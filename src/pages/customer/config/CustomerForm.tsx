@@ -26,7 +26,6 @@ import {
   ArrowLeft,
   User,
   Phone,
-  Mail,
   MapPin,
   Calendar,
   CheckCircle,
@@ -44,7 +43,7 @@ import {
   Percent,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { customerService, type CreateCustomerPayload, type UpdateCustomerPayload, type Branch, type AccountDetails, type PaymentHistory } from '@/services/customerService';
+import { customerService, type CreateCustomerPayload, type UpdateCustomerPayload, type Branch, type PaymentHistory } from '@/services/customerService';
 
 // Form field configuration interface
 interface FormFieldConfig {
@@ -62,8 +61,8 @@ interface FormFieldConfig {
 
 // Branch schema for validation
 const branchSchema = z.object({
-  branchName: z.string().min(1, 'Branch name is required'),
-  location: z.string().min(1, 'Location is required'),
+  branchName: z.string().optional().transform(val => val === '' ? undefined : val),
+  location: z.string().optional().transform(val => val === '' ? undefined : val),
   phone: z.string().optional().transform(val => val === '' ? undefined : val),
   contactPerson: z.string().optional().transform(val => val === '' ? undefined : val),
 });
@@ -434,8 +433,7 @@ const BranchManager: React.FC<{
   append: (value: Branch) => void;
   remove: (index: number) => void;
   register: any;
-  errors: any;
-}> = ({ fields, append, remove, register, errors }) => {
+}> = ({ fields, append, remove, register }) => {
   const addBranch = () => {
     append({
       branchName: '',
@@ -475,25 +473,19 @@ const BranchManager: React.FC<{
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Branch Name *</Label>
+              <Label>Branch Name</Label>
               <Input
                 {...register(`branches.${index}.branchName`)}
                 placeholder="Enter branch name"
               />
-              {errors.branches?.[index]?.branchName && (
-                <p className="text-sm text-red-500">{errors.branches[index].branchName.message}</p>
-              )}
             </div>
             
             <div className="space-y-2">
-              <Label>Location *</Label>
+              <Label>Location</Label>
               <Input
                 {...register(`branches.${index}.location`)}
                 placeholder="Enter location"
               />
-              {errors.branches?.[index]?.location && (
-                <p className="text-sm text-red-500">{errors.branches[index].location.message}</p>
-              )}
             </div>
             
             <div className="space-y-2">
@@ -530,7 +522,7 @@ const BranchManager: React.FC<{
 const AccountDetailsManager: React.FC<{
   register: any;
   errors: any;
-}> = ({ register, errors }) => {
+}> = ({ register }) => {
   return (
     <Card className="p-4">
       <div className="mb-4">
@@ -705,10 +697,6 @@ const PaymentHistoryManager: React.FC<{
 };
 
 export default function CustomerForm() {
-  const userData = localStorage.getItem('userData');
-  const user = userData ? JSON.parse(userData) : null;
-  const companyId = user?.company_id;
-
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
@@ -927,10 +915,10 @@ export default function CustomerForm() {
         // Handle branches
         if (data.branches && data.branches.length > 0) {
           const cleanBranches = data.branches.filter((branch: any) => 
-            branch.branchName?.trim() && branch.location?.trim()
+            branch.branchName?.trim() || branch.location?.trim() || branch.phone?.trim() || branch.contactPerson?.trim()
           ).map((branch: any) => ({
-            branchName: branch.branchName.trim(),
-            location: branch.location.trim(),
+            branchName: branch.branchName?.trim() || undefined,
+            location: branch.location?.trim() || undefined,
             phone: branch.phone?.trim() || undefined,
             contactPerson: branch.contactPerson?.trim() || undefined
           }));
@@ -1100,7 +1088,6 @@ export default function CustomerForm() {
                       append={appendBranch}
                       remove={removeBranch}
                       register={register}
-                      errors={errors}
                     />
                   </div>
 

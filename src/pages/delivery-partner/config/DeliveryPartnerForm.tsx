@@ -213,7 +213,7 @@ export const DeliveryPartnerForm: React.FC<DeliveryPartnerFormProps> = ({ mode }
                     </Label>
                     <Select
                       value={formData.status}
-                      onValueChange={(value: 'Active' | 'Inactive') => handleInputChange('status', value)}
+                      onValueChange={(value) => handleInputChange('status', value as 'Active' | 'Inactive')}
                     >
                       <SelectTrigger className="border-gray-200 focus:border-blue-500 focus:ring-blue-200 transition-all duration-200 pl-3 pr-3 py-2 rounded-md shadow-sm focus:ring-4">
                         <SelectValue placeholder="Select status" />

@@ -70,7 +70,7 @@ export const PriceListingForm: React.FC<PriceListingFormProps> = ({ mode }) => {
       setFormData({
         fromCountry: priceListing.fromCountry,
         toCountry: priceListing.toCountry,
-        deliveryPartnerId: deliveryPartnerId,
+        deliveryPartnerId: deliveryPartnerId || undefined,
         amount: priceListing.amount,
         status: priceListing.status
       });
@@ -115,7 +115,7 @@ export const PriceListingForm: React.FC<PriceListingFormProps> = ({ mode }) => {
     }
   };
 
-  const handleInputChange = (field: keyof CreatePriceListingPayload, value: string | number) => {
+  const handleInputChange = (field: keyof CreatePriceListingPayload, value: string | number | undefined) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -124,7 +124,7 @@ export const PriceListingForm: React.FC<PriceListingFormProps> = ({ mode }) => {
   };
 
   const handleDeliveryPartnerChange = (partnerId: string) => {
-    const actualPartnerId = partnerId === 'none' ? '' : partnerId;
+    const actualPartnerId = partnerId === 'none' ? undefined : partnerId;
     handleInputChange('deliveryPartnerId', actualPartnerId);
     const partner = deliveryPartners.find(p => p._id === actualPartnerId);
     setSelectedDeliveryPartner(partner || null);
@@ -227,7 +227,7 @@ export const PriceListingForm: React.FC<PriceListingFormProps> = ({ mode }) => {
                       Delivery Partner (Optional)
                     </Label>
                     <Select
-                      value={formData.deliveryPartnerId || undefined}
+                      value={formData.deliveryPartnerId || "none"}
                       onValueChange={handleDeliveryPartnerChange}
                     >
                       <SelectTrigger className="border-gray-200 focus:border-blue-500 focus:ring-blue-200 transition-all duration-200 pl-3 pr-3 py-2 rounded-md shadow-sm focus:ring-4">
