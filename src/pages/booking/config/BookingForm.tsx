@@ -1,0 +1,553 @@
+import { useParams, useNavigate } from 'react-router-dom';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  ArrowLeft,
+  Calendar,
+  Package,
+  Users,
+  Truck,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  Save,
+  Plus,
+  Building,
+} from 'lucide-react';
+import { toast } from 'react-hot-toast';
+import { bookingService, type CreateBookingPayload, type UpdateBookingPayload } from '@/services/bookingService';
+import { customerService, type Customer } from '@/services/customerService';
+import { pickupPartnerService, type PickupPartner } from '@/services/pickupPartnerService';
+
+// Form validation schema
+const bookingFormSchema = z.object({
+  sender: z.string().min(1, 'Sender is required'),
+  receiver: z.string().min(1, 'Receiver is required'),
+  receiverBranch: z.string().optional(),
+  pickupPartner: z.string().min(1, 'Pickup partner is required'),
+  date: z.string().min(1, 'Booking date is required'),
+  expectedReceivingDate: z.string().min(1, 'Expected receiving date is required'),
+  bundleCount: z.number().min(1, 'Bundle count must be at least 1'),
+  status: z.enum(['pending', 'success']),
+}).refine(data => {
+  const bookingDate = new Date(data.date);
+  const expectedDate = new Date(data.expectedReceivingDate);
+  return expectedDate > bookingDate;
+}, {
+  message: 'Expected receiving date must be after booking date',
+  path: ['expectedReceivingDate']
+});
+
+type BookingFormValues = z.infer<typeof bookingFormSchema>;
+
+export default function BookingForm() {
+  const { id } = useParams<{ id?: string }>();
+  const navigate = useNavigate();
+  const isEditing = Boolean(id);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  
+  // Options for dropdowns
+  const [senders, setSenders] = useState<Customer[]>([]);
+  const [receivers, setReceivers] = useState<Customer[]>([]);
+  const [pickupPartners, setPickupPartners] = useState<PickupPartner[]>([]);
+  const [receiverBranches, setReceiverBranches] = useState<string[]>([]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+    watch,
+    setValue,
+    trigger,
+  } = useForm<BookingFormValues>({
+    resolver: zodResolver(bookingFormSchema),
+    defaultValues: {
+      sender: '',
+      receiver: '',
+      receiverBranch: '',
+      pickupPartner: '',
+      date: '',
+      expectedReceivingDate: '',
+      bundleCount: 1,
+      status: 'pending',
+    },
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
+  });
+
+  const watchedReceiver = watch('receiver');
+
+  // Fetch dropdown options
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const [sendersResponse, receiversResponse, pickupPartnersResponse] = await Promise.all([
+          customerService.listCustomers({ customerType: 'Sender', limit: 1000 }),
+          customerService.listCustomers({ customerType: 'Receiver', limit: 1000 }),
+          pickupPartnerService.listPickupPartners({ limit: 1000 })
+        ]);
+
+        setSenders(sendersResponse.data || []);
+        setReceivers(receiversResponse.data || []);
+        setPickupPartners(pickupPartnersResponse.data || []);
+      } catch (error) {
+        console.error('Error fetching options:', error);
+        toast.error('Failed to load form options');
+      }
+    };
+
+    fetchOptions();
+  }, []);
+
+  // Update receiver branches when receiver changes
+  useEffect(() => {
+    if (watchedReceiver) {
+      const selectedReceiver = receivers.find(r => r._id === watchedReceiver);
+      if (selectedReceiver && selectedReceiver.branches) {
+        const branchNames = selectedReceiver.branches
+          .filter(branch => branch.branchName)
+          .map(branch => branch.branchName!);
+        setReceiverBranches(branchNames);
+      } else {
+        setReceiverBranches([]);
+      }
+      // Reset branch selection when receiver changes
+      setValue('receiverBranch', '');
+    }
+  }, [watchedReceiver, receivers, setValue]);
+
+  // Fetch booking data for editing
+  useEffect(() => {
+    if (isEditing && id) {
+      setIsLoading(true);
+      const fetchBooking = async () => {
+        try {
+          const response = await bookingService.getBooking(id);
+          const booking = response.data;
+
+          if (!booking) throw new Error('Failed to fetch booking');
+
+          // Format dates for input fields
+          const formatDateForInput = (dateString: string) => {
+            return new Date(dateString).toISOString().split('T')[0];
+          };
+
+          reset({
+            sender: booking.sender._id,
+            receiver: booking.receiver._id,
+            receiverBranch: booking.receiverBranch || '',
+            pickupPartner: booking.pickupPartner._id,
+            date: formatDateForInput(booking.date),
+            expectedReceivingDate: formatDateForInput(booking.expectedReceivingDate),
+            bundleCount: booking.bundleCount,
+            status: booking.status,
+          });
+        } catch (err) {
+          setError('Failed to load booking data');
+          toast.error('Failed to load booking data');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchBooking();
+    }
+  }, [id, isEditing, reset]);
+
+  // Helper function to clear validation errors
+  const clearValidationErrors = () => {
+    setError('');
+  };
+
+  // Function to handle form submission with proper validation
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    clearValidationErrors();
+
+    const isValid = await trigger();
+    if (!isValid) {
+      setError('Please fix the validation errors before submitting.');
+      return;
+    }
+
+    handleSubmit(onSubmit)(e);
+  };
+
+  const onSubmit: SubmitHandler<BookingFormValues> = async (data) => {
+    console.log('Form submitted with data:', data);
+    setError('');
+
+    try {
+      setIsLoading(true);
+
+      const bookingPayload: CreateBookingPayload | UpdateBookingPayload = {
+        sender: data.sender,
+        receiver: data.receiver,
+        receiverBranch: data.receiverBranch || undefined,
+        pickupPartner: data.pickupPartner,
+        date: data.date,
+        expectedReceivingDate: data.expectedReceivingDate,
+        bundleCount: Number(data.bundleCount),
+        status: data.status,
+      };
+
+      if (isEditing && id) {
+        const response = await bookingService.updateBooking(id, bookingPayload);
+        if (!response.data) throw new Error('Booking update failed');
+        toast.success('Booking updated successfully!');
+      } else {
+        const response = await bookingService.createBooking(bookingPayload as CreateBookingPayload);
+        if (!response.data) throw new Error('Booking creation failed');
+        toast.success('Booking created successfully!');
+      }
+
+      setTimeout(() => navigate('/dashboard/bookings'), 1000);
+    } catch (error: any) {
+      console.error('Error submitting form:', error);
+      setError(error.message || 'Failed to save booking. Please check all fields and try again.');
+      toast.error(error.message || 'Failed to save booking. Please check all fields and try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading && isEditing) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[50vh]">
+        <Loader2 className="h-12 w-12 text-blue-500 animate-spin mb-4" />
+        <p className="text-lg font-medium text-gray-700">Loading booking data...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 bg-gray-50 min-h-screen">
+      <div className="max-w-4xl mx-auto space-y-8">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/dashboard/bookings')}
+            className="hover:bg-blue-100 transition-colors duration-200 rounded-full"
+          >
+            <ArrowLeft className="h-5 w-5 text-blue-600" />
+          </Button>
+          <div className="flex items-center space-x-3">
+            <div className="p-2 rounded-lg bg-blue-100">
+              <Package className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">
+                {isEditing ? 'Update Booking' : 'Create New Booking'}
+              </h1>
+              <p className="text-gray-600">Create or update booking information</p>
+            </div>
+          </div>
+        </div>
+
+        <Card className="border-none shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+          <CardHeader>
+            <CardTitle className="text-xl text-blue-800">Booking Information</CardTitle>
+            <CardDescription className="text-blue-600">
+              {isEditing ? 'Update the booking details below' : 'Fill in the booking details below to create a new booking'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <form onSubmit={handleFormSubmit} className="space-y-8" noValidate>
+              {/* Error Display */}
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-md p-4">
+                  <div className="flex items-center">
+                    <AlertCircle className="h-5 w-5 text-red-400 mr-2" />
+                    <p className="text-red-800">{error}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Basic Information */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Customer Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Sender */}
+                  <div className="space-y-2">
+                    <Label htmlFor="sender" className="flex items-center gap-2 font-medium">
+                      <Users className="h-4 w-4 text-blue-500" />
+                      Sender <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      value={watch('sender')}
+                      onValueChange={(value) => {
+                        setValue('sender', value);
+                        if (errors.sender) clearValidationErrors();
+                      }}
+                    >
+                      <SelectTrigger className={errors.sender ? 'border-red-300' : ''}>
+                        <SelectValue placeholder="Select sender" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {senders.map((sender) => (
+                          <SelectItem key={sender._id} value={sender._id!}>
+                            {sender.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.sender && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.sender.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Receiver */}
+                  <div className="space-y-2">
+                    <Label htmlFor="receiver" className="flex items-center gap-2 font-medium">
+                      <Users className="h-4 w-4 text-green-500" />
+                      Receiver <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      value={watch('receiver')}
+                      onValueChange={(value) => {
+                        setValue('receiver', value);
+                        if (errors.receiver) clearValidationErrors();
+                      }}
+                    >
+                      <SelectTrigger className={errors.receiver ? 'border-red-300' : ''}>
+                        <SelectValue placeholder="Select receiver" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {receivers.map((receiver) => (
+                          <SelectItem key={receiver._id} value={receiver._id!}>
+                            {receiver.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.receiver && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.receiver.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Pickup Partner */}
+                  <div className="space-y-2">
+                    <Label htmlFor="pickupPartner" className="flex items-center gap-2 font-medium">
+                      <Truck className="h-4 w-4 text-orange-500" />
+                      Pickup Partner <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      value={watch('pickupPartner')}
+                      onValueChange={(value) => {
+                        setValue('pickupPartner', value);
+                        if (errors.pickupPartner) clearValidationErrors();
+                      }}
+                    >
+                      <SelectTrigger className={errors.pickupPartner ? 'border-red-300' : ''}>
+                        <SelectValue placeholder="Select pickup partner" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pickupPartners.map((partner) => (
+                          <SelectItem key={partner._id} value={partner._id!}>
+                            {partner.name} - {partner.phoneNumber}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.pickupPartner && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.pickupPartner.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Receiver Branch */}
+                  {receiverBranches.length > 0 && (
+                    <div className="space-y-2 md:col-span-3">
+                      <Label htmlFor="receiverBranch" className="flex items-center gap-2 font-medium">
+                        <Building className="h-4 w-4 text-purple-500" />
+                        Receiver Branch
+                      </Label>
+                      <Select
+                        value={watch('receiverBranch') || 'no-branch'}
+                        onValueChange={(value) => setValue('receiverBranch', value === 'no-branch' ? '' : value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select branch (optional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="no-branch">No specific branch</SelectItem>
+                          {receiverBranches.map((branch) => (
+                            <SelectItem key={branch} value={branch}>
+                              {branch}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Booking Details */}
+              <div>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Calendar className="h-5 w-5" />
+                  Booking Details
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* <div className="grid grid-cols-1 md:grid-cols-2  gap-6"> */}
+                  {/* Date */}
+                  <div className="space-y-2">
+                    <Label htmlFor="date" className="flex items-center gap-2 font-medium">
+                      <Calendar className="h-4 w-4 text-blue-500" />
+                      Booking Date <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="date"
+                      type="date"
+                      {...register('date')}
+                      className={errors.date ? 'border-red-300' : ''}
+                    />
+                    {errors.date && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.date.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Expected Receiving Date */}
+                  <div className="space-y-2">
+                    <Label htmlFor="expectedReceivingDate" className="flex items-center gap-2 font-medium">
+                      <Calendar className="h-4 w-4 text-green-500" />
+                      Expected Receiving Date <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="expectedReceivingDate"
+                      type="date"
+                      {...register('expectedReceivingDate')}
+                      className={errors.expectedReceivingDate ? 'border-red-300' : ''}
+                    />
+                    {errors.expectedReceivingDate && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.expectedReceivingDate.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Bundle Count */}
+                  <div className="space-y-2">
+                    <Label htmlFor="bundleCount" className="flex items-center gap-2 font-medium">
+                      <Package className="h-4 w-4 text-purple-500" />
+                      Bundle Count <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="bundleCount"
+                      type="number"
+                      min="1"
+                      {...register('bundleCount', { valueAsNumber: true })}
+                      className={errors.bundleCount ? 'border-red-300' : ''}
+                    />
+                    {errors.bundleCount && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.bundleCount.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Status */}
+                  <div className="space-y-2">
+                    <Label htmlFor="status" className="flex items-center gap-2 font-medium">
+                      <CheckCircle className="h-4 w-4 text-green-500" />
+                      Status <span className="text-red-500">*</span>
+                    </Label>
+                    <Select
+                      value={watch('status')}
+                      onValueChange={(value) => setValue('status', value as 'pending' | 'success')}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="success">Success</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.status && (
+                      <p className="text-sm text-red-500 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        {errors.status.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t flex justify-between items-center">
+                <div className="text-sm text-gray-500">
+                  * Required fields
+                </div>
+                <div className="flex gap-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => navigate('/dashboard/bookings')}
+                    className="border-gray-300 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting || isLoading}
+                    className="text-white transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg disabled:opacity-50"
+                  >
+                    {(isSubmitting || isLoading) ? (
+                      <span className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        {isEditing ? 'Updating...' : 'Creating...'}
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2">
+                        {isEditing ? <Save className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                        {isEditing ? 'Update Booking' : 'Create Booking'}
+                      </span>
+                    )}
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

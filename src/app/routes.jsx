@@ -60,6 +60,9 @@ import { PickupPartnerEdit } from '@/pages/pickup-partner/config/PickupPartnerEd
 import { PriceListingManagement } from '@/pages/price-listing/list/PriceListingManagement';
 import { PriceListingCreate } from '@/pages/price-listing/config/PriceListingCreate';
 import { PriceListingEdit } from '@/pages/price-listing/config/PriceListingEdit';
+import { BookingManagement } from '@/pages/booking/list/BookingManagement';
+import BookingForm from '@/pages/booking/config/BookingForm';
+import BookingView from '@/pages/booking/config/BookingView';
 
 
 const protectedRoutes = [
@@ -128,7 +131,11 @@ const protectedRoutes = [
   { path: 'pickup-partners/edit/:id', element: <PickupPartnerEdit />, module: 'Pickup Partners' },
   { path: 'price-listings', element: <PriceListingManagement />, module: 'Price Listings' },
   { path: 'price-listings/create', element: <PriceListingCreate />, module: 'Price Listings' },
-  { path: 'price-listings/edit/:id', element: <PriceListingEdit />, module: 'Price Listings' }
+  { path: 'price-listings/edit/:id', element: <PriceListingEdit />, module: 'Price Listings' },
+  { path: 'bookings', element: <BookingManagement />, module: 'Bookings' },
+  { path: 'bookings/create', element: <BookingForm />, module: 'Bookings' },
+  { path: 'bookings/edit/:id', element: <BookingForm />, module: 'Bookings' },
+  { path: 'bookings/view/:id', element: <BookingView />, module: 'Bookings' }
 ];
 
 const unprotectedRoutes = [
