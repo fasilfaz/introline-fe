@@ -2,7 +2,7 @@ import { toast } from 'react-hot-toast';
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'https://introline-be.vercel.app/api/v1';
 
 const getAccessToken = (): string | null => {
   const stored = localStorage.getItem('accessToken');
