@@ -127,12 +127,12 @@ export const DashboardLayout = () => {
 
   // All menu items with role access definitions
   const allMenuItems = [
-    {
-      path: '/dashboard',
-      label: 'Dashboard',
-      icon: <Home className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'admin', 'purchaser', 'biller', 'store']
-    },
+    // {
+    //   path: '/dashboard',
+    //   label: 'Dashboard',
+    //   icon: <Home className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'admin', 'purchaser', 'biller', 'store']
+    // },
     {
       path: '/dashboard/users',
       label: 'Users',
@@ -157,49 +157,49 @@ export const DashboardLayout = () => {
     //   icon: <LayoutTemplate className="mr-3 h-4 w-4 flex-shrink-0" />,
     //   roles: ['superadmin', 'admin']
     // },
-    
-    {
-      path: '/dashboard/purchase-entries',
-      label: 'Purchase Entries',
-      icon: <FileText className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'purchaser', 'admin']
-    },
-    {
-      path: '/dashboard/item-master',
-      label: 'Item Master',
-      icon: <Package className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'admin', 'purchaser']
-    },
-    {
-      path: '/dashboard/purchaser/qc',
-      label: 'Quality Control',
-      icon: <ShieldCheck className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'purchaser']
-    },
-    {
-      path: '/dashboard/supplierManagement',
-      label: 'Supplier Management',
-      icon: <Truck className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'purchaser']
-    },
-    {
-      path: '/dashboard/storeManagement',
-      label: 'Store Management',
-      icon: <Store className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'purchaser', 'admin', 'biller']
-    },
-    {
-      path: '/dashboard/store/stock',
-      label: 'Store Stock',
-      icon: <Store className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'store', 'biller', 'purchaser']
-    },
-    {
-      path: '/dashboard/purchaser/packing-lists',
-      label: 'Packing Lists',
-      icon: <Boxes className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'purchaser', 'store']
-    },
+
+    // {
+    //   path: '/dashboard/purchase-entries',
+    //   label: 'Purchase Entries',
+    //   icon: <FileText className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'purchaser', 'admin']
+    // },
+    // {
+    //   path: '/dashboard/item-master',
+    //   label: 'Item Master',
+    //   icon: <Package className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'admin', 'purchaser']
+    // },
+    // {
+    //   path: '/dashboard/purchaser/qc',
+    //   label: 'Quality Control',
+    //   icon: <ShieldCheck className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'purchaser']
+    // },
+    // {
+    //   path: '/dashboard/supplierManagement',
+    //   label: 'Supplier Management',
+    //   icon: <Truck className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'purchaser']
+    // },
+    // {
+    //   path: '/dashboard/storeManagement',
+    //   label: 'Store Management',
+    //   icon: <Store className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'purchaser', 'admin', 'biller']
+    // },
+    // {
+    //   path: '/dashboard/store/stock',
+    //   label: 'Store Stock',
+    //   icon: <Store className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'store', 'biller', 'purchaser']
+    // },
+    // {
+    //   path: '/dashboard/purchaser/packing-lists',
+    //   label: 'Packing Lists',
+    //   icon: <Boxes className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'purchaser', 'store']
+    // },
     {
       path: '/dashboard/purchaser/expenses',
       label: 'Daily Expenses',
@@ -224,24 +224,24 @@ export const DashboardLayout = () => {
     //   icon: <Package className="mr-3 h-4 w-4 flex-shrink-0" />,
     //   roles: ['superadmin', 'admin']
     // },
-    {
-      path: '/dashboard/invoice',
-      label: 'Sales Invoice',
-      icon: <BadgeDollarSign className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'biller']
-    },
-    {
-      path: '/dashboard/reports',
-      label: 'Reports',
-      icon: <ChartNoAxesCombined className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'admin', 'biller', 'purchaser']
-    },
-    {
-      path: '/dashboard/administration/product-transmission',
-      label: 'Product Transmission',
-      icon: <ArrowRightLeft className="mr-3 h-4 w-4 flex-shrink-0" />,
-      roles: ['superadmin', 'admin']
-    },
+    // {
+    //   path: '/dashboard/invoice',
+    //   label: 'Sales Invoice',
+    //   icon: <BadgeDollarSign className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'biller']
+    // },
+    // {
+    //   path: '/dashboard/reports',
+    //   label: 'Reports',
+    //   icon: <ChartNoAxesCombined className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'admin', 'biller', 'purchaser']
+    // },
+    // {
+    //   path: '/dashboard/administration/product-transmission',
+    //   label: 'Product Transmission',
+    //   icon: <ArrowRightLeft className="mr-3 h-4 w-4 flex-shrink-0" />,
+    //   roles: ['superadmin', 'admin']
+    // },
     {
       path: '/dashboard/delivery-partners',
       label: 'Delivery Partners',
