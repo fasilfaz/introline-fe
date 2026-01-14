@@ -43,7 +43,7 @@ import { RoleManagement } from '@/pages/management/roleManagement/RoleManagement
 import AuthRedirectPage from '@/pages/auth/authRedirect';
 import CurrencyRatesPage from '@/pages/administration/CurrencyRatesPage';
 import QualityControlPage from '@/pages/purchaser/QC';
-import {PackingListsPage} from '@/pages/purchaser/PackingLists'
+import { PackingListsPage } from '@/pages/purchaser/PackingLists'
 import { PackingListView } from '@/pages/purchaser/PackingListView';
 import { DailyExpensesPage } from "@/pages/purchaser/DailyExpenses";
 import { OpeningBalancePage } from "@/pages/purchaser/OpeningBalance";
@@ -63,6 +63,7 @@ import { PriceListingEdit } from '@/pages/price-listing/config/PriceListingEdit'
 import { BookingManagement } from '@/pages/booking/list/BookingManagement';
 import BookingForm from '@/pages/booking/config/BookingForm';
 import BookingView from '@/pages/booking/config/BookingView';
+import StoreBookings from '@/pages/management/storeManagement/list/StoreBookings';
 
 
 const protectedRoutes = [
@@ -85,6 +86,7 @@ const protectedRoutes = [
   { path: 'storeManagement', element: <StoreManagement />, module: 'Store Management' },
   { path: 'store/add', element: <AddStoreForm />, module: 'Store Management' },
   { path: 'store/edit/:id', element: <AddStoreForm />, module: 'Store Management' },
+  { path: 'store/bookings', element: <StoreBookings />, module: 'Store Management' },
   { path: 'store/stock', element: <StoreStockPage />, module: 'Store Stock' },
   { path: 'warehouseManagement', element: <WarehouseManagement />, module: 'Inventory Management' },
   { path: 'items', element: <ItemManagement />, module: 'Item Master' },
@@ -114,10 +116,10 @@ const protectedRoutes = [
   { path: 'customer-management/edit/:id', element: <CustomerForm />, module: 'Customer Master' },
   { path: 'customer-management/view/:id', element: <CustomerView />, module: 'Customer Master' },
   { path: 'purchaser/qc', element: <QualityControlPage />, module: 'Quality Control' },
-  { path: 'purchaser/packing-lists',element: <PackingListsPage /> ,module: 'Packing Lists'},
-  { path: 'purchaser/packing-lists/view/:id',element: <PackingListView /> ,module: 'Packing Lists'},
-  { path: 'purchaser/expenses',element: <DailyExpensesPage /> ,module: 'Daily Expenses'},
-  { path: 'purchaser/opening-balance',element: <OpeningBalancePage /> ,module: 'Opening Balance'},
+  { path: 'purchaser/packing-lists', element: <PackingListsPage />, module: 'Packing Lists' },
+  { path: 'purchaser/packing-lists/view/:id', element: <PackingListView />, module: 'Packing Lists' },
+  { path: 'purchaser/expenses', element: <DailyExpensesPage />, module: 'Daily Expenses' },
+  { path: 'purchaser/opening-balance', element: <OpeningBalancePage />, module: 'Opening Balance' },
   { path: 'purchase-entries', element: <PurchaseEntries />, module: 'Purchase Entries' },
   { path: 'purchase-entries/add', element: <PurchaseEntryForm />, module: 'Purchase Entries' },
   { path: 'purchase-entries/edit/:id', element: <PurchaseEntryForm />, module: 'Purchase Entries' },

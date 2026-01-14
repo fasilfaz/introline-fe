@@ -172,6 +172,7 @@ export default function AddStoreForm() {
   const [storeIdValidationStatus, setStoreIdValidationStatus] = useState<'idle' | 'validating' | 'valid' | 'invalid'>('idle');
   const [storeIdValidationMessage, setStoreIdValidationMessage] = useState<string>('');
   const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [showCustomCountry, setShowCustomCountry] = useState(false);
 
   const isEditing = Boolean(id);
 
@@ -369,6 +370,7 @@ export default function AddStoreForm() {
         setStore(data as any as IStore); // Type assertion to match the existing IStore type
 
         if (data) {
+          setShowCustomCountry(data.country && !["India", "UAE"].includes(data.country));
           reset({
             code: data.code || "",
             name: data.name || "",
@@ -940,31 +942,73 @@ export default function AddStoreForm() {
                         />
                         <ErrorMessage message={errors.postalCode?.message} />
                       </div>
-                      <div className="space-y-2 group">
-                        <Label
-                          htmlFor="country"
-                          className={`${errors.country ? "text-red-500" : "text-gray-700"
-                            } group-hover:text-blue-700 transition-colors duration-200 font-medium`}
-                        >
-                          Country <span className="text-red-500">*</span>
-                        </Label>
-                        <Controller
-                          name="country"
-                          control={control}
-                          render={({ field }) => (
-                            <Input
-                              {...field}
-                              id="country"
-                              placeholder="Enter country"
-                              className={`${errors.country
-                                ? "border-red-300 focus:border-red-500 focus:ring-red-200"
-                                : "border-gray-200 focus:border-blue-500 focus:ring-blue-200"
-                                } pl-3 pr-3 py-2 rounded-md shadow-sm focus:ring-4 transition-all duration-200 ${field.value ? "border-blue-300" : ""
-                                }`}
+                      <div className="space-y-4">
+                        <div className="space-y-2 group">
+                          <Label
+                            htmlFor="country"
+                            className={`${errors.country ? "text-red-500" : "text-gray-700"
+                              } group-hover:text-blue-700 transition-colors duration-200 font-medium`}
+                          >
+                            Country <span className="text-red-500">*</span>
+                          </Label>
+                          <Controller
+                            name="country"
+                            control={control}
+                            render={({ field }) => (
+                              <Select
+                                value={["India", "UAE"].includes(field.value) ? field.value : field.value ? "Other" : ""}
+                                onValueChange={(val) => {
+                                  if (val === "Other") {
+                                    setShowCustomCountry(true);
+                                    field.onChange("");
+                                  } else {
+                                    setShowCustomCountry(false);
+                                    field.onChange(val);
+                                  }
+                                }}
+                              >
+                                <SelectTrigger
+                                  className={`${errors.country
+                                    ? "border-red-300 focus:border-red-500 focus:ring-red-200"
+                                    : "border-gray-200 focus:border-blue-500 focus:ring-blue-200"
+                                    } pl-3 pr-3 py-2 rounded-md shadow-sm focus:ring-4 transition-all duration-200 ${field.value ? "border-blue-300" : ""
+                                    }`}
+                                >
+                                  <SelectValue placeholder="Select country" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="India">India</SelectItem>
+                                  <SelectItem value="UAE">UAE</SelectItem>
+                                  <SelectItem value="Other">Other (Create New)</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            )}
+                          />
+                          <ErrorMessage message={errors.country?.message} />
+                        </div>
+
+                        {showCustomCountry && (
+                          <div className="space-y-2 group animate-in fade-in slide-in-from-top-1 duration-200">
+                            <Label
+                              htmlFor="customCountry"
+                              className="text-gray-700 group-hover:text-blue-700 transition-colors duration-200 font-medium"
+                            >
+                              Enter Country Name <span className="text-red-500">*</span>
+                            </Label>
+                            <Controller
+                              name="country"
+                              control={control}
+                              render={({ field }) => (
+                                <Input
+                                  {...field}
+                                  id="customCountry"
+                                  placeholder="Enter your country"
+                                  className="border-gray-200 focus:border-blue-500 focus:ring-blue-200 pl-3 pr-3 py-2 rounded-md shadow-sm focus:ring-4 transition-all duration-200"
+                                />
+                              )}
                             />
-                          )}
-                        />
-                        <ErrorMessage message={errors.country?.message} />
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

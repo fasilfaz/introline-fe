@@ -139,67 +139,37 @@ export const DashboardLayout = () => {
       icon: <Users className="mr-3 h-4 w-4 flex-shrink-0" />,
       roles: ['superadmin', 'admin']
     },
-    // {
-    //   path: '/dashboard/category-master',
-    //   label: 'Category Master',
-    //   icon: <LayoutTemplate className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'admin', "purchaser"]
-    // },
     {
       path: '/dashboard/customer-management',
       label: 'Customer Master',
       icon: <LayoutTemplate className="mr-3 h-4 w-4 flex-shrink-0" />,
       roles: ['superadmin', 'biller']
     },
-    // {
-    //   path: '/dashboard/itemConfigurator',
-    //   label: 'Item Configurator',
-    //   icon: <LayoutTemplate className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'admin']
-    // },
-
-    // {
-    //   path: '/dashboard/purchase-entries',
-    //   label: 'Purchase Entries',
-    //   icon: <FileText className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'purchaser', 'admin']
-    // },
-    // {
-    //   path: '/dashboard/item-master',
-    //   label: 'Item Master',
-    //   icon: <Package className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'admin', 'purchaser']
-    // },
-    // {
-    //   path: '/dashboard/purchaser/qc',
-    //   label: 'Quality Control',
-    //   icon: <ShieldCheck className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'purchaser']
-    // },
-    // {
-    //   path: '/dashboard/supplierManagement',
-    //   label: 'Supplier Management',
-    //   icon: <Truck className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'purchaser']
-    // },
-    // {
-    //   path: '/dashboard/storeManagement',
-    //   label: 'Store Management',
-    //   icon: <Store className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'purchaser', 'admin', 'biller']
-    // },
-    // {
-    //   path: '/dashboard/store/stock',
-    //   label: 'Store Stock',
-    //   icon: <Store className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'store', 'biller', 'purchaser']
-    // },
-    // {
-    //   path: '/dashboard/purchaser/packing-lists',
-    //   label: 'Packing Lists',
-    //   icon: <Boxes className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'purchaser', 'store']
-    // },
+    {
+      label: 'Store Management',
+      icon: <Store className="mr-3 h-4 w-4 flex-shrink-0" />,
+      roles: ['superadmin', 'purchaser', 'admin', 'biller', 'store'],
+      children: [
+        {
+          path: '/dashboard/storeManagement',
+          label: 'Store',
+          icon: <Store className="mr-3 h-4 w-4 flex-shrink-0" />,
+          roles: ['superadmin', 'purchaser', 'admin', 'biller']
+        },
+        {
+          path: '/dashboard/store/bookings',
+          label: 'Store Bookings',
+          icon: <Calendar className="mr-3 h-4 w-4 flex-shrink-0" />,
+          roles: ['superadmin', 'admin', 'biller', 'store']
+        },
+        {
+          path: '/dashboard/purchaser/packing-lists',
+          label: 'Packing List',
+          icon: <Boxes className="mr-3 h-4 w-4 flex-shrink-0" />,
+          roles: ['superadmin', 'purchaser', 'store']
+        }
+      ]
+    },
     {
       path: '/dashboard/purchaser/expenses',
       label: 'Daily Expenses',
@@ -212,36 +182,6 @@ export const DashboardLayout = () => {
       icon: <Wallet className="mr-3 h-4 w-4 flex-shrink-0" />,
       roles: ['superadmin', 'purchaser', 'admin', 'biller']
     },
-    // { 
-    //   path: '/dashboard/purchaseOrderManagement', 
-    //   label: 'PurchaseOrder Management', 
-    //   icon: <FileText className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'purchaser', 'admin']
-    // },
-    // {
-    //   path: '/dashboard/inventoryManagement',
-    //   label: 'Inventory Management',
-    //   icon: <Package className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'admin']
-    // },
-    // {
-    //   path: '/dashboard/invoice',
-    //   label: 'Sales Invoice',
-    //   icon: <BadgeDollarSign className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'biller']
-    // },
-    // {
-    //   path: '/dashboard/reports',
-    //   label: 'Reports',
-    //   icon: <ChartNoAxesCombined className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'admin', 'biller', 'purchaser']
-    // },
-    // {
-    //   path: '/dashboard/administration/product-transmission',
-    //   label: 'Product Transmission',
-    //   icon: <ArrowRightLeft className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'admin']
-    // },
     {
       path: '/dashboard/delivery-partners',
       label: 'Delivery Partners',
@@ -266,24 +206,6 @@ export const DashboardLayout = () => {
       icon: <Calendar className="mr-3 h-4 w-4 flex-shrink-0" />,
       roles: ['superadmin', 'admin', 'biller']
     },
-    // {
-    //   path: '/dashboard/administration',
-    //   label: 'Administration',
-    //   icon: <Building2 className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'admin']
-    // },
-    // {
-    //   path: '/dashboard/administration/currency',
-    //   label: 'Currency Rates',
-    //   icon: <Building2 className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'admin', 'store']
-    // },
-    // { 
-    //   path: '/dashboard/audit-trial', 
-    //   label: 'Audit Trial', 
-    //   icon: <Clock className="mr-3 h-4 w-4 flex-shrink-0" />,
-    //   roles: ['superadmin', 'admin']
-    // },
   ];
 
   // Filter menu items based on user role
@@ -315,10 +237,83 @@ export const DashboardLayout = () => {
     }
 
     // Filter based on role
-    return allMenuItems.filter(item => item.roles.includes(normalizedRole));
+    return allMenuItems.filter(item => {
+      const hasAccess = item.roles.includes(normalizedRole);
+      if (hasAccess && item.children) {
+        // Also filter children
+        const filteredChildren = item.children.filter(child => child.roles.includes(normalizedRole));
+        if (filteredChildren.length > 0) {
+          // Clone item to avoid direct mutation of allMenuItems
+          return { ...item, children: filteredChildren };
+        }
+        return false;
+      }
+      return hasAccess;
+    }).map(item => {
+      if (item.children) {
+        return {
+          ...item,
+          children: item.children.filter(child => child.roles.includes(normalizedRole))
+        };
+      }
+      return item;
+    });
   };
 
   const visibleItems = getVisibleMenuItems();
+
+  const SidebarItem = ({ item }) => {
+    const hasChildren = item.children && item.children.length > 0;
+    const isAnyChildActive = hasChildren && item.children.some(child => isActiveRoute(child.path));
+    const [isExpanded, setIsExpanded] = useState(isAnyChildActive);
+
+    if (hasChildren) {
+      return (
+        <div className="space-y-1">
+          <Button
+            variant="ghost"
+            className={cn(
+              getMenuItemStyles(item.path || '#'),
+              "justify-between"
+            )}
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            <div className="flex items-center">
+              {item.icon}
+              {item.label}
+            </div>
+            <ChevronRight className={cn(
+              "h-4 w-4 transition-transform duration-200",
+              isExpanded && "rotate-90"
+            )} />
+          </Button>
+          {isExpanded && (
+            <div className="pl-4 space-y-1 mt-1">
+              {item.children.map(child => (
+                <Link key={child.path} to={child.path}>
+                  <Button variant="ghost" className={getMenuItemStyles(child.path)}>
+                    {child.icon}
+                    {child.label}
+                    {renderActiveIndicator(child.path)}
+                  </Button>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <Link to={item.path}>
+        <Button variant="ghost" className={getMenuItemStyles(item.path)}>
+          {item.icon}
+          {item.label}
+          {renderActiveIndicator(item.path)}
+        </Button>
+      </Link>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -423,13 +418,7 @@ export const DashboardLayout = () => {
         <nav className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 px-3 py-4 space-y-1"
           style={{ maxHeight: 'calc(100vh - 140px)' }}>
           {visibleItems.map(item => (
-            <Link key={item.path} to={item.path}>
-              <Button variant="ghost" className={getMenuItemStyles(item.path)}>
-                {item.icon}
-                {item.label}
-                {renderActiveIndicator(item.path)}
-              </Button>
-            </Link>
+            <SidebarItem key={item.label} item={item} />
           ))}
         </nav>
 
