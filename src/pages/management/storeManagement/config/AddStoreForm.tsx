@@ -370,7 +370,7 @@ export default function AddStoreForm() {
         setStore(data as any as IStore); // Type assertion to match the existing IStore type
 
         if (data) {
-          setShowCustomCountry(data.country && !["India", "UAE"].includes(data.country));
+          setShowCustomCountry(!!(data.country && !["India", "UAE"].includes(data.country)));
           reset({
             code: data.code || "",
             name: data.name || "",
