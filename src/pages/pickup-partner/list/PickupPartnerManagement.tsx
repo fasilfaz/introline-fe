@@ -394,7 +394,7 @@ export const PickupPartnerManagement: React.FC = () => {
                           className={`h-8 flex items-center gap-1 font-semibold cursor-pointer hover:text-blue-600 justify-start`}
                         >
                           <DollarSign className="h-3 w-3 mr-1" />
-                          Pickup Charge
+                          Pickup Charge per kg
                           <SortIndicator column="price" sortConfig={sortConfig} />
                         </button>
                       </TableHead>

@@ -176,7 +176,7 @@ export const DeliveryPartnerForm: React.FC<DeliveryPartnerFormProps> = ({ mode }
                   <div className="space-y-2 group">
                     <Label htmlFor="price" className="text-gray-700 group-hover:text-blue-700 transition-colors duration-200 flex items-center gap-1 font-medium">
                       <DollarSign className="h-4 w-4" />
-                      Delivery Charge <span className="text-red-500">*</span>
+                      Delivery Charge per bundle<span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="price"

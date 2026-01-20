@@ -412,7 +412,7 @@ export const DeliveryPartnerManagement: React.FC = () => {
                           className={`h-8 flex items-center gap-1 font-semibold cursor-pointer hover:text-blue-600 justify-start`}
                         >
                           <DollarSign className="h-3 w-3 mr-1" />
-                          Delivery Charge
+                          Delivery Charge per bundle
                           <SortIndicator column="price" sortConfig={sortConfig} />
                         </button>
                       </TableHead>
