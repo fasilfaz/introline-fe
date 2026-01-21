@@ -24,7 +24,8 @@ export const DeliveryPartnerForm: React.FC<DeliveryPartnerFormProps> = ({ mode }
     name: '',
     phoneNumber: '',
     price: 0,
-    country: '',
+    fromCountry: '',
+    toCountry: '',
     status: 'Active'
   });
 
@@ -43,7 +44,8 @@ export const DeliveryPartnerForm: React.FC<DeliveryPartnerFormProps> = ({ mode }
         name: deliveryPartner.name,
         phoneNumber: deliveryPartner.phoneNumber,
         price: deliveryPartner.price,
-        country: deliveryPartner.country,
+        fromCountry: deliveryPartner.fromCountry,
+        toCountry: deliveryPartner.toCountry,
         status: deliveryPartner.status
       });
     } catch (error) {
@@ -56,15 +58,15 @@ export const DeliveryPartnerForm: React.FC<DeliveryPartnerFormProps> = ({ mode }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!formData.name.trim() || !formData.phoneNumber.trim() || !formData.country.trim() || formData.price < 0) {
+
+    if (!formData.name.trim() || !formData.phoneNumber.trim() || !formData.fromCountry.trim() || !formData.toCountry.trim() || formData.price < 0) {
       toast.error('Please fill in all required fields');
       return;
     }
 
     try {
       setLoading(true);
-      
+
       if (mode === 'create') {
         await deliveryPartnerService.createDeliveryPartner(formData);
         toast.success('Delivery partner created successfully');
@@ -72,7 +74,7 @@ export const DeliveryPartnerForm: React.FC<DeliveryPartnerFormProps> = ({ mode }
         await deliveryPartnerService.updateDeliveryPartner(id!, formData);
         toast.success('Delivery partner updated successfully');
       }
-      
+
       navigate('/dashboard/delivery-partners');
     } catch (error: any) {
       console.error('Error saving delivery partner:', error);
@@ -192,15 +194,30 @@ export const DeliveryPartnerForm: React.FC<DeliveryPartnerFormProps> = ({ mode }
                   </div>
 
                   <div className="space-y-2 group">
-                    <Label htmlFor="country" className="text-gray-700 group-hover:text-blue-700 transition-colors duration-200 flex items-center gap-1 font-medium">
+                    <Label htmlFor="fromCountry" className="text-gray-700 group-hover:text-blue-700 transition-colors duration-200 flex items-center gap-1 font-medium">
                       <MapPin className="h-4 w-4" />
-                      Country <span className="text-red-500">*</span>
+                      From Country <span className="text-red-500">*</span>
                     </Label>
                     <Input
-                      id="country"
-                      value={formData.country}
-                      onChange={(e) => handleInputChange('country', e.target.value)}
-                      placeholder="Enter country"
+                      id="fromCountry"
+                      value={formData.fromCountry}
+                      onChange={(e) => handleInputChange('fromCountry', e.target.value)}
+                      placeholder="Enter from country"
+                      required
+                      className="border-gray-200 focus:border-blue-500 focus:ring-blue-200 transition-all duration-200 pl-3 pr-3 py-2 rounded-md shadow-sm focus:ring-4"
+                    />
+                  </div>
+
+                  <div className="space-y-2 group">
+                    <Label htmlFor="toCountry" className="text-gray-700 group-hover:text-blue-700 transition-colors duration-200 flex items-center gap-1 font-medium">
+                      <MapPin className="h-4 w-4" />
+                      To Country <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                      id="toCountry"
+                      value={formData.toCountry}
+                      onChange={(e) => handleInputChange('toCountry', e.target.value)}
+                      placeholder="Enter to country"
                       required
                       className="border-gray-200 focus:border-blue-500 focus:ring-blue-200 transition-all duration-200 pl-3 pr-3 py-2 rounded-md shadow-sm focus:ring-4"
                     />

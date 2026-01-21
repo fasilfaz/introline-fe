@@ -7,7 +7,8 @@ export interface DeliveryPartner {
   name: string;
   phoneNumber: string;
   price: number; // delivery charge
-  country: string;
+  fromCountry: string;
+  toCountry: string;
   status: 'Active' | 'Inactive';
   isActive: boolean;
   createdAt?: string;
@@ -20,7 +21,8 @@ export interface ListDeliveryPartnersParams {
   limit?: number;
   search?: string;
   status?: string;
-  country?: string;
+  fromCountry?: string;
+  toCountry?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
@@ -30,7 +32,8 @@ export interface CreateDeliveryPartnerPayload {
   name: string;
   phoneNumber: string;
   price: number;
-  country: string;
+  fromCountry: string;
+  toCountry: string;
   status: 'Active' | 'Inactive';
 }
 
@@ -43,15 +46,16 @@ export const deliveryPartnerService = {
   // Fetch all delivery partners with pagination and filters
   async listDeliveryPartners(params: ListDeliveryPartnersParams = {}) {
     const queryParams = new URLSearchParams();
-    
+
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.search) queryParams.append('search', params.search);
     if (params.status) queryParams.append('status', params.status);
-    if (params.country) queryParams.append('country', params.country);
+    if (params.fromCountry) queryParams.append('fromCountry', params.fromCountry);
+    if (params.toCountry) queryParams.append('toCountry', params.toCountry);
     if (params.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
-    
+
     const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
     return apiClient.get<ApiListResponse<DeliveryPartner>>(`/delivery-partners${queryString}`);
   },

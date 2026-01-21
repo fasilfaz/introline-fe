@@ -60,7 +60,7 @@ const STATUS_OPTIONS: Array<{ value: 'Active' | 'Inactive'; label: string }> = [
   { value: 'Inactive', label: 'Inactive' },
 ];
 
-type SortField = 'name' | 'phoneNumber' | 'country' | 'price' | 'status' | 'createdAt';
+type SortField = 'name' | 'phoneNumber' | 'fromCountry' | 'toCountry' | 'price' | 'status' | 'createdAt';
 type SortOrder = 'asc' | 'desc';
 
 interface SortConfig {
@@ -91,7 +91,8 @@ export const DeliveryPartnerManagement: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [countryFilter, setCountryFilter] = useState<string>('all');
+  const [fromCountryFilter, setFromCountryFilter] = useState<string>('all');
+  const [toCountryFilter, setToCountryFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [pagination, setPagination] = useState<PaginationData>({
@@ -108,7 +109,8 @@ export const DeliveryPartnerManagement: React.FC = () => {
   // Refs to track previous values
   const prevSearchTerm = useRef(searchTerm);
   const prevStatusFilter = useRef(statusFilter);
-  const prevCountryFilter = useRef(countryFilter);
+  const prevFromCountryFilter = useRef(fromCountryFilter);
+  const prevToCountryFilter = useRef(toCountryFilter);
   const prevSortConfig = useRef(sortConfig);
   const isInitialLoad = useRef(true);
 
@@ -132,8 +134,12 @@ export const DeliveryPartnerManagement: React.FC = () => {
         params.status = statusFilter;
       }
 
-      if (countryFilter !== 'all') {
-        params.country = countryFilter;
+      if (fromCountryFilter !== 'all') {
+        params.fromCountry = fromCountryFilter;
+      }
+
+      if (toCountryFilter !== 'all') {
+        params.toCountry = toCountryFilter;
       }
 
       const response = await deliveryPartnerService.listDeliveryPartners(params);
@@ -158,19 +164,21 @@ export const DeliveryPartnerManagement: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [itemsPerPage, searchTerm, statusFilter, countryFilter, sortConfig]);
+  }, [itemsPerPage, searchTerm, statusFilter, fromCountryFilter, toCountryFilter, sortConfig]);
 
   // Handle search and filter changes with debouncing
   useEffect(() => {
     const searchChanged = prevSearchTerm.current !== searchTerm;
     const statusFilterChanged = prevStatusFilter.current !== statusFilter;
-    const countryFilterChanged = prevCountryFilter.current !== countryFilter;
+    const fromCountryFilterChanged = prevFromCountryFilter.current !== fromCountryFilter;
+    const toCountryFilterChanged = prevToCountryFilter.current !== toCountryFilter;
     const sortChanged = JSON.stringify(prevSortConfig.current) !== JSON.stringify(sortConfig);
 
     // Update refs
     prevSearchTerm.current = searchTerm;
     prevStatusFilter.current = statusFilter;
-    prevCountryFilter.current = countryFilter;
+    prevFromCountryFilter.current = fromCountryFilter;
+    prevToCountryFilter.current = toCountryFilter;
     prevSortConfig.current = sortConfig;
 
     // Skip initial load to prevent double fetching
@@ -180,7 +188,7 @@ export const DeliveryPartnerManagement: React.FC = () => {
     }
 
     // Reset to page 1 only if search/filter changed, not sort
-    if (searchChanged || statusFilterChanged || countryFilterChanged) {
+    if (searchChanged || statusFilterChanged || fromCountryFilterChanged || toCountryFilterChanged) {
       setCurrentPage(1);
       const handler = setTimeout(() => {
         fetchDeliveryPartners(1);
@@ -192,7 +200,7 @@ export const DeliveryPartnerManagement: React.FC = () => {
     if (sortChanged) {
       fetchDeliveryPartners(currentPage);
     }
-  }, [searchTerm, statusFilter, countryFilter, sortConfig, fetchDeliveryPartners]);
+  }, [searchTerm, statusFilter, fromCountryFilter, toCountryFilter, sortConfig, fetchDeliveryPartners]);
 
   // Handle pagination changes
   useEffect(() => {
@@ -259,7 +267,8 @@ export const DeliveryPartnerManagement: React.FC = () => {
 
   const clearFilters = () => {
     setStatusFilter('all');
-    setCountryFilter('all');
+    setFromCountryFilter('all');
+    setToCountryFilter('all');
     setSearchTerm('');
     setCurrentPage(1);
   };
@@ -327,7 +336,7 @@ export const DeliveryPartnerManagement: React.FC = () => {
 
             <CardContent className="pt-6">
               <div className="mb-6 space-y-4">
-                <div className="flex flex-col sm:flex-row items-center gap-4">
+                <div className="flex flex-col lg:flex-row items-center gap-4">
                   <div className="relative flex-1 w-full">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
@@ -337,15 +346,15 @@ export const DeliveryPartnerManagement: React.FC = () => {
                       className="pl-10"
                     />
                   </div>
-                  <div className="flex items-center gap-4 w-full sm:w-auto">
-                    <div className="flex items-center gap-2 flex-1 sm:flex-none">
+                  <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+                    <div className="flex items-center gap-2">
                       <Filter className="h-4 w-4 text-gray-500" />
                       <Select
                         value={statusFilter}
                         onValueChange={(value) => setStatusFilter(value)}
                       >
-                        <SelectTrigger className="w-full sm:w-[140px]">
-                          <SelectValue placeholder="Filter by Status" />
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">All Status</SelectItem>
@@ -355,6 +364,25 @@ export const DeliveryPartnerManagement: React.FC = () => {
                         </SelectContent>
                       </Select>
                     </div>
+
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder="From Country"
+                        value={fromCountryFilter === 'all' ? '' : fromCountryFilter}
+                        onChange={(e) => setFromCountryFilter(e.target.value || 'all')}
+                        className="w-[140px]"
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Input
+                        placeholder="To Country"
+                        value={toCountryFilter === 'all' ? '' : toCountryFilter}
+                        onChange={(e) => setToCountryFilter(e.target.value || 'all')}
+                        className="w-[140px]"
+                      />
+                    </div>
+
                     <Button
                       size="sm"
                       variant="outline"
@@ -399,11 +427,20 @@ export const DeliveryPartnerManagement: React.FC = () => {
                       </TableHead>
                       <TableHead className="font-semibold">
                         <button
-                          onClick={() => handleSort('country')}
+                          onClick={() => handleSort('fromCountry')}
                           className={`h-8 flex items-center gap-1 font-semibold cursor-pointer hover:text-blue-600 justify-start`}
                         >
-                          Country
-                          <SortIndicator column="country" sortConfig={sortConfig} />
+                          From
+                          <SortIndicator column="fromCountry" sortConfig={sortConfig} />
+                        </button>
+                      </TableHead>
+                      <TableHead className="font-semibold">
+                        <button
+                          onClick={() => handleSort('toCountry')}
+                          className={`h-8 flex items-center gap-1 font-semibold cursor-pointer hover:text-blue-600 justify-start`}
+                        >
+                          To
+                          <SortIndicator column="toCountry" sortConfig={sortConfig} />
                         </button>
                       </TableHead>
                       <TableHead className="font-semibold">
@@ -412,7 +449,7 @@ export const DeliveryPartnerManagement: React.FC = () => {
                           className={`h-8 flex items-center gap-1 font-semibold cursor-pointer hover:text-blue-600 justify-start`}
                         >
                           <DollarSign className="h-3 w-3 mr-1" />
-                          Delivery Charge per bundle
+                          Charge
                           <SortIndicator column="price" sortConfig={sortConfig} />
                         </button>
                       </TableHead>
@@ -441,9 +478,9 @@ export const DeliveryPartnerManagement: React.FC = () => {
                     {loading ? (
                       Array(itemsPerPage).fill(0).map((_, index) => (
                         <TableRow key={`loading-${index}`} className="hover:bg-gray-50">
-                          {Array(7).fill(0).map((_, idx) => (
+                          {Array(8).fill(0).map((_, idx) => (
                             <TableCell key={`loading-cell-${idx}`} className="text-center py-3">
-                              <div className="h-4 w-32 bg-gray-200 rounded animate-pulse mx-auto"></div>
+                              <div className="h-4 w-24 bg-gray-200 rounded animate-pulse mx-auto"></div>
                             </TableCell>
                           ))}
                         </TableRow>
@@ -461,7 +498,10 @@ export const DeliveryPartnerManagement: React.FC = () => {
                             {partner.phoneNumber}
                           </TableCell>
                           <TableCell className="text-left">
-                            {partner.country}
+                            {partner.fromCountry}
+                          </TableCell>
+                          <TableCell className="text-left">
+                            {partner.toCountry}
                           </TableCell>
                           <TableCell className="text-left font-medium">
                             {formatCurrency(partner.price)}
@@ -500,14 +540,14 @@ export const DeliveryPartnerManagement: React.FC = () => {
                       ))
                     ) : (
                       <TableRow className="hover:bg-gray-50">
-                        <TableCell colSpan={7} className="h-24 text-center text-muted-foreground">
+                        <TableCell colSpan={8} className="h-24 text-center text-muted-foreground">
                           <div className="flex flex-col items-center justify-center py-6">
                             <MapPin className="h-12 w-12 text-gray-300 mb-2" />
                             <p className="text-base font-medium">
-                              {searchTerm || statusFilter !== 'all' ? 'No matching delivery partners found' : "No delivery partners added yet"}
+                              {searchTerm || statusFilter !== 'all' || fromCountryFilter !== 'all' || toCountryFilter !== 'all' ? 'No matching delivery partners found' : "No delivery partners added yet"}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {searchTerm || statusFilter !== 'all'
+                              {searchTerm || statusFilter !== 'all' || fromCountryFilter !== 'all' || toCountryFilter !== 'all'
                                 ? 'Try adjusting your search or filter criteria.'
                                 : 'Click "Add Delivery Partner" to get started.'}
                             </p>
