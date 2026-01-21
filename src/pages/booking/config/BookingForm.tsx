@@ -157,7 +157,9 @@ export default function BookingForm() {
             sender: booking.sender._id,
             receiver: booking.receiver._id,
             receiverBranch: booking.receiverBranch || '',
-            pickupPartner: booking.pickupPartner._id,
+            pickupPartner: typeof booking.pickupPartner === 'string'
+              ? booking.pickupPartner
+              : (booking.pickupPartner as any)._id || '',
             date: formatDateForInput(booking.date),
             expectedReceivingDate: formatDateForInput(booking.expectedReceivingDate),
             bundleCount: booking.bundleCount,
@@ -372,6 +374,8 @@ export default function BookingForm() {
                         <SelectValue placeholder="Select pickup partner" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="Self">Self </SelectItem>
+                        <SelectItem value="Central">Central (Direct to Office)</SelectItem>
                         {pickupPartners.map((partner) => (
                           <SelectItem key={partner._id} value={partner._id!}>
                             {partner.name} - {partner.phoneNumber}
@@ -422,7 +426,7 @@ export default function BookingForm() {
                   Booking Details
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* <div className="grid grid-cols-1 md:grid-cols-2  gap-6"> */}
+                  {/* <div className="grid grid-cols-1 md:grid-cols-2  gap-6"> */}
                   {/* Date */}
                   <div className="space-y-2">
                     <Label htmlFor="date" className="flex items-center gap-2 font-medium">
