@@ -212,7 +212,7 @@ export default function ReminderForm() {
                   <Bell className="h-5 w-5" />
                   Reminder Details
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   {/* Date */}
                   <div className="space-y-2">
                     <Label htmlFor="date" className="flex items-center gap-2 font-medium">
@@ -233,26 +233,31 @@ export default function ReminderForm() {
                     )}
                   </div>
 
-                  {/* WhatsApp Checkbox */}
+                  {/* Purpose */}
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-2 font-medium">
-                      <MessageCircle className="h-4 w-4 text-green-500" />
-                      WhatsApp Notification
+                    <Label htmlFor="purpose" className="flex items-center gap-2 font-medium">
+                      <Target className="h-4 w-4 text-orange-500" />
+                      Purpose <span className="text-red-500">*</span>
                     </Label>
-                    <div className="flex items-center space-x-2 pt-2">
-                      <Checkbox
-                        id="whatsapp"
-                        checked={watch('whatsapp')}
-                        onCheckedChange={(checked) => setValue('whatsapp', Boolean(checked))}
-                      />
-                      <Label htmlFor="whatsapp" className="text-sm font-normal cursor-pointer">
-                        Send reminder via WhatsApp
-                      </Label>
+                    <Input
+                      id="purpose"
+                      placeholder="Enter reminder purpose..."
+                      {...register('purpose')}
+                      className={errors.purpose ? 'border-red-300' : ''}
+                    />
+                    <div className="flex justify-between items-center">
+                      {errors.purpose && (
+                        <p className="text-sm text-red-500 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.purpose.message}
+                        </p>
+                      )}
+                      <p className="text-sm text-gray-500 ml-auto">
+                        {watch('purpose')?.length || 0}/200 characters
+                      </p>
                     </div>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 gap-6 mt-6">
                   {/* Description */}
                   <div className="space-y-2">
                     <Label htmlFor="description" className="flex items-center gap-2 font-medium">
@@ -278,28 +283,21 @@ export default function ReminderForm() {
                     </div>
                   </div>
 
-                  {/* Purpose */}
+                  {/* WhatsApp Checkbox */}
                   <div className="space-y-2">
-                    <Label htmlFor="purpose" className="flex items-center gap-2 font-medium">
-                      <Target className="h-4 w-4 text-orange-500" />
-                      Purpose <span className="text-red-500">*</span>
+                    <Label className="flex items-center gap-2 font-medium">
+                      <MessageCircle className="h-4 w-4 text-green-500" />
+                      WhatsApp Notification
                     </Label>
-                    <Input
-                      id="purpose"
-                      placeholder="Enter reminder purpose..."
-                      {...register('purpose')}
-                      className={errors.purpose ? 'border-red-300' : ''}
-                    />
-                    <div className="flex justify-between items-center">
-                      {errors.purpose && (
-                        <p className="text-sm text-red-500 flex items-center gap-1">
-                          <AlertCircle className="h-3 w-3" />
-                          {errors.purpose.message}
-                        </p>
-                      )}
-                      <p className="text-sm text-gray-500 ml-auto">
-                        {watch('purpose')?.length || 0}/200 characters
-                      </p>
+                    <div className="flex items-center space-x-2 pt-2">
+                      <Checkbox
+                        id="whatsapp"
+                        checked={watch('whatsapp')}
+                        onCheckedChange={(checked) => setValue('whatsapp', Boolean(checked))}
+                      />
+                      <Label htmlFor="whatsapp" className="text-sm font-normal cursor-pointer">
+                        Send reminder via WhatsApp
+                      </Label>
                     </div>
                   </div>
                 </div>
