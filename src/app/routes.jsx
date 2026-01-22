@@ -63,6 +63,9 @@ import { PriceListingEdit } from '@/pages/price-listing/config/PriceListingEdit'
 import { BookingManagement } from '@/pages/booking/list/BookingManagement';
 import BookingForm from '@/pages/booking/config/BookingForm';
 import BookingView from '@/pages/booking/config/BookingView';
+import { ReminderManagement } from '@/pages/reminder/list/ReminderManagement';
+import ReminderForm from '@/pages/reminder/config/ReminderForm';
+import ReminderView from '@/pages/reminder/config/ReminderView';
 import StoreBookings from '@/pages/management/storeManagement/list/StoreBookings';
 
 
@@ -137,7 +140,11 @@ const protectedRoutes = [
   { path: 'bookings', element: <BookingManagement />, module: 'Bookings' },
   { path: 'bookings/create', element: <BookingForm />, module: 'Bookings' },
   { path: 'bookings/edit/:id', element: <BookingForm />, module: 'Bookings' },
-  { path: 'bookings/view/:id', element: <BookingView />, module: 'Bookings' }
+  { path: 'bookings/view/:id', element: <BookingView />, module: 'Bookings' },
+  { path: 'reminders', element: <ReminderManagement />, module: 'Reminders' },
+  { path: 'reminders/create', element: <ReminderForm />, module: 'Reminders' },
+  { path: 'reminders/edit/:id', element: <ReminderForm />, module: 'Reminders' },
+  { path: 'reminders/view/:id', element: <ReminderView />, module: 'Reminders' }
 ];
 
 const unprotectedRoutes = [

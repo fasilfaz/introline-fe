@@ -206,6 +206,12 @@ export const DashboardLayout = () => {
       icon: <Calendar className="mr-3 h-4 w-4 flex-shrink-0" />,
       roles: ['superadmin', 'admin', 'biller']
     },
+    {
+      path: '/dashboard/reminders',
+      label: 'Reminders',
+      icon: <Bell className="mr-3 h-4 w-4 flex-shrink-0" />,
+      roles: ['superadmin', 'admin', 'biller']
+    },
   ];
 
   // Filter menu items based on user role
