@@ -29,6 +29,15 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { reminderService, type CreateReminderPayload, type UpdateReminderPayload } from '@/services/reminderService';
+import { customerService, type Customer } from '@/services/customerService';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { User } from 'lucide-react';
 
 // Form validation schema
 const reminderFormSchema = z.object({
@@ -36,7 +45,20 @@ const reminderFormSchema = z.object({
   description: z.string().min(1, 'Description is required').max(500, 'Description must be less than 500 characters'),
   purpose: z.string().min(1, 'Purpose is required').max(200, 'Purpose must be less than 200 characters'),
   whatsapp: z.boolean(),
-});
+  customerId: z.string().optional(),
+}).refine(
+  (data) => {
+    // If whatsapp is true, customerId must be provided
+    if (data.whatsapp && !data.customerId) {
+      return false;
+    }
+    return true;
+  },
+  {
+    message: 'Please select a customer when WhatsApp notification is enabled',
+    path: ['customerId'],
+  }
+);
 
 type ReminderFormValues = z.infer<typeof reminderFormSchema>;
 
@@ -46,6 +68,9 @@ export default function ReminderForm() {
   const isEditing = Boolean(id);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loadingCustomers, setLoadingCustomers] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   const {
     register,
@@ -62,10 +87,32 @@ export default function ReminderForm() {
       description: '',
       purpose: '',
       whatsapp: false,
+      customerId: '',
     },
     mode: 'onSubmit',
     reValidateMode: 'onSubmit',
   });
+
+  // Fetch customers on component mount
+  useEffect(() => {
+    const fetchCustomers = async () => {
+      setLoadingCustomers(true);
+      try {
+        const response = await customerService.listCustomers({ limit: 1000 });
+        // Filter only Sender customers (they have whatsappNumber)
+        const sendersWithWhatsApp = response.data.filter(
+          (customer: Customer) => customer.customerType === 'Sender' && customer.whatsappNumber
+        );
+        setCustomers(sendersWithWhatsApp);
+      } catch (err) {
+        console.error('Failed to load customers:', err);
+        toast.error('Failed to load customers');
+      } finally {
+        setLoadingCustomers(false);
+      }
+    };
+    fetchCustomers();
+  }, []);
 
   // Fetch reminder data for editing
   useEffect(() => {
@@ -88,7 +135,16 @@ export default function ReminderForm() {
             description: reminder.description,
             purpose: reminder.purpose,
             whatsapp: reminder.whatsapp,
+            customerId: reminder.customer?._id || reminder.customerId || '',
           });
+
+          // Set selected customer if available
+          if (reminder.customer?._id) {
+            const customer = customers.find(c => c._id === reminder.customer._id);
+            if (customer) {
+              setSelectedCustomer(customer);
+            }
+          }
         } catch (err) {
           setError('Failed to load reminder data');
           toast.error('Failed to load reminder data');
@@ -98,7 +154,7 @@ export default function ReminderForm() {
       };
       fetchReminder();
     }
-  }, [id, isEditing, reset]);
+  }, [id, isEditing, reset, customers]);
 
   // Helper function to clear validation errors
   const clearValidationErrors = () => {
@@ -131,6 +187,7 @@ export default function ReminderForm() {
         description: data.description.trim(),
         purpose: data.purpose.trim(),
         whatsapp: data.whatsapp,
+        customerId: data.customerId || undefined,
       };
 
       if (isEditing && id) {
@@ -300,6 +357,60 @@ export default function ReminderForm() {
                       </Label>
                     </div>
                   </div>
+
+                  {/* Customer Selection - Only show when WhatsApp is enabled */}
+                  {watch('whatsapp') && (
+                    <div className="space-y-2">
+                      <Label htmlFor="customerId" className="flex items-center gap-2 font-medium">
+                        <User className="h-4 w-4 text-indigo-500" />
+                        Select Customer <span className="text-red-500">*</span>
+                      </Label>
+                      <Select
+                        value={watch('customerId')}
+                        onValueChange={(value) => {
+                          setValue('customerId', value);
+                          const customer = customers.find(c => c._id === value);
+                          setSelectedCustomer(customer || null);
+                        }}
+                      >
+                        <SelectTrigger className={errors.customerId ? 'border-red-300' : ''}>
+                          <SelectValue placeholder={loadingCustomers ? "Loading customers..." : "Select a customer"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {customers.length === 0 && !loadingCustomers ? (
+                            <div className="p-2 text-sm text-gray-500 text-center">
+                              No customers with WhatsApp numbers found
+                            </div>
+                          ) : (
+                            customers.map((customer) => (
+                              <SelectItem key={customer._id} value={customer._id!}>
+                                <div className="flex flex-col">
+                                  <span className="font-medium">{customer.name}</span>
+                                  <span className="text-xs text-gray-500">{customer.whatsappNumber}</span>
+                                </div>
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      {errors.customerId && (
+                        <p className="text-sm text-red-500 flex items-center gap-1">
+                          <AlertCircle className="h-3 w-3" />
+                          {errors.customerId.message}
+                        </p>
+                      )}
+                      {selectedCustomer && (
+                        <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-md">
+                          <p className="text-sm text-green-800">
+                            <span className="font-medium">Selected:</span> {selectedCustomer.name}
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            WhatsApp: {selectedCustomer.whatsappNumber}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 

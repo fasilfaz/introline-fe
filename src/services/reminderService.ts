@@ -8,6 +8,13 @@ export interface Reminder {
   description: string;
   purpose: string;
   whatsapp: boolean;
+  customer?: any;
+  customerId?: string;
+  customerName?: string;
+  customerWhatsappNumber?: string;
+  whatsappSent?: boolean;
+  whatsappSentAt?: string;
+  whatsappError?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -28,23 +35,24 @@ export interface CreateReminderPayload {
   description: string;
   purpose: string;
   whatsapp: boolean;
+  customerId?: string;
 }
 
-export interface UpdateReminderPayload extends Partial<CreateReminderPayload> {}
+export interface UpdateReminderPayload extends Partial<CreateReminderPayload> { }
 
 // Reminder service with all CRUD operations
 export const reminderService = {
   // Fetch all reminders with pagination and filters
   async listReminders(params: ListRemindersParams = {}) {
     const queryParams = new URLSearchParams();
-    
+
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.search) queryParams.append('search', params.search);
     if (params.whatsapp) queryParams.append('whatsapp', params.whatsapp);
     if (params.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
-    
+
     const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
     return apiClient.get<ApiListResponse<Reminder>>(`/reminders${queryString}`);
   },
