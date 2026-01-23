@@ -39,16 +39,17 @@ export interface Customer {
   // Common fields
   shopName?: string;
   contactPerson?: string;
+  phone?: string;
+  whatsappNumber?: string;
+  countryCode?: string;
   
   // Sender specific fields
   location?: string;
   gstNumber?: string;
-  whatsappNumber?: string;
   accountDetails?: AccountDetails;
   
   // Receiver specific fields
   branches?: Branch[];
-  phone?: string;
   credit?: number;
   country?: string;
   address?: string;
@@ -79,16 +80,17 @@ export interface CreateCustomerPayload {
   // Common fields
   shopName?: string;
   contactPerson?: string;
+  phone?: string;
+  whatsappNumber?: string;
+  countryCode?: string;
   
   // Sender specific fields
   location?: string;
   gstNumber?: string;
-  whatsappNumber?: string;
   accountDetails?: AccountDetails;
   
   // Receiver specific fields
   branches?: Branch[];
-  phone?: string;
   credit?: number;
   country?: string;
   address?: string;

@@ -45,6 +45,88 @@ import {
 import { toast } from 'react-hot-toast';
 import { customerService, type CreateCustomerPayload, type UpdateCustomerPayload, type Branch, type PaymentHistory } from '@/services/customerService';
 
+const countryCodes = [
+  { code: '+1', country: 'US', flag: 'US' },
+  { code: '+44', country: 'UK', flag: 'GB' },
+  { code: '+91', country: 'IN', flag: 'IN' },
+  { code: '+86', country: 'CN', flag: 'CN' },
+  { code: '+81', country: 'JP', flag: 'JP' },
+  { code: '+49', country: 'DE', flag: 'DE' },
+  { code: '+33', country: 'FR', flag: 'FR' },
+  { code: '+39', country: 'IT', flag: 'IT' },
+  { code: '+34', country: 'ES', flag: 'ES' },
+  { code: '+7', country: 'RU', flag: 'RU' },
+  { code: '+55', country: 'BR', flag: 'BR' },
+  { code: '+61', country: 'AU', flag: 'AU' },
+  { code: '+82', country: 'KR', flag: 'KR' },
+  { code: '+65', country: 'SG', flag: 'SG' },
+  { code: '+971', country: 'AE', flag: 'AE' },
+  { code: '+966', country: 'SA', flag: 'SA' },
+  { code: '+60', country: 'MY', flag: 'MY' },
+  { code: '+66', country: 'TH', flag: 'TH' },
+  { code: '+84', country: 'VN', flag: 'VN' },
+  { code: '+62', country: 'ID', flag: 'ID' },
+];
+
+const PhoneInput: React.FC<{
+  label: string;
+  phoneValue: string;
+  countryCodeValue: string;
+  onPhoneChange: (value: string) => void;
+  onCountryCodeChange: (value: string) => void;
+  placeholder?: string;
+  error?: string;
+  icon?: React.ComponentType<{ className?: string }>;
+}> = ({ 
+  label, 
+  phoneValue, 
+  countryCodeValue, 
+  onPhoneChange, 
+  onCountryCodeChange, 
+  placeholder, 
+  error,
+  icon: IconComponent 
+}) => {
+  return (
+    <div className="space-y-2">
+      <Label className={`${error ? 'text-red-500' : 'text-gray-700'} group-hover:text-blue-700 transition-colors duration-200 flex items-center gap-1 font-medium`}>
+        {IconComponent && <IconComponent className="h-4 w-4" />}
+        {label}
+      </Label>
+      <div className="flex gap-2">
+        <Select value={countryCodeValue} onValueChange={onCountryCodeChange}>
+          <SelectTrigger className={`w-24 ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200'}`}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {countryCodes.map((country) => (
+              <SelectItem key={country.code} value={country.code}>
+                <span className="flex items-center gap-2">
+                  <span>{country.flag}</span>
+                  <span>{country.code}</span>
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Input
+          type="tel"
+          placeholder={placeholder}
+          value={phoneValue}
+          onChange={(e) => onPhoneChange(e.target.value)}
+          className={`flex-1 ${error ? 'border-red-300 focus:border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-blue-500 focus:ring-blue-200'} transition-all duration-200`}
+        />
+      </div>
+      {error && (
+        <p className="text-sm text-red-500 flex items-center gap-1 mt-1">
+          <AlertCircle className="h-3 w-3" />
+          {error}
+        </p>
+      )}
+    </div>
+  );
+};
+
 // Form field configuration interface
 interface FormFieldConfig {
   name: keyof CustomerFormValues;
@@ -119,6 +201,28 @@ const formFieldsConfig: FormFieldConfig[] = [
     showFor: 'all',
   },
   
+  // Common fields for both types
+  {
+    name: 'shopName',
+    label: 'Shop Name',
+    type: 'text',
+    placeholder: 'Enter shop name',
+    icon: Building,
+    validation: z.string().optional().transform(val => val === '' ? undefined : val),
+    gridCols: 2,
+    showFor: 'all',
+  },
+  {
+    name: 'contactPerson',
+    label: 'Contact Person',
+    type: 'text',
+    placeholder: 'Enter contact person name',
+    icon: User,
+    validation: z.string().optional().transform(val => val === '' ? undefined : val),
+    gridCols: 2,
+    showFor: 'all',
+  },
+  
   // Sender specific fields
   {
     name: 'location',
@@ -140,47 +244,8 @@ const formFieldsConfig: FormFieldConfig[] = [
     gridCols: 2,
     showFor: 'Sender',
   },
-  {
-    name: 'whatsappNumber',
-    label: 'WhatsApp Number',
-    type: 'tel',
-    placeholder: 'WhatsApp number',
-    icon: MessageSquare,
-    validation: z.string().optional().transform(val => val === '' ? undefined : val),
-    gridCols: 2,
-    showFor: 'Sender',
-  },
-  {
-    name: 'shopName',
-    label: 'Shop Name',
-    type: 'text',
-    placeholder: 'Enter shop name',
-    icon: Building,
-    validation: z.string().optional().transform(val => val === '' ? undefined : val),
-    gridCols: 2,
-    showFor: 'all',
-  },
-  {
-    name: 'contactPerson',
-    label: 'Contact Person',
-    type: 'text',
-    placeholder: 'Enter contact person name',
-    icon: User,
-    validation: z.string().optional().transform(val => val === '' ? undefined : val),
-    gridCols: 2,
-    showFor: 'all',
-  },
+  
   // Receiver specific fields
-  {
-    name: 'phone',
-    label: 'Phone Number',
-    type: 'tel',
-    placeholder: 'Enter phone number',
-    icon: Phone,
-    validation: z.string().optional().transform(val => val === '' ? undefined : val),
-    gridCols: 2,
-    showFor: 'Receiver',
-  },
   {
     name: 'credit',
     label: 'Credit',
@@ -261,6 +326,11 @@ const createFormSchema = () => {
   schemaFields.branches = z.array(branchSchema).optional();
   schemaFields.accountDetails = accountDetailsSchema.optional();
   schemaFields.paymentHistory = z.array(paymentHistorySchema).optional();
+  
+  // Add phone fields
+  schemaFields.phone = z.string().optional().transform(val => val === '' ? undefined : val);
+  schemaFields.whatsappNumber = z.string().optional().transform(val => val === '' ? undefined : val);
+  schemaFields.countryCode = z.string().optional().transform(val => val === '' ? '+91' : val);
 
   return z.object(schemaFields);
 };
@@ -725,6 +795,11 @@ export default function CustomerForm() {
     defaults.accountDetails = {};
     defaults.paymentHistory = [];
     
+    // Initialize phone fields
+    defaults.phone = '';
+    defaults.whatsappNumber = '';
+    defaults.countryCode = '+91';
+    
     return defaults;
   };
 
@@ -792,17 +867,11 @@ export default function CustomerForm() {
               case 'gstNumber':
                 formData[field.name] = customer.gstNumber || '';
                 break;
-              case 'whatsappNumber':
-                formData[field.name] = customer.whatsappNumber || '';
-                break;
               case 'shopName':
                 formData[field.name] = customer.shopName || '';
                 break;
               case 'contactPerson':
                 formData[field.name] = customer.contactPerson || '';
-                break;
-              case 'phone':
-                formData[field.name] = customer.phone || '';
                 break;
               case 'credit':
                 formData[field.name] = customer.credit || '';
@@ -825,6 +894,11 @@ export default function CustomerForm() {
           formData.branches = customer.branches || [];
           formData.accountDetails = customer.accountDetails || {};
           formData.paymentHistory = customer.paymentHistory || [];
+          
+          // Set phone fields
+          formData.phone = customer.phone || '';
+          formData.whatsappNumber = customer.whatsappNumber || '';
+          formData.countryCode = customer.countryCode || '+91';
 
           reset(formData);
         } catch (err) {
@@ -876,13 +950,17 @@ export default function CustomerForm() {
         status: data.status,
       };
 
+      // Add common fields
+      if (data.shopName && data.shopName.trim()) customerPayload.shopName = data.shopName.trim();
+      if (data.contactPerson && data.contactPerson.trim()) customerPayload.contactPerson = data.contactPerson.trim();
+      if (data.phone && data.phone.trim()) customerPayload.phone = data.phone.trim();
+      if (data.whatsappNumber && data.whatsappNumber.trim()) customerPayload.whatsappNumber = data.whatsappNumber.trim();
+      if (data.countryCode && data.countryCode.trim()) customerPayload.countryCode = data.countryCode.trim();
+
       // Add sender-specific fields
       if (data.customerType === 'Sender') {
         if (data.location && data.location.trim()) customerPayload.location = data.location.trim();
         if (data.gstNumber && data.gstNumber.trim()) customerPayload.gstNumber = data.gstNumber.trim();
-        if (data.whatsappNumber && data.whatsappNumber.trim()) customerPayload.whatsappNumber = data.whatsappNumber.trim();
-        if (data.shopName && data.shopName.trim()) customerPayload.shopName = data.shopName.trim();
-        if (data.contactPerson && data.contactPerson.trim()) customerPayload.contactPerson = data.contactPerson.trim();
         
         // Handle account details
         if (data.accountDetails) {
@@ -902,9 +980,6 @@ export default function CustomerForm() {
 
       // Add receiver-specific fields
       if (data.customerType === 'Receiver') {
-        if (data.shopName && data.shopName.trim()) customerPayload.shopName = data.shopName.trim();
-        if (data.contactPerson && data.contactPerson.trim()) customerPayload.contactPerson = data.contactPerson.trim();
-        if (data.phone && data.phone.trim()) customerPayload.phone = data.phone.trim();
         if (data.country && data.country.trim()) customerPayload.country = data.country.trim();
         if (data.address && data.address.trim()) customerPayload.address = data.address.trim();
         
@@ -967,10 +1042,11 @@ export default function CustomerForm() {
         // Only add additional fields if they exist
         if (customerPayload.shopName) createPayload.shopName = customerPayload.shopName;
         if (customerPayload.contactPerson) createPayload.contactPerson = customerPayload.contactPerson;
+        if (customerPayload.phone) createPayload.phone = customerPayload.phone;
+        if (customerPayload.whatsappNumber) createPayload.whatsappNumber = customerPayload.whatsappNumber;
+        if (customerPayload.countryCode) createPayload.countryCode = customerPayload.countryCode;
         if (customerPayload.location) createPayload.location = customerPayload.location;
         if (customerPayload.gstNumber) createPayload.gstNumber = customerPayload.gstNumber;
-        if (customerPayload.whatsappNumber) createPayload.whatsappNumber = customerPayload.whatsappNumber;
-        if (customerPayload.phone) createPayload.phone = customerPayload.phone;
         if (customerPayload.credit) createPayload.credit = customerPayload.credit;
         if (customerPayload.country) createPayload.country = customerPayload.country;
         if (customerPayload.address) createPayload.address = customerPayload.address;
@@ -1058,6 +1134,38 @@ export default function CustomerForm() {
                       customerType={watchedCustomerType}
                     />
                   ))}
+                  
+                  <PhoneInput
+                    label="Phone Number"
+                    phoneValue={watch('phone') || ''}
+                    countryCodeValue={watch('countryCode') || '+91'}
+                    onPhoneChange={(value) => {
+                      setValue('phone', value);
+                      if (errors.phone) clearValidationErrors();
+                    }}
+                    onCountryCodeChange={(value) => {
+                      setValue('countryCode', value);
+                    }}
+                    placeholder="Enter phone number"
+                    error={errors.phone?.message as string}
+                    icon={Phone}
+                  />
+                  
+                  <PhoneInput
+                    label="WhatsApp Number"
+                    phoneValue={watch('whatsappNumber') || ''}
+                    countryCodeValue={watch('countryCode') || '+91'}
+                    onPhoneChange={(value) => {
+                      setValue('whatsappNumber', value);
+                      if (errors.whatsappNumber) clearValidationErrors();
+                    }}
+                    onCountryCodeChange={(value) => {
+                      setValue('countryCode', value);
+                    }}
+                    placeholder="Enter WhatsApp number"
+                    error={errors.whatsappNumber?.message as string}
+                    icon={MessageSquare}
+                  />
                 </div>
               </div>
 

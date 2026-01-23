@@ -26,6 +26,28 @@ import { toast } from 'react-hot-toast';
 import { customerService } from '@/services/customerService';
 
 import type { Customer } from '@/services/customerService';
+const countryCodes = [
+  { code: '+1', country: 'United States', flag: '🇺🇸' },
+  { code: '+44', country: 'United Kingdom', flag: '🇬🇧' },
+  { code: '+91', country: 'India', flag: '🇮🇳' },
+  { code: '+86', country: 'China', flag: '🇨🇳' },
+  { code: '+81', country: 'Japan', flag: '🇯🇵' },
+  { code: '+49', country: 'Germany', flag: '🇩🇪' },
+  { code: '+33', country: 'France', flag: '🇫🇷' },
+  { code: '+39', country: 'Italy', flag: '🇮🇹' },
+  { code: '+34', country: 'Spain', flag: '🇪🇸' },
+  { code: '+7', country: 'Russia', flag: '🇷🇺' },
+  { code: '+55', country: 'Brazil', flag: '🇧🇷' },
+  { code: '+61', country: 'Australia', flag: '🇦🇺' },
+  { code: '+82', country: 'South Korea', flag: '🇰🇷' },
+  { code: '+65', country: 'Singapore', flag: '🇸🇬' },
+  { code: '+971', country: 'UAE', flag: '🇦🇪' },
+  { code: '+966', country: 'Saudi Arabia', flag: '🇸🇦' },
+  { code: '+60', country: 'Malaysia', flag: '🇲🇾' },
+  { code: '+66', country: 'Thailand', flag: '🇹🇭' },
+  { code: '+84', country: 'Vietnam', flag: '🇻🇳' },
+  { code: '+62', country: 'Indonesia', flag: '🇮🇩' },
+];
 
 interface InfoFieldProps {
   label: string;
@@ -95,11 +117,30 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, value, icon: Icon, type = 
       );
       break;
     case 'phone':
-      renderedValue = (
-        <a href={`tel:${displayValue}`} className="text-blue-600 hover:underline">
-          {displayValue}
-        </a>
-      );
+      if (displayValue) {
+        // Extract country code and phone number
+        const phoneStr = String(displayValue);
+        const countryCodeMatch = phoneStr.match(/^(\+\d+)\s(.+)$/);
+        
+        if (countryCodeMatch) {
+          const [, countryCode, phoneNumber] = countryCodeMatch;
+          const country = countryCodes.find(c => c.code === countryCode);
+          
+          renderedValue = (
+            <a href={`tel:${displayValue}`} className="text-blue-600 hover:underline flex items-center gap-2">
+              {country && <span className="text-base">{country.flag}</span>}
+              <span className="font-mono text-sm">{countryCode}</span>
+              <span className="text-sm">{phoneNumber}</span>
+            </a>
+          );
+        } else {
+          renderedValue = (
+            <a href={`tel:${displayValue}`} className="text-blue-600 hover:underline text-sm">
+              {displayValue}
+            </a>
+          );
+        }
+      }
       break;
     case 'badge':
       renderedValue = (
@@ -294,6 +335,20 @@ export default function CustomerView() {
                 />
 
                 <InfoField
+                  label="Phone Number"
+                  value={customer.phone ? `${customer.countryCode || '+91'} ${customer.phone}` : null}
+                  icon={Phone}
+                  type="phone"
+                />
+
+                <InfoField
+                  label="WhatsApp Number"
+                  value={customer.whatsappNumber ? `${customer.countryCode || '+91'} ${customer.whatsappNumber}` : null}
+                  icon={MessageSquare}
+                  type="phone"
+                />
+
+                <InfoField
                   label="Created At"
                   value={customer.createdAt ? new Date(customer.createdAt).toLocaleDateString() : null}
                   icon={Calendar}
@@ -325,13 +380,6 @@ export default function CustomerView() {
                     label="GST Number"
                     value={customer.gstNumber}
                     icon={Building}
-                  />
-
-                  <InfoField
-                    label="WhatsApp Number"
-                    value={customer.whatsappNumber}
-                    icon={MessageSquare}
-                    type="phone"
                   />
                 </div>
 
@@ -387,13 +435,6 @@ export default function CustomerView() {
                   Receiver Details
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <InfoField
-                    label="Phone Number"
-                    value={customer.phone}
-                    icon={Phone}
-                    type="phone"
-                  />
-
                   <InfoField
                     label="Credit"
                     value={customer.credit ? formatCurrency(customer.credit) : '$0.00'}
