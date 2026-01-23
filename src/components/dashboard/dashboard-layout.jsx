@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Home, Users, Package, Truck, LayoutTemplate, ChevronRight, Bell, LogOut, BadgeDollarSign, ChartNoAxesCombined, Store, FileText, Workflow, ClipboardCheck, SquareChartGantt, Building2, Clock, Handshake, ShieldCheck, Boxes, ArrowRightLeft, Wallet, MapPin, UserCheck, DollarSign, Calendar } from 'lucide-react';
+import { Menu, X, Home, Users, Package, Truck, LayoutTemplate, ChevronRight, Bell, LogOut, BadgeDollarSign, ChartNoAxesCombined, Store, FileText, Workflow, ClipboardCheck, SquareChartGantt, Building2, Clock, Handshake, ShieldCheck, Boxes, ArrowRightLeft, Wallet, MapPin, UserCheck, DollarSign, Calendar, Container } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -210,6 +210,12 @@ export const DashboardLayout = () => {
       path: '/dashboard/reminders',
       label: 'Reminders',
       icon: <Bell className="mr-3 h-4 w-4 flex-shrink-0" />,
+      roles: ['superadmin', 'admin', 'biller']
+    },
+    {
+      path: '/dashboard/containers',
+      label: 'Container Management',
+      icon: <Container className="mr-3 h-4 w-4 flex-shrink-0" />,
       roles: ['superadmin', 'admin', 'biller']
     },
   ];

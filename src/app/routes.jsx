@@ -66,6 +66,9 @@ import BookingView from '@/pages/booking/config/BookingView';
 import { ReminderManagement } from '@/pages/reminder/list/ReminderManagement';
 import ReminderForm from '@/pages/reminder/config/ReminderForm';
 import ReminderView from '@/pages/reminder/config/ReminderView';
+import { ContainerManagement } from '@/pages/container/list/ContainerManagement';
+import ContainerForm from '@/pages/container/config/ContainerForm';
+import ContainerView from '@/pages/container/config/ContainerView';
 import StoreBookings from '@/pages/management/storeManagement/list/StoreBookings';
 
 
@@ -144,7 +147,11 @@ const protectedRoutes = [
   { path: 'reminders', element: <ReminderManagement />, module: 'Reminders' },
   { path: 'reminders/create', element: <ReminderForm />, module: 'Reminders' },
   { path: 'reminders/edit/:id', element: <ReminderForm />, module: 'Reminders' },
-  { path: 'reminders/view/:id', element: <ReminderView />, module: 'Reminders' }
+  { path: 'reminders/view/:id', element: <ReminderView />, module: 'Reminders' },
+  { path: 'containers', element: <ContainerManagement />, module: 'Containers' },
+  { path: 'containers/create', element: <ContainerForm />, module: 'Containers' },
+  { path: 'containers/edit/:id', element: <ContainerForm />, module: 'Containers' },
+  { path: 'containers/view/:id', element: <ContainerView />, module: 'Containers' }
 ];
 
 const unprotectedRoutes = [
