@@ -1,5 +1,5 @@
 // Role-based module access control
-export type UserRole = 'superadmin' | 'admin' | 'purchaser' | 'biller' | 'store';
+export type UserRole = 'superadmin' | 'admin' | 'manager' | 'store_keeper' | 'marketing_executive' | 'pickup_boy' | 'telecaller' | 'customer' | 'logistic_coordinator';
 
 export type ModuleKey = 
   | 'Dashboard'
@@ -90,36 +90,51 @@ export const ROLE_MODULE_ACCESS: Record<UserRole, ModuleKey[]> = {
     'Purchase Return Requests',
     'Product Transmission'
   ],
-  purchaser: [
+  manager: [
+    'Dashboard',
+    'Users',
+    'Customer Master',
+    'Item Master',
+    'Store Management',
+    'Store Stock',
+    'Inventory Management',
+    'Sales Invoice',
+    'Reports',
+    'Purchase Order Approvals'
+  ],
+  store_keeper: [
     'Dashboard',
     'Item Master',
-    'Quality Control',
-    'Supplier Management',
     'Store Management',
-    'Packing Lists',
-    'Daily Expenses',
-    'Opening Balance',
-    'Purchase Entries',
-    'Purchase Order Management',
-    'Category Master',
     'Store Stock',
-    'Reports',
+    'Inventory Management',
+    'Reports'
   ],
-  biller: [
+  marketing_executive: [
+    'Dashboard',
+    'Customer Master',
+    'Sales Invoice',
+    'Reports'
+  ],
+  pickup_boy: [
+    'Dashboard',
+    'Reports'
+  ],
+  telecaller: [
+    'Dashboard',
+    'Customer Master',
+    'Reports'
+  ],
+  customer: [
+    'Dashboard',
+    'Reports'
+  ],
+  logistic_coordinator: [
     'Dashboard',
     'Customer Master',
     'Store Management',
     'Store Stock',
-    'Daily Expenses',
-    'Opening Balance',
-    'Sales Invoice',
-    'Reports',
-  ],
-  store: [
-    'Dashboard',
-    'Store Management',
-    'Store Stock',
-    'Packing Lists'
+    'Reports'
   ]
 };
 

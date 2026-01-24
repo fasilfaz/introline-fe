@@ -38,8 +38,13 @@ import { userService } from '@/services/userService';
 
 const ROLE_OPTIONS = [
   { id: 'admin', name: 'Admin' },
-  { id: 'purchaser', name: 'Purchaser' },
-  { id: 'biller', name: 'Biller' }
+  { id: 'manager', name: 'Manager' },
+  { id: 'store_keeper', name: 'Store Keeper' },
+  { id: 'marketing_executive', name: 'Marketing Executive' },
+  { id: 'pickup_boy', name: 'Pickup Boy' },
+  { id: 'telecaller', name: 'Telecaller' },
+  { id: 'customer', name: 'Customer' },
+  { id: 'logistic_coordinator', name: 'Logistic Coordinator' }
 ];
 
 const STATUS_OPTIONS = ['active', 'inactive', 'locked'];
