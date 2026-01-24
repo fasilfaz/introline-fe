@@ -167,7 +167,8 @@ const PrintPreview: React.FC = () => {
   // Redirect if no data is available
   useEffect(() => {
     if (!reportData || !selectedReportType) {
-      navigate('/dashboard/reports');
+      const isEnhancedReport = ['customers', 'containers', 'delivery-partners', 'pickup-partners', 'bookings'].includes(selectedReportType || '');
+      navigate(isEnhancedReport ? '/dashboard/enhanced-reports' : '/dashboard/reports');
       toast.error('No report data available. Please generate a report first.');
       return;
     }
@@ -197,7 +198,8 @@ const PrintPreview: React.FC = () => {
   };
 
   const handleBackToReports = () => {
-    navigate('/dashboard/reports');
+    const isEnhancedReport = ['customers', 'containers', 'delivery-partners', 'pickup-partners', 'bookings'].includes(selectedReportType || '');
+    navigate(isEnhancedReport ? '/dashboard/enhanced-reports' : '/dashboard/reports');
   };
 
   // Simple print function that directly prints the current data
@@ -844,7 +846,7 @@ const PrintPreview: React.FC = () => {
           <Package className="h-16 w-16 mx-auto mb-4 text-gray-400" />
           <h3 className="text-lg font-medium text-gray-900 mb-2">No Report Data Available</h3>
           <p className="text-gray-600 mb-4">Please generate a report first.</p>
-          <Button onClick={() => navigate('/dashboard/reports')}>
+          <Button onClick={handleBackToReports}>
             Back to Reports
           </Button>
         </div>
