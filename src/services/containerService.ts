@@ -1,6 +1,5 @@
-import { ApiResponse, PaginatedResponse } from '@/types/api';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
+import { apiClient } from './apiClient';
+import type { ApiListResponse, ApiResponse } from '@/types/backend';
 
 export interface Container {
   _id?: string;
@@ -40,78 +39,40 @@ export interface ListContainersParams {
   sortOrder?: 'asc' | 'desc';
 }
 
-class ContainerService {
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
-    const url = `${API_BASE_URL}/containers${endpoint}`;
+// Container service with all CRUD operations
+export const containerService = {
+  // Fetch all containers with pagination and filters
+  async listContainers(params: ListContainersParams = {}) {
+    const queryParams = new URLSearchParams();
     
-    const defaultHeaders = {
-      'Content-Type': 'application/json',
-    };
-
-    const config: RequestInit = {
-      ...options,
-      headers: {
-        ...defaultHeaders,
-        ...options.headers,
-      },
-    };
-
-    try {
-      const response = await fetch(url, config);
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Container service request failed:', error);
-      throw error;
-    }
-  }
-
-  async listContainers(params: ListContainersParams = {}): Promise<PaginatedResponse<Container>> {
-    const searchParams = new URLSearchParams();
+    if (params.page) queryParams.append('page', params.page.toString());
+    if (params.limit) queryParams.append('limit', params.limit.toString());
+    if (params.search) queryParams.append('search', params.search);
+    if (params.status) queryParams.append('status', params.status);
+    if (params.sortBy) queryParams.append('sortBy', params.sortBy);
+    if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
     
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        searchParams.append(key, value.toString());
-      }
-    });
+    const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+    return apiClient.get<ApiListResponse<Container>>(`/containers${queryString}`);
+  },
 
-    const queryString = searchParams.toString();
-    const endpoint = queryString ? `?${queryString}` : '';
-    
-    return this.request<Container[]>(endpoint);
+  // Fetch a single container by ID
+  async getContainer(id: string) {
+    return apiClient.get<ApiResponse<Container>>(`/containers/${id}`);
+  },
+
+  // Create a new container
+  async createContainer(container: CreateContainerPayload) {
+    return apiClient.post<ApiResponse<Container>>('/containers', container);
+  },
+
+  // Update an existing container
+  async updateContainer(id: string, container: UpdateContainerPayload) {
+    return apiClient.put<ApiResponse<Container>>(`/containers/${id}`, container);
+  },
+
+  // Delete a container
+  async deleteContainer(id: string) {
+    return apiClient.delete<ApiResponse<{ success: boolean }>>(`/containers/${id}`);
   }
-
-  async getContainer(id: string): Promise<ApiResponse<Container>> {
-    return this.request<Container>(`/${id}`);
-  }
-
-  async createContainer(data: CreateContainerPayload): Promise<ApiResponse<Container>> {
-    return this.request<Container>('', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async updateContainer(id: string, data: UpdateContainerPayload): Promise<ApiResponse<Container>> {
-    return this.request<Container>(`/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  }
-
-  async deleteContainer(id: string): Promise<ApiResponse<null>> {
-    return this.request<null>(`/${id}`, {
-      method: 'DELETE',
-    });
-  }
-}
-
-export const containerService = new ContainerService();
+};
