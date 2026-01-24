@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { formatCurrency } from '@/Utils/formatters';
 import { Package, Printer, X, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import {
   selectPrintData,
@@ -125,10 +126,9 @@ const PrintPreview: React.FC = () => {
     ? (data as any[])
     : [];
 
-  // For packing list reports
-  const packingListItems = selectedReportType === 'packing-list'
-    ? (data as any[])
-    : [];
+  // const packingListItems = selectedReportType === 'packing-list'
+  //   ? (data as any[])
+  //   : [];
 
   // Group stock items by item name
   const allInventoryStocks = stockItems.reduce((acc: GroupedStockItem[], item: any) => {
@@ -640,6 +640,54 @@ const PrintPreview: React.FC = () => {
               <td><span style="background: ${item.status === 'Active' ? '#059669' : '#6b7280'}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${item.status}</span></td>
               <td>${formatDate(item.createdAt)}</td>
             `;
+          } else if (selectedReportType === 'containers') {
+            row += `
+              <td>${item.containerCode || 'N/A'}</td>
+              <td>${item.companyName || 'N/A'}</td>
+              <td>${item.bookingDate ? formatDate(item.bookingDate) : 'N/A'}</td>
+              <td style="text-align: right;">${formatCurrency(item.bookingCharge || 0)}</td>
+              <td style="text-align: right;">${formatCurrency(item.advancePayment || 0)}</td>
+              <td style="text-align: right; color: ${item.balanceAmount > 0 ? '#dc2626' : '#059669'};">${formatCurrency(item.balanceAmount || 0)}</td>
+              <td><span style="background: ${item.status === 'completed' ? '#059669' : item.status === 'confirmed' ? '#3b82f6' : item.status === 'cancelled' ? '#dc2626' : '#6b7280'}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${item.status}</span></td>
+            `;
+          } else if (selectedReportType === 'delivery-partners') {
+            row += `
+              <td>${item.name || 'N/A'}</td>
+              <td>${item.phoneNumber || 'N/A'}</td>
+              <td style="text-align: right;">${formatCurrency(item.price || 0)}</td>
+              <td>${item.fromCountry || ''} → ${item.toCountry || ''}</td>
+              <td><span style="background: ${item.status === 'Active' ? '#059669' : '#6b7280'}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${item.status}</span></td>
+              <td>${item.createdAt ? formatDate(item.createdAt) : 'N/A'}</td>
+            `;
+          } else if (selectedReportType === 'pickup-partners') {
+            row += `
+              <td>${item.name || 'N/A'}</td>
+              <td>${item.phoneNumber || 'N/A'}</td>
+              <td style="text-align: right;">${formatCurrency(item.price || 0)}</td>
+              <td><span style="background: ${item.status === 'Active' ? '#059669' : '#6b7280'}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${item.status}</span></td>
+              <td>${item.createdAt ? formatDate(item.createdAt) : 'N/A'}</td>
+            `;
+          } else if (selectedReportType === 'bookings') {
+            row += `
+              <td>
+                <div style="font-weight: 500;">${item.sender?.name || 'N/A'}</div>
+                <div style="font-size: 10px; color: #666;">${item.sender?.location || ''}</div>
+              </td>
+              <td>
+                <div style="font-weight: 500;">${item.receiver?.name || 'N/A'}</div>
+                <div style="font-size: 10px; color: #666;">${item.receiver?.country || ''}</div>
+                ${item.receiverBranch ? `<div style="font-size: 10px; color: #2563eb;">Branch: ${item.receiverBranch}</div>` : ''}
+              </td>
+              <td>
+                <div style="font-weight: 500;">${item.pickupPartner?.name || 'N/A'}</div>
+                <div style="font-size: 10px; color: #666;">${item.pickupPartner?.phoneNumber || ''}</div>
+              </td>
+              <td>${item.date ? formatDate(item.date) : 'N/A'}</td>
+              <td>${item.expectedReceivingDate ? formatDate(item.expectedReceivingDate) : 'N/A'}</td>
+              <td style="text-align: center;">${item.bundleCount || 0}</td>
+              <td style="text-align: right;">${formatCurrency(item.pickupPartner?.price || 0)}</td>
+              <td><span style="background: ${item.status === 'success' ? '#059669' : '#6b7280'}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${item.status}</span></td>
+            `;
           }
 
           row += '</tr>';
@@ -726,9 +774,9 @@ const PrintPreview: React.FC = () => {
                 <h2>${reportTitle.toUpperCase()}</h2>
                 <div>
                   <p>Generated: ${formatDate(new Date())}</p>
-                  <p>Range: ${dateRange && dateRange[0] && dateRange[1] 
-                    ? `${formatDate(dateRange[0])} - ${formatDate(dateRange[1])}` 
-                    : 'All Time'}</p>
+                  <p>Range: ${dateRange && dateRange[0] && dateRange[1]
+          ? `${formatDate(dateRange[0])} - ${formatDate(dateRange[1])}`
+          : 'All Time'}</p>
                 </div>
               </div>
             </div>
@@ -1319,7 +1367,78 @@ const PrintPreview: React.FC = () => {
                               <td className="py-3 px-4 text-gray-800 text-sm">{formatDate(item.createdAt)}</td>
                             </>
                           )}
-                          {/* Add other report type renderings here as needed */}
+                          {selectedReportType === 'containers' && (
+                            <>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.containerCode || 'N/A'}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.companyName || 'N/A'}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.bookingDate ? formatDate(item.bookingDate) : 'N/A'}</td>
+                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{formatCurrency(item.bookingCharge || 0)}</td>
+                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{formatCurrency(item.advancePayment || 0)}</td>
+                              <td className="py-3 px-4 text-right text-gray-800 text-sm">
+                                <span className={item.balanceAmount > 0 ? 'text-red-600' : 'text-green-600'}>
+                                  {formatCurrency(item.balanceAmount || 0)}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">
+                                <Badge variant={item.status === 'completed' ? 'default' : item.status === 'confirmed' ? 'secondary' : item.status === 'cancelled' ? 'destructive' : 'outline'}>
+                                  {item.status}
+                                </Badge>
+                              </td>
+                            </>
+                          )}
+                          {selectedReportType === 'delivery-partners' && (
+                            <>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.name || 'N/A'}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.phoneNumber || 'N/A'}</td>
+                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{formatCurrency(item.price || 0)}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.fromCountry || ''} → {item.toCountry || ''}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">
+                                <Badge variant={item.status === 'Active' ? 'default' : 'secondary'}>
+                                  {item.status}
+                                </Badge>
+                              </td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.createdAt ? formatDate(item.createdAt) : 'N/A'}</td>
+                            </>
+                          )}
+                          {selectedReportType === 'pickup-partners' && (
+                            <>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.name || 'N/A'}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.phoneNumber || 'N/A'}</td>
+                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{formatCurrency(item.price || 0)}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">
+                                <Badge variant={item.status === 'Active' ? 'default' : 'secondary'}>
+                                  {item.status}
+                                </Badge>
+                              </td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.createdAt ? formatDate(item.createdAt) : 'N/A'}</td>
+                            </>
+                          )}
+                          {selectedReportType === 'bookings' && (
+                            <>
+                              <td className="py-3 px-4 text-gray-800 text-sm">
+                                <div className="font-medium">{item.sender?.name || 'N/A'}</div>
+                                <div className="text-xs text-gray-500">{item.sender?.location || ''}</div>
+                              </td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">
+                                <div className="font-medium">{item.receiver?.name || 'N/A'}</div>
+                                <div className="text-xs text-gray-500">{item.receiver?.country || ''}</div>
+                                {item.receiverBranch && <div className="text-xs text-blue-600">Branch: {item.receiverBranch}</div>}
+                              </td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">
+                                <div className="font-medium">{item.pickupPartner?.name || 'N/A'}</div>
+                                <div className="text-xs text-gray-500">{item.pickupPartner?.phoneNumber || ''}</div>
+                              </td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.date ? formatDate(item.date) : 'N/A'}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.expectedReceivingDate ? formatDate(item.expectedReceivingDate) : 'N/A'}</td>
+                              <td className="py-3 px-4 text-center text-gray-800 text-sm">{item.bundleCount || 0}</td>
+                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{formatCurrency(item.pickupPartner?.price || 0)}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">
+                                <Badge variant={item.status === 'success' ? 'default' : 'secondary'}>
+                                  {item.status}
+                                </Badge>
+                              </td>
+                            </>
+                          )}
                         </tr>
                       ))
                     ) : (
