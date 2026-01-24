@@ -39,9 +39,8 @@ export interface Customer {
   // Common fields
   shopName?: string;
   contactPerson?: string;
-  phone?: string;
-  whatsappNumber?: string;
-  countryCode?: string;
+  phone?: string; // Now stores complete phone number with country code
+  whatsappNumber?: string; // Now stores complete WhatsApp number with country code
   
   // Sender specific fields
   location?: string;
@@ -80,9 +79,8 @@ export interface CreateCustomerPayload {
   // Common fields
   shopName?: string;
   contactPerson?: string;
-  phone?: string;
-  whatsappNumber?: string;
-  countryCode?: string;
+  phone?: string; // Now stores complete phone number with country code
+  whatsappNumber?: string; // Now stores complete WhatsApp number with country code
   
   // Sender specific fields
   location?: string;

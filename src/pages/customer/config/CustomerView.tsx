@@ -25,6 +25,7 @@ import {
 import { toast } from 'react-hot-toast';
 import { customerService } from '@/services/customerService';
 
+import { formatPhoneNumber } from '@/Utils/phoneUtils';
 import type { Customer } from '@/services/customerService';
 const countryCodes = [
   { code: '+1', country: 'United States', flag: '🇺🇸' },
@@ -118,27 +119,40 @@ const InfoField: React.FC<InfoFieldProps> = ({ label, value, icon: Icon, type = 
       break;
     case 'phone':
       if (displayValue) {
-        // Extract country code and phone number
+        // Phone numbers now come pre-formatted from formatPhoneNumber utility
         const phoneStr = String(displayValue);
-        const countryCodeMatch = phoneStr.match(/^(\+\d+)\s(.+)$/);
         
-        if (countryCodeMatch) {
-          const [, countryCode, phoneNumber] = countryCodeMatch;
-          const country = countryCodes.find(c => c.code === countryCode);
-          
+        // Check if it's already formatted with country info (contains parentheses)
+        if (phoneStr.includes('(') && phoneStr.includes(')')) {
+          // Already formatted by formatPhoneNumber utility
           renderedValue = (
-            <a href={`tel:${displayValue}`} className="text-blue-600 hover:underline flex items-center gap-2">
-              {country && <span className="text-base">{country.flag}</span>}
-              <span className="font-mono text-sm">{countryCode}</span>
-              <span className="text-sm">{phoneNumber}</span>
+            <a href={`tel:${phoneStr.replace(/[^\d+]/g, '')}`} className="text-blue-600 hover:underline text-sm">
+              {phoneStr}
             </a>
           );
         } else {
-          renderedValue = (
-            <a href={`tel:${displayValue}`} className="text-blue-600 hover:underline text-sm">
-              {displayValue}
-            </a>
-          );
+          // Try to parse as country code + number format
+          const countryCodeMatch = phoneStr.match(/^(\+\d+)\s(.+)$/);
+          
+          if (countryCodeMatch) {
+            const [, countryCode, phoneNumber] = countryCodeMatch;
+            const country = countryCodes.find(c => c.code === countryCode);
+            
+            renderedValue = (
+              <a href={`tel:${displayValue}`} className="text-blue-600 hover:underline flex items-center gap-2">
+                {country && <span className="text-base">{country.flag}</span>}
+                <span className="font-mono text-sm">{countryCode}</span>
+                <span className="text-sm">{phoneNumber}</span>
+              </a>
+            );
+          } else {
+            // Fallback for any other format
+            renderedValue = (
+              <a href={`tel:${displayValue}`} className="text-blue-600 hover:underline text-sm">
+                {displayValue}
+              </a>
+            );
+          }
         }
       }
       break;
@@ -336,14 +350,14 @@ export default function CustomerView() {
 
                 <InfoField
                   label="Phone Number"
-                  value={customer.phone ? `${customer.countryCode || '+91'} ${customer.phone}` : null}
+                  value={customer.phone ? formatPhoneNumber(customer.phone) : null}
                   icon={Phone}
                   type="phone"
                 />
 
                 <InfoField
                   label="WhatsApp Number"
-                  value={customer.whatsappNumber ? `${customer.countryCode || '+91'} ${customer.whatsappNumber}` : null}
+                  value={customer.whatsappNumber ? formatPhoneNumber(customer.whatsappNumber) : null}
                   icon={MessageSquare}
                   type="phone"
                 />

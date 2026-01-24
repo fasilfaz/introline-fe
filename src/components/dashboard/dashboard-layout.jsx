@@ -342,7 +342,7 @@ export const DashboardLayout = () => {
             </Button>
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
-                Pro<span className='text-blue-600'>Ventory</span>
+                Intro<span className='text-blue-600'>Lines</span>
               </h1>
               <div className="hidden md:flex ml-6 bg-gray-100 rounded-full px-3 py-1.5">
                 <span className="text-xs font-medium text-blue-700 uppercase tracking-wider">

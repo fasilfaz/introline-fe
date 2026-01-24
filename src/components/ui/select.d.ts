@@ -15,7 +15,9 @@ interface SelectContentProps extends React.HTMLAttributes<HTMLDivElement> {
   position?: "popper" | "item-aligned";
 }
 
-interface SelectItemProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SelectItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  value: string;
+}
 
 interface SelectValueProps {
   placeholder?: string;
