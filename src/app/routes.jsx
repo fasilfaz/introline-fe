@@ -14,6 +14,7 @@ import SalesInvoiceList from '@/pages/invocie/list/InvoiceManagement';
 import InvoiceView from '@/pages/invocie/config/InvoiceView';
 import InvoiceEdit from '@/pages/invocie/config/InvoiceEdit';
 import Reports from '@/pages/Reports/Reports';
+import EnhancedReports from '@/pages/Reports/EnhancedReports';
 import ItemManagement from '@/pages/management/itemManagement/list/ItemManagement';
 import SupplierManagement from '@/pages/management/supplierManagement/list/SupplierManagement';
 import ItemConfigForm from '@/pages/management/itemManagement/config/ItemConfigForm';
@@ -101,6 +102,7 @@ const protectedRoutes = [
   { path: 'invoice/edit/:id', element: <InvoiceEdit />, module: 'Sales Invoice' },
   { path: 'invoice/add', element: <InvoiceEdit />, module: 'Sales Invoice' },
   { path: 'reports', element: <Reports />, module: 'Reports' },
+  { path: 'enhanced-reports', element: <EnhancedReports />, module: 'Reports' },
   { path: 'report/preview', element: <PrintPreview />, module: 'Reports' },
   { path: 'purchaseOrderForm', element: <PurchaseOrderForm />, module: 'Purchase Order Management' },
   { path: 'purchaseOrderManagement', element: <PurchaseOrderList />, module: 'Purchase Order Management' },

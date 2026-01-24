@@ -218,6 +218,25 @@ export const DashboardLayout = () => {
       icon: <Container className="mr-3 h-4 w-4 flex-shrink-0" />,
       roles: ['superadmin', 'admin', 'biller']
     },
+    {
+      label: 'Reports',
+      icon: <ChartNoAxesCombined className="mr-3 h-4 w-4 flex-shrink-0" />,
+      roles: ['superadmin', 'admin', 'biller', 'purchaser'],
+      children: [
+        {
+          path: '/dashboard/reports',
+          label: 'Standard Reports',
+          icon: <FileText className="mr-3 h-4 w-4 flex-shrink-0" />,
+          roles: ['superadmin', 'admin', 'biller', 'purchaser']
+        },
+        {
+          path: '/dashboard/enhanced-reports',
+          label: 'Business Reports',
+          icon: <ChartNoAxesCombined className="mr-3 h-4 w-4 flex-shrink-0" />,
+          roles: ['superadmin', 'admin', 'biller']
+        }
+      ]
+    },
   ];
 
   // Filter menu items based on user role

@@ -1,17 +1,17 @@
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Package, Printer, X, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Package, Printer, X, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import {
   selectPrintData,
   selectSelectedReportType,
   selectDateRange,
   selectReportConfigs
 } from '@/redux/features/PurchaseOrderReportPrintSlice';
-import React from 'react';
 
 // Interfaces matching Reports.tsx data structure
 interface PurchaseOrderItem {
@@ -29,12 +29,6 @@ interface PurchaseOrderItem {
   orderDate: string;
   status: string;
 }
-
-
-
-
-
-
 
 type GroupedStockItem = {
   item_uuid: string;
@@ -60,7 +54,6 @@ const PrintPreview: React.FC = () => {
   const selectedReportType = useSelector(selectSelectedReportType);
   const dateRange = useSelector(selectDateRange);
   const reportConfigs = useSelector(selectReportConfigs);
-  // const userData = useSelector(selectUser);
 
   // Static company data since we don't have company logic
   const companyData = {
@@ -94,6 +87,22 @@ const PrintPreview: React.FC = () => {
     }
     if (selectedReportType === 'packing-list' && reportData) {
       return reportData['packing-list']?.data || [];
+    }
+    // Support for new enhanced report types
+    if (selectedReportType === 'customers' && reportData) {
+      return reportData['customers']?.data || [];
+    }
+    if (selectedReportType === 'containers' && reportData) {
+      return reportData['containers']?.data || [];
+    }
+    if (selectedReportType === 'delivery-partners' && reportData) {
+      return reportData['delivery-partners']?.data || [];
+    }
+    if (selectedReportType === 'pickup-partners' && reportData) {
+      return reportData['pickup-partners']?.data || [];
+    }
+    if (selectedReportType === 'bookings' && reportData) {
+      return reportData['bookings']?.data || [];
     }
     if (selectedReportType && reportData && reportData[selectedReportType as keyof typeof reportData]) {
       return (reportData[selectedReportType as keyof typeof reportData] as any)?.data || [];
@@ -155,8 +164,6 @@ const PrintPreview: React.FC = () => {
   const totalStockQty = stockItems.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0);
   const totalStockValue = stockItems.reduce((sum: number, item: any) => sum + ((item.quantity || 0) * (item.unitPrice || 0)), 0);
 
-  // Data is already processed above, no need for separate useEffect
-
   // Redirect if no data is available
   useEffect(() => {
     if (!reportData || !selectedReportType) {
@@ -165,8 +172,6 @@ const PrintPreview: React.FC = () => {
       return;
     }
   }, [reportData, selectedReportType, navigate]);
-
-  // Data is already available from Redux, no need to fetch
 
   // Format date helper function
   const formatDate = (date: Date | string) => {
@@ -178,44 +183,7 @@ const PrintPreview: React.FC = () => {
     });
   };
 
-
-
-  // For printing, use all purchase order items
-  const allPurchaseOrders = selectedReportType === 'purchase-order'
-    ? purchaseOrderItems.map(item => ({
-      id: item._id,
-      po_number: `PO-${item.itemId}`,
-      supplier_id: item.supplier._id,
-      order_date: item.orderDate,
-      total_items: 1,
-      total_value: item.totalValue,
-      payment_details: null,
-      remarks: null,
-      items: [{
-        id: item._id,
-        item_id: item.itemId,
-        order_qty: item.quantity,
-        order_price: item.totalValue,
-        item_mgmt: {
-          item_name: item.itemName,
-          description: item.description || null
-        }
-      }],
-      supplier: {
-        supplier_name: item.supplier.name,
-        email: null,
-        address: null
-      },
-      store: {
-        name: 'Default Store',
-        address: null
-      },
-      order_status: item.status
-    }))
-    : [];
-
-
-
+  // Navigation functions
   const handleNext = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -253,6 +221,40 @@ const PrintPreview: React.FC = () => {
           totalValue: item.totalValue
         }))
       });
+
+      // For printing, use all purchase order items
+      const allPurchaseOrders = selectedReportType === 'purchase-order'
+        ? purchaseOrderItems.map(item => ({
+          id: item._id,
+          po_number: `PO-${item.itemId}`,
+          supplier_id: item.supplier._id,
+          order_date: item.orderDate,
+          total_items: 1,
+          total_value: item.totalValue,
+          payment_details: null,
+          remarks: null,
+          items: [{
+            id: item._id,
+            item_id: item.itemId,
+            order_qty: item.quantity,
+            order_price: item.totalValue,
+            item_mgmt: {
+              item_name: item.itemName,
+              description: item.description || null
+            }
+          }],
+          supplier: {
+            supplier_name: item.supplier.name,
+            email: null,
+            address: null
+          },
+          store: {
+            name: 'Default Store',
+            address: null
+          },
+          order_status: item.status
+        }))
+        : [];
 
       if (allPurchaseOrders.length === 0) {
         toast.error('No purchase order data available');
@@ -310,23 +312,6 @@ const PrintPreview: React.FC = () => {
                   </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
-                  <div>
-                    <h3 style="margin: 0 0 10px 0;">Supplier:</h3>
-                    <div style="border-left: 4px solid #2563eb; padding-left: 15px;">
-                      <p style="margin: 5px 0; font-weight: bold;">${item?.supplier?.name || po.supplier?.supplier_name || 'N/A'}</p>
-                      <p style="margin: 5px 0; color: #666;">Supplier ID: ${item?.supplier?._id || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div style="text-align: right;">
-                    <h3 style="margin: 0 0 10px 0;">Item Details:</h3>
-                    <div style="border-right: 4px solid #2563eb; padding-right: 15px;">
-                      <p style="margin: 5px 0; font-weight: bold;">${item?.itemName || 'N/A'}</p>
-                      <p style="margin: 5px 0; color: #666;">${item?.description || 'No description'}</p>
-                    </div>
-                  </div>
-                </div>
-                
                 <table>
                   <thead>
                     <tr style="background-color: #eff6ff;">
@@ -355,19 +340,6 @@ const PrintPreview: React.FC = () => {
                     </tr>
                   </tfoot>
                 </table>
-                
-                <div style="margin: 20px 0;">
-                  <h3 style="margin: 0 0 10px 0;">Additional Details</h3>
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                    <div>
-                      <p style="margin: 5px 0; color: #666;"><strong>Item ID:</strong> ${item?.itemId || 'N/A'}</p>
-                      <p style="margin: 5px 0; color: #666;"><strong>Status:</strong> ${item?.status || 'N/A'}</p>
-                    </div>
-                    <div>
-                      <p style="margin: 5px 0; color: #666;"><strong>Description:</strong> ${item?.description || 'N/A'}</p>
-                    </div>
-                  </div>
-                </div>
                 
                 <div class="footer">
                   <p>${reportConfigs['purchase-order']?.report_footer || 'Generated by AL LIBAS GENERAL TRADING L L C'}</p>
@@ -481,11 +453,6 @@ const PrintPreview: React.FC = () => {
                 </tfoot>
              </table>
 
-             <div style="margin-top: 20px;">
-                <h4 style="font-size: 14px; margin-bottom: 5px;">Additional Details</h4>
-                <p style="font-size: 12px; color: #666; margin: 0;"><strong>Remarks:</strong> ${reportConfigs['sales']?.remarks || 'N/A'}</p>
-             </div>
-
              <div class="footer">
                 ${reportConfigs['sales']?.report_footer || 'Generated by AL LIBAS GENERAL TRADING L L C'}
              </div>
@@ -526,12 +493,6 @@ const PrintPreview: React.FC = () => {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             color: #333;
           }
-          .page {
-            page-break-after: always;
-          }
-          .page:last-child {
-            page-break-after: auto;
-          }
           .header {
             padding: 20px;
             border-bottom: 2px solid #e5e7eb;
@@ -541,8 +502,6 @@ const PrintPreview: React.FC = () => {
             justify-content: space-between;
             align-items: center;
           }
-          .header .left-column { text-align: left; }
-          .header .right-column { text-align: right; }
           .header h1 {
             color: #1e40af;
             font-size: 28px;
@@ -554,14 +513,6 @@ const PrintPreview: React.FC = () => {
             font-size: 20px;
             font-weight: 600;
             margin: 0 0 8px;
-          }
-          .header .company-details, .header .stock-details {
-            color: #6b7280;
-            font-size: 14px;
-            margin-top: 8px; 
-          }
-          .header .stock-details p {
-            margin: 4px 0; 
           }
           table {
             width: 100%;
@@ -579,9 +530,7 @@ const PrintPreview: React.FC = () => {
             font-weight: 600;
             color: #1f2937;
           }
-          td:first-child { width: 40px; } /* empty column */
           tbody tr:nth-child(even) { background-color: #f9fafb; }
-          tbody tr:hover { background-color: #eff6ff; transition: background-color 0.2s ease; }
           .totals-row {
             background-color: #e0f2fe;
             font-weight: bold;
@@ -597,243 +546,59 @@ const PrintPreview: React.FC = () => {
         </style>
       </head>
       <body>
-        <div class="page">
-          <div class="header">
-            <div class="left-column">
-              <h1>${companyData.name}</h1>
-              <div class="company-details">
-                ${companyData.description}<br>
-                ${companyData.address}<br>
-                ${companyData.city}, ${companyData.state}, ${companyData.country}, ${companyData.postal_code}<br>
-                Phone: ${companyData.phone}
-              </div>
-            </div>
-            <div class="right-column">
-              <h2>INVENTORY STOCK REPORT</h2>
-              <div class="stock-details">
-                <p>Date: ${formatDate(new Date().toLocaleDateString())}</p>
-              </div>
+        <div class="header">
+          <div>
+            <h1>${companyData.name}</h1>
+            <div>
+              ${companyData.description}<br>
+              ${companyData.address}<br>
+              ${companyData.city}, ${companyData.state}, ${companyData.country}, ${companyData.postal_code}<br>
+              Phone: ${companyData.phone}
             </div>
           </div>
-
-          <table>
-            <tbody>
-              ${allInventoryStocks.map(item => `
-                <tr style="background:#f3f4f6;font-weight:bold;">
-                  <td colspan="5">${item.item_id} - ${item.item_name}</td>
-                </tr>
-                <tr style="background:#eff6ff;">
-                  <td></td>
-                  <td><b>Store Name</b></td>
-                  <td style="text-align:right;"><b>Quantity</b></td>
-                  <td style="text-align:right;"><b>Unit Price</b></td>
-                  <td style="text-align:right;"><b>Total Value</b></td>
-                </tr>
-                ${item.stores.map(store => `
-                  <tr>
-                    <td></td>
-                    <td>${store.store_name}</td>
-                    <td style="text-align:right;">${store.quantity}</td>
-                    <td style="text-align:right;">${(store.unit_price).toFixed(2)}</td>
-                    <td style="text-align:right;">${(store.quantity * store.unit_price).toFixed(2)}</td>
-                  </tr>
-                `).join('')}
-              `).join('')}
-
-              <tr class="totals-row">
-                <td colspan="2" style="text-align:right;">Grand Total</td>
-                <td style="text-align:right;">${totalStockQty}</td>
-                <td></td>
-                <td style="text-align:right;">${totalStockValue.toFixed(2)}</td>
-              </tr>
-            </tbody>
-          </table>
-
-          <div style="margin: 20px 0;">
-            <h4 style="margin: 0 0 10px 0;">Additional Details</h4>
-            <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
-              <div>
-                <p style="margin: 5px 0; color: #666; font-size: 12px;"><strong>Remarks:</strong> ${reportConfigs['stock']?.remarks || 'N/A'}</p>
-              </div>
+          <div>
+            <h2>INVENTORY STOCK REPORT</h2>
+            <div>
+              <p>Date: ${formatDate(new Date().toLocaleDateString())}</p>
             </div>
-          </div>
-
-          <div class="footer">
-            <p>${reportConfigs['stock']?.report_footer || 'Generated on ' + new Date().toLocaleDateString() + ' by AL LIBAS GENERAL TRADING L L C'}</p>
           </div>
         </div>
-      </body>
-    </html>
-  `;
 
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-
-      printWindow.onload = () => {
-        printWindow.print();
-        printWindow.close();
-      };
-    } else if (selectedReportType === 'packing-list') {
-      if (packingListItems.length === 0) {
-        toast.error('No packing list data available to print');
-        return;
-      }
-
-      const printWindow = window.open('', '_blank');
-      if (!printWindow) {
-        toast.error('Please allow popups to print');
-        return;
-      }
-
-      const printContent = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Packing List Report</title>
-        <style>
-          @page { size: A4; margin: 15mm; }
-          body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            color: #333;
-          }
-          .page {
-            page-break-after: always;
-          }
-          .page:last-child {
-            page-break-after: auto;
-          }
-          .header {
-            padding: 20px;
-            border-bottom: 2px solid #e5e7eb;
-            margin-bottom: 25px;
-            border-radius: 8px 8px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-          }
-          .header .left-column { text-align: left; }
-          .header .right-column { text-align: right; }
-          .header h1 {
-            color: #1e40af;
-            font-size: 28px;
-            font-weight: 800;
-            margin: 0;
-          }
-          .header h2 {
-            color: #1e3a8a;
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0 0 8px;
-          }
-          .header .company-details, .header .report-details {
-            color: #6b7280;
-            font-size: 14px;
-            margin-top: 8px; 
-          }
-          .header .report-details p {
-            margin: 4px 0; 
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 13px;
-          }
-          th, td {
-            border: 1px solid #e5e7eb;
-            padding: 8px 10px;
-            font-size: 13px;
-          }
-          th {
-            background-color: #f9fafb;
-            font-weight: 600;
-            color: #1f2937;
-          }
-          tbody tr:nth-child(even) { background-color: #f9fafb; }
-          tbody tr:hover { background-color: #eff6ff; transition: background-color 0.2s ease; }
-          .packing-list-header {
-            background-color: #e0f2fe;
-            font-weight: bold;
-          }
-          .footer {
-            margin-top: 25px;
-            text-align: center;
-            font-size: 12px;
-            color: #6b7280;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 15px;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="page">
-          <div class="header">
-            <div class="left-column">
-              <h1>${companyData.name}</h1>
-              <div class="company-details">
-                ${companyData.description}<br>
-                ${companyData.address}<br>
-                ${companyData.city}, ${companyData.state}, ${companyData.country}, ${companyData.postal_code}<br>
-                Phone: ${companyData.phone}
-              </div>
-            </div>
-            <div class="right-column">
-              <h2>PACKING LIST REPORT</h2>
-              <div class="report-details">
-                <p>Date: ${formatDate(new Date().toLocaleDateString())}</p>
-                <p>Total Packing Lists: ${packingListItems.length}</p>
-              </div>
-            </div>
-          </div>
-
-          <table>
-            <thead>
-              <tr>
-                <th>Box/Bora Number</th>
-                <th>Item Description</th>
-                <th style="text-align:right;">Quantity</th>
-                <th>Size</th>
-                <th>Cargo Number</th>
-                <th>Remarks</th>
+        <table>
+          <tbody>
+            ${allInventoryStocks.map(item => `
+              <tr style="background:#f3f4f6;font-weight:bold;">
+                <td colspan="5">${item.item_id} - ${item.item_name}</td>
               </tr>
-            </thead>
-            <tbody>
-              ${packingListItems.flatMap((packingList: any) => 
-                (packingList.items || []).map((item: any, itemIndex: number) => `
-                  <tr>
-                    <td>${itemIndex === 0 ? (packingList.boxNumber || '-') : ''}</td>
-                    <td>
-                      <strong>${item.product?.name || 'Unknown Item'}</strong>
-                      ${item.description ? `<br><small style="color: #666;">${item.description}</small>` : ''}
-                    </td>
-                    <td style="text-align:right;">${item.quantity || 0}</td>
-                    <td>${item.unitOfMeasure || packingList.size || '-'}</td>
-                    <td>${itemIndex === 0 ? (packingList.cargoNumber || '-') : ''}</td>
-                    <td>${itemIndex === 0 ? (packingList.description || '-') : ''}</td>
-                  </tr>
-                `)
-              ).join('')}
-            </tbody>
-          </table>
+              <tr style="background:#eff6ff;">
+                <td></td>
+                <td><b>Store Name</b></td>
+                <td style="text-align:right;"><b>Quantity</b></td>
+                <td style="text-align:right;"><b>Unit Price</b></td>
+                <td style="text-align:right;"><b>Total Value</b></td>
+              </tr>
+              ${item.stores.map(store => `
+                <tr>
+                  <td></td>
+                  <td>${store.store_name}</td>
+                  <td style="text-align:right;">${store.quantity}</td>
+                  <td style="text-align:right;">${(store.unit_price).toFixed(2)}</td>
+                  <td style="text-align:right;">${(store.quantity * store.unit_price).toFixed(2)}</td>
+                </tr>
+              `).join('')}
+            `).join('')}
 
-          <div style="margin: 20px 0;">
-            <h4 style="margin: 0 0 10px 0;">Summary</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-              <div>
-                <p style="margin: 5px 0; color: #666; font-size: 12px;"><strong>Total Packing Lists:</strong> ${packingListItems.length}</p>
-                <p style="margin: 5px 0; color: #666; font-size: 12px;"><strong>Total Items:</strong> ${packingListItems.reduce((sum, pl) => sum + (pl.totalQuantity || 0), 0)}</p>
-              </div>
-              <div>
-                <p style="margin: 5px 0; color: #666; font-size: 12px;"><strong>Date Range:</strong> ${dateRange[0] && dateRange[1] ? `${formatDate(dateRange[0])} - ${formatDate(dateRange[1])}` : 'All time'}</p>
-              </div>
-            </div>
-          </div>
+            <tr class="totals-row">
+              <td colspan="2" style="text-align:right;">Grand Total</td>
+              <td style="text-align:right;">${totalStockQty}</td>
+              <td></td>
+              <td style="text-align:right;">${totalStockValue.toFixed(2)}</td>
+            </tr>
+          </tbody>
+        </table>
 
-          <div class="footer">
-            <p>${(reportConfigs as any)['packing-list']?.report_footer || 'Generated on ' + new Date().toLocaleDateString() + ' by AL LIBAS GENERAL TRADING L L C'}</p>
-          </div>
+        <div class="footer">
+          <p>${reportConfigs['stock']?.report_footer || 'Generated on ' + new Date().toLocaleDateString() + ' by AL LIBAS GENERAL TRADING L L C'}</p>
         </div>
       </body>
     </html>
@@ -848,7 +613,8 @@ const PrintPreview: React.FC = () => {
       };
     } else {
       // Handle other report types
-      // const headers = reportData?.[selectedReportType as keyof typeof reportData]?.headers || [];
+      const reportTitle = reportData?.[selectedReportType as keyof typeof reportData]?.title || 'Report';
+      const headers = reportData?.[selectedReportType as keyof typeof reportData]?.headers || [];
 
       const printWindow = window.open('', '_blank');
       if (!printWindow) {
@@ -856,40 +622,142 @@ const PrintPreview: React.FC = () => {
         return;
       }
 
-      // let tableRows = '';
-      // if (data.length > 0) {
-      //   tableRows = data.map((item: any) => {
-      //     let row = '<tr>';
+      let tableRows = '';
+      if (data.length > 0) {
+        tableRows = data.map((item: any) => {
+          let row = '<tr>';
 
-      //     if (selectedReportType === 'stock') {
-      //       row += `
-      //         <td>${item.id}</td>
-      //         <td>${item.name}</td>
-      //         <td>${item.category}</td>
-      //         <td>${item.inStock}</td>
-      //         <td>${item.reserved}</td>
-      //         <td>${item.available}</td>
-      //         <td>${item.reorderLevel}</td>
-      //         <td>${formatDate(item.lastUpdated)}</td>
-      //       `;
-      //     } else if (selectedReportType === 'supplier') {
-      //       row += `
-      //         <td>${item.id}</td>
-      //         <td>${item.name}</td>
-      //         <td>${item.totalOrders}</td>
-      //         <td>${item.totalValue}</td>
-      //         <td>${item.onTimeDelivery}</td>
-      //         <td>${item.rating}</td>
-      //         <td>${formatDate(item.lastOrder)}</td>
-      //       `;
-      //     }
+          if (selectedReportType === 'customers') {
+            row += `
+              <td>${item.name || 'N/A'}</td>
+              <td><span style="background: ${item.customerType === 'Sender' ? '#3b82f6' : '#6b7280'}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${item.customerType}</span></td>
+              <td>${item.phone || 'N/A'}</td>
+              <td>${item.shopName || 'N/A'}</td>
+              <td>${item.customerType === 'Sender' ? (item.location || 'N/A') : (item.country || 'N/A')}</td>
+              <td style="text-align: right;">${(item.totalCredit || 0).toFixed(2)}</td>
+              <td style="text-align: right;">${(item.totalAmount || 0).toFixed(2)}</td>
+              <td style="text-align: right; color: ${item.balanceAmount >= 0 ? '#059669' : '#dc2626'};">${(item.balanceAmount || 0).toFixed(2)}</td>
+              <td><span style="background: ${item.status === 'Active' ? '#059669' : '#6b7280'}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 11px;">${item.status}</span></td>
+              <td>${formatDate(item.createdAt)}</td>
+            `;
+          }
 
-      //     row += '</tr>';
-      //     return row;
-      //   }).join('');
-      // } else {
-      //   tableRows = `<tr><td colspan="${headers.length}" style="text-align: center; color: #666;">No data found</td></tr>`;
-      // }
+          row += '</tr>';
+          return row;
+        }).join('');
+      } else {
+        tableRows = `<tr><td colspan="${headers.length}" style="text-align: center; color: #666; padding: 20px;">No data found</td></tr>`;
+      }
+
+      const printContent = `
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>${reportTitle}</title>
+            <style>
+              @page { size: A4; margin: 15mm; }
+              body {
+                margin: 0;
+                padding: 0;
+                font-family: 'Helvetica Neue', Arial, sans-serif;
+                color: #333;
+              }
+              .header {
+                padding: 20px;
+                border-bottom: 2px solid #e5e7eb;
+                margin-bottom: 25px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+              }
+              .header h1 {
+                color: #1e40af;
+                font-size: 28px;
+                font-weight: 800;
+                margin: 0;
+              }
+              .header h2 {
+                color: #1e3a8a;
+                font-size: 20px;
+                font-weight: 600;
+                margin: 0 0 8px;
+              }
+              table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 15px 0;
+                font-size: 12px;
+              }
+              th, td {
+                border: 1px solid #e5e7eb;
+                padding: 8px 10px;
+                text-align: left;
+              }
+              th {
+                background-color: #f8fafc;
+                font-weight: 600;
+                color: #1f2937;
+              }
+              tbody tr:nth-child(even) {
+                background-color: #f9fafb;
+              }
+              .footer {
+                margin-top: 25px;
+                text-align: center;
+                font-size: 12px;
+                color: #6b7280;
+                border-top: 1px solid #e5e7eb;
+                padding-top: 15px;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <div>
+                <h1>${companyData.name}</h1>
+                <div>
+                  ${companyData.description}<br>
+                  ${companyData.address}<br>
+                  ${companyData.city}, ${companyData.state}, ${companyData.country}, ${companyData.postal_code}<br>
+                  Phone: ${companyData.phone}
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <h2>${reportTitle.toUpperCase()}</h2>
+                <div>
+                  <p>Generated: ${formatDate(new Date())}</p>
+                  <p>Range: ${dateRange && dateRange[0] && dateRange[1] 
+                    ? `${formatDate(dateRange[0])} - ${formatDate(dateRange[1])}` 
+                    : 'All Time'}</p>
+                </div>
+              </div>
+            </div>
+
+            <table>
+              <thead>
+                <tr>
+                  ${headers.map((header: string) => `<th>${header}</th>`).join('')}
+                </tr>
+              </thead>
+              <tbody>
+                ${tableRows}
+              </tbody>
+            </table>
+
+            <div class="footer">
+              <p>Generated on ${formatDate(new Date())} by AL LIBAS GENERAL TRADING L L C</p>
+            </div>
+          </body>
+        </html>
+      `;
+
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+
+      printWindow.onload = () => {
+        printWindow.print();
+        printWindow.close();
+      };
     }
   };
 
@@ -972,12 +840,6 @@ const PrintPreview: React.FC = () => {
                 <div>
                   <h1 className="text-2xl font-bold text-gray-800">{companyData.name}</h1>
                   <p className="text-gray-600 text-sm">{companyData.description}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-                  {/* <p className="text-gray-700 text-sm font-medium">System ID</p>
-                  <p className="text-gray-500 text-xs">IMS2025</p> */}
                 </div>
               </div>
             </div>
@@ -1279,7 +1141,6 @@ const PrintPreview: React.FC = () => {
             </div>
           </div>
         ) : selectedReportType === 'stock' ? (
-          // Other Report Types (Stock, Supplier, etc.)
           <div className="bg-white rounded-lg shadow-lg border border-gray-200">
             <div className="min-h-[29.7cm] p-8">
               {/* Header */}
@@ -1292,9 +1153,7 @@ const PrintPreview: React.FC = () => {
                   <p className="text-gray-600 text-sm">Phone: {companyData?.phone}</p>
                 </div>
                 <div className="text-right">
-                  <h2 className="text-xl font-bold text-blue-800">
-                    {reportData[selectedReportType as keyof typeof reportData]?.title || 'Report'}
-                  </h2>
+                  <h2 className="text-xl font-bold text-blue-800">INVENTORY STOCK REPORT</h2>
                   <p className="text-gray-600 mt-1 text-sm">Generated: {formatDate(new Date())}</p>
                   <p className="text-gray-600 text-sm">
                     {dateRange && dateRange[0] && dateRange[1]
@@ -1354,9 +1213,13 @@ const PrintPreview: React.FC = () => {
                           <td className="py-3 px-4 text-right" colSpan={2}>
                             Grand Total
                           </td>
-                          <td className="py-3 px-4 text-right">{totalStockQty}</td>
-                          <td></td>
-                          <td className="py-3 px-4 text-right">{totalStockValue.toFixed(2)}</td>
+                          <td className="py-3 px-4 text-right">
+                            {totalStockQty}
+                          </td>
+                          <td className="py-3 px-4 text-right"></td>
+                          <td className="py-3 px-4 text-right text-blue-700">
+                            {totalStockValue.toFixed(2)}
+                          </td>
                         </tr>
                       </>
                     ) : (
@@ -1389,7 +1252,7 @@ const PrintPreview: React.FC = () => {
             </div>
           </div>
         ) : (
-          // Other Report Types (Stock, Supplier, etc.)
+          // Other Report Types
           <div className="bg-white rounded-lg shadow-lg border border-gray-200">
             <div className="min-h-[29.7cm] p-8">
               {/* Header */}
@@ -1430,17 +1293,33 @@ const PrintPreview: React.FC = () => {
                     {data.length > 0 ? (
                       data.map((item: any, index: number) => (
                         <tr key={index} className="border-b">
-                          {selectedReportType === 'supplier' && (
+                          {selectedReportType === 'customers' && (
                             <>
-                              <td className="py-3 px-4 text-gray-800 text-sm">{item.id}</td>
                               <td className="py-3 px-4 text-gray-800 text-sm">{item.name}</td>
-                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{item.totalOrders}</td>
-                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{item.totalValue.toFixed(2)}</td>
-                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{item.onTimeDelivery}%</td>
-                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{item.rating}</td>
-                              <td className="py-3 px-4 text-gray-800 text-sm">{formatDate(item.lastOrder)}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">
+                                <Badge variant={item.customerType === 'Sender' ? 'default' : 'secondary'}>
+                                  {item.customerType}
+                                </Badge>
+                              </td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.phone || 'N/A'}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.shopName || 'N/A'}</td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{item.customerType === 'Sender' ? (item.location || 'N/A') : (item.country || 'N/A')}</td>
+                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{(item.totalCredit || 0).toFixed(2)}</td>
+                              <td className="py-3 px-4 text-right text-gray-800 text-sm">{(item.totalAmount || 0).toFixed(2)}</td>
+                              <td className="py-3 px-4 text-right text-gray-800 text-sm">
+                                <span className={item.balanceAmount >= 0 ? 'text-green-600' : 'text-red-600'}>
+                                  {(item.balanceAmount || 0).toFixed(2)}
+                                </span>
+                              </td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">
+                                <Badge variant={item.status === 'Active' ? 'default' : 'secondary'}>
+                                  {item.status}
+                                </Badge>
+                              </td>
+                              <td className="py-3 px-4 text-gray-800 text-sm">{formatDate(item.createdAt)}</td>
                             </>
                           )}
+                          {/* Add other report type renderings here as needed */}
                         </tr>
                       ))
                     ) : (
