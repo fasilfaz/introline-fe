@@ -17,6 +17,7 @@ interface PackingListFormState {
   plannedBundleCount: number;
   actualBundleCount: number;
   packingStatus: 'pending' | 'in_progress' | 'completed';
+  count?: number;
 }
 
 const DEFAULT_FORM: PackingListFormState = {
@@ -26,7 +27,8 @@ const DEFAULT_FORM: PackingListFormState = {
   packedBy: '',
   plannedBundleCount: 0,
   actualBundleCount: 0,
-  packingStatus: 'pending'
+  packingStatus: 'pending',
+  count: 0
 };
 
 export const PackingListForm = () => {
@@ -62,12 +64,12 @@ export const PackingListForm = () => {
 
   const loadPackingList = async () => {
     if (!id) return;
-    
+
     try {
       setLoading(true);
       const response = await packingListService.get(id);
       const packingList = response.data;
-      
+
       setFormState({
         bookingReference: packingList.bookingReference?._id || '',
         netWeight: packingList.netWeight,
@@ -75,7 +77,8 @@ export const PackingListForm = () => {
         packedBy: packingList.packedBy,
         plannedBundleCount: packingList.plannedBundleCount,
         actualBundleCount: packingList.actualBundleCount,
-        packingStatus: packingList.packingStatus
+        packingStatus: packingList.packingStatus,
+        count: packingList.count
       });
     } catch (error) {
       console.error('Failed to load packing list', error);
@@ -92,22 +95,22 @@ export const PackingListForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formState.bookingReference) {
       toast.error('Please select a booking reference');
       return;
     }
-    
+
     if (!formState.packedBy.trim()) {
       toast.error('Please enter who packed the items');
       return;
     }
-    
+
     if (formState.netWeight <= 0 || formState.grossWeight <= 0) {
       toast.error('Please enter valid weights');
       return;
     }
-    
+
     if (formState.plannedBundleCount <= 0) {
       toast.error('Please enter a valid planned bundle count');
       return;
@@ -115,7 +118,7 @@ export const PackingListForm = () => {
 
     try {
       setSaving(true);
-      
+
       const payload: PackingListInput = {
         bookingReference: formState.bookingReference,
         netWeight: formState.netWeight,
@@ -123,7 +126,8 @@ export const PackingListForm = () => {
         packedBy: formState.packedBy.trim(),
         plannedBundleCount: formState.plannedBundleCount,
         actualBundleCount: formState.actualBundleCount,
-        packingStatus: formState.packingStatus
+        packingStatus: formState.packingStatus,
+        count: formState.count
       };
 
       if (isEditing) {
@@ -133,7 +137,7 @@ export const PackingListForm = () => {
         await packingListService.create(payload);
         toast.success('Packing list created successfully');
       }
-      
+
       navigate('/dashboard/packing-lists');
     } catch (error: any) {
       console.error(`Failed to ${isEditing ? 'update' : 'create'} packing list`, error);
@@ -171,7 +175,7 @@ export const PackingListForm = () => {
               Packing List Details
             </CardTitle>
             <CardDescription>
-              {isEditing 
+              {isEditing
                 ? 'Update the packing list information below'
                 : 'Fill in the details to create a new packing list'
               }
@@ -278,6 +282,19 @@ export const PackingListForm = () => {
                   <option value="completed">Completed</option>
                 </select>
               </div>
+
+              {isEditing && (
+                <div className="space-y-2">
+                  <Label htmlFor="count">Sequential Count</Label>
+                  <Input
+                    id="count"
+                    value={formState.count || ''}
+                    disabled
+                    className="bg-muted"
+                  />
+                  <p className="text-xs text-muted-foreground">Auto-generated sequential number</p>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-end gap-3 pt-6 border-t">

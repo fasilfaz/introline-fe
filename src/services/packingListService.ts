@@ -9,6 +9,7 @@ export interface PackingListInput {
   plannedBundleCount: number;
   actualBundleCount?: number;
   packingStatus?: 'pending' | 'in_progress' | 'completed';
+  count?: number;
 }
 
 // Extended interface for backward compatibility with old packing list system
@@ -44,9 +45,10 @@ export interface PackingList {
   plannedBundleCount: number;
   actualBundleCount: number;
   packingStatus: 'pending' | 'in_progress' | 'completed';
+  count?: number;
   createdAt: string;
   updatedAt: string;
-  
+
   // Legacy fields for backward compatibility with old system
   boxNumber?: string;
   store?: {

@@ -19,7 +19,7 @@ interface TransmissionItem {
   packingListId: string;
   productId: string;
   productName: string;
-  productCode: string;
+  productCode?: string;
   quantity: number;
   originalPrice: number; // INR price from purchaser store
   margin: string; // Percentage as string
@@ -161,11 +161,16 @@ const ProductTransmissionPage = () => {
       const storeStockResponse = await storeStockService.list({ storeId, limit: 1000 });
       const storeStock = storeStockResponse.data || [];
 
+      if (!packingList.items) {
+        toast.error('Packing list items not available');
+        return;
+      }
+
       // Create transmission items from packing list
       const transmissionItems: TransmissionItem[] = packingList.items.map(item => {
         const stockItem = storeStock.find(stock => {
           const stockProductId = (stock.product as any)?._id || (stock.product as any)?.id || stock.product;
-          const itemProductId = item.product._id;
+          const itemProductId = item.product?._id;
           return stockProductId === itemProductId;
         });
 
@@ -177,9 +182,9 @@ const ProductTransmissionPage = () => {
 
         return {
           packingListId: packingList._id,
-          productId: item.product._id,
-          productName: item.product.name,
-          productCode: item.product.code,
+          productId: item.product?._id || '',
+          productName: item.product?.name || 'Unknown',
+          productCode: item.product?.code,
           quantity: item.quantity,
           originalPrice,
           margin,
