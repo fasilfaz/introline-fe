@@ -25,7 +25,7 @@ export const PackingListView = () => {
   useEffect(() => {
     const fetchPackingList = async () => {
       if (!id) return;
-      
+
       try {
         setLoading(true);
         const response = await packingListService.get(id);
@@ -65,12 +65,12 @@ export const PackingListView = () => {
     if (src?.startsWith('data:image')) {
       return <img src={src} alt={alt} className="max-w-full h-auto rounded-lg border" />;
     }
-    
+
     // Check if it's a URL
     if (src?.startsWith('http')) {
       return <img src={src} alt={alt} className="max-w-full h-auto rounded-lg border" />;
     }
-    
+
     // If it's neither, show a placeholder
     return (
       <div className="bg-muted border rounded-lg w-full h-48 flex items-center justify-center">
@@ -79,10 +79,11 @@ export const PackingListView = () => {
     );
   };
 
-  const StatusBadge = ({ status }: { status: string }) => {
-    const config = statusConfig[status] || { label: status, color: 'bg-gray-100 text-gray-800', icon: Box };
+  const StatusBadge = ({ status }: { status?: string }) => {
+    const safeStatus = status || 'pending';
+    const config = statusConfig[safeStatus] || { label: safeStatus, color: 'bg-gray-100 text-gray-800', icon: Box };
     const IconComponent = config.icon;
-    
+
     return (
       <Badge className={`${config.color} gap-1`}>
         <IconComponent className="h-3 w-3" />
@@ -110,7 +111,7 @@ export const PackingListView = () => {
               </CardTitle>
               <CardDescription>Shipment details and item information</CardDescription>
             </div>
-            <StatusBadge status={packingList.status} />
+            <StatusBadge status={packingList.status || 'pending'} />
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -130,8 +131,8 @@ export const PackingListView = () => {
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  {packingList.packingDate 
-                    ? new Date(packingList.packingDate).toLocaleDateString() 
+                  {packingList.packingDate
+                    ? new Date(packingList.packingDate).toLocaleDateString()
                     : 'Not set'}
                 </span>
               </div>
@@ -142,8 +143,8 @@ export const PackingListView = () => {
               <div className="flex items-center gap-2">
                 <Truck className="h-4 w-4 text-muted-foreground" />
                 <span>
-                  {packingList.shipmentDate 
-                    ? new Date(packingList.shipmentDate).toLocaleDateString() 
+                  {packingList.shipmentDate
+                    ? new Date(packingList.shipmentDate).toLocaleDateString()
                     : 'Not scheduled'}
                 </span>
               </div>

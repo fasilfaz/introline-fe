@@ -4,6 +4,7 @@ import type { ApiListResponse, ApiResponse } from '@/types/backend';
 // Define the Booking interface to match the backend model
 export interface Booking {
   _id?: string;
+  id?: string;
   sender: {
     _id: string;
     name: string;
@@ -78,6 +79,11 @@ export const bookingService = {
     
     const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
     return apiClient.get<ApiListResponse<Booking>>(`/bookings${queryString}`);
+  },
+
+  // Alias for listBookings to maintain compatibility
+  async list(params: ListBookingsParams = {}) {
+    return this.listBookings(params);
   },
 
   // Fetch a single booking by ID

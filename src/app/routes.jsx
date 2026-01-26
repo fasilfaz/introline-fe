@@ -46,6 +46,9 @@ import CurrencyRatesPage from '@/pages/administration/CurrencyRatesPage';
 import QualityControlPage from '@/pages/purchaser/QC';
 import { PackingListsPage } from '@/pages/purchaser/PackingLists'
 import { PackingListView } from '@/pages/purchaser/PackingListView';
+import { PackingListManagement } from '@/pages/packing-list/list/PackingListManagement';
+import { PackingListForm } from '@/pages/packing-list/config/PackingListForm';
+import { PackingListView as NewPackingListView } from '@/pages/packing-list/config/PackingListView';
 import { DailyExpensesPage } from "@/pages/purchaser/DailyExpenses";
 import { OpeningBalancePage } from "@/pages/purchaser/OpeningBalance";
 import { StoreStockPage } from "@/pages/store/StoreStock";
@@ -126,6 +129,10 @@ const protectedRoutes = [
   { path: 'purchaser/qc', element: <QualityControlPage />, module: 'Quality Control' },
   { path: 'purchaser/packing-lists', element: <PackingListsPage />, module: 'Packing Lists' },
   { path: 'purchaser/packing-lists/view/:id', element: <PackingListView />, module: 'Packing Lists' },
+  { path: 'packing-lists', element: <PackingListManagement />, module: 'Packing Lists' },
+  { path: 'packing-lists/create', element: <PackingListForm />, module: 'Packing Lists' },
+  { path: 'packing-lists/edit/:id', element: <PackingListForm />, module: 'Packing Lists' },
+  { path: 'packing-lists/view/:id', element: <NewPackingListView />, module: 'Packing Lists' },
   { path: 'purchaser/expenses', element: <DailyExpensesPage />, module: 'Daily Expenses' },
   { path: 'purchaser/opening-balance', element: <OpeningBalancePage />, module: 'Opening Balance' },
   { path: 'purchase-entries', element: <PurchaseEntries />, module: 'Purchase Entries' },
