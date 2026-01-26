@@ -7,9 +7,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { packingListService, type PackingListInput } from '@/services/packingListService';
 import { bookingService, type Booking } from '@/services/bookingService';
+import { storeService, type Store } from '@/services/storeService';
 import toast from 'react-hot-toast';
 
 interface PackingListFormState {
+  store: string;
   bookingReference: string;
   netWeight: number;
   grossWeight: number;
@@ -21,6 +23,7 @@ interface PackingListFormState {
 }
 
 const DEFAULT_FORM: PackingListFormState = {
+  store: '',
   bookingReference: '',
   netWeight: 0,
   grossWeight: 0,
@@ -37,26 +40,44 @@ export const PackingListForm = () => {
   const isEditing = Boolean(id);
 
   const [formState, setFormState] = useState<PackingListFormState>(DEFAULT_FORM);
+  const [stores, setStores] = useState<Store[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(false);
-  const [loadingBookings, setLoadingBookings] = useState(true);
+  const [loadingStores, setLoadingStores] = useState(true);
+  const [loadingBookings, setLoadingBookings] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    loadBookings();
+    loadStores();
     if (isEditing) {
       loadPackingList();
     }
   }, [id, isEditing]);
 
-  const loadBookings = async () => {
+  const loadStores = async () => {
+    try {
+      setLoadingStores(true);
+      const response = await storeService.listStores({ limit: 1000 });
+      setStores(response.data);
+    } catch (error) {
+      console.error('Failed to load stores', error);
+      toast.error('Unable to load stores');
+    } finally {
+      setLoadingStores(false);
+    }
+  };
+
+  const loadBookingsForStore = async (storeId: string) => {
     try {
       setLoadingBookings(true);
-      const response = await bookingService.list({ limit: 1000 });
-      setBookings(response.data);
+      // Since the API may not directly support filtering by store in the parameters,
+      // we'll fetch all bookings and filter them by store client-side
+      const response = await bookingService.listBookings({ limit: 1000 });
+      const bookingsForStore = response.data.filter(booking => booking.store?._id === storeId);
+      setBookings(bookingsForStore);
     } catch (error) {
-      console.error('Failed to load bookings', error);
-      toast.error('Unable to load bookings');
+      console.error('Failed to load bookings for store', error);
+      toast.error('Unable to load bookings for selected store');
     } finally {
       setLoadingBookings(false);
     }
@@ -69,9 +90,22 @@ export const PackingListForm = () => {
       setLoading(true);
       const response = await packingListService.get(id);
       const packingList = response.data;
+      
+      if (!packingList.bookingReference) {
+        throw new Error('Packing list has no booking reference');
+      }
+      
+      // Get the booking to determine the store
+      const bookingId = typeof packingList.bookingReference === 'string' 
+        ? packingList.bookingReference 
+        : packingList.bookingReference._id;
+        
+      const bookingResponse = await bookingService.getBooking(bookingId);
+      const booking = bookingResponse.data;
 
       setFormState({
-        bookingReference: packingList.bookingReference?._id || '',
+        store: booking.store?._id || '',
+        bookingReference: bookingId,
         netWeight: packingList.netWeight,
         grossWeight: packingList.grossWeight,
         packedBy: packingList.packedBy,
@@ -80,6 +114,11 @@ export const PackingListForm = () => {
         packingStatus: packingList.packingStatus,
         count: packingList.count
       });
+      
+      // If we have a store, we should also load the bookings for that store
+      if (booking.store?._id) {
+        await loadBookingsForStore(booking.store._id);
+      }
     } catch (error) {
       console.error('Failed to load packing list', error);
       toast.error('Unable to load packing list');
@@ -184,24 +223,60 @@ export const PackingListForm = () => {
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
+                <Label htmlFor="store">Store *</Label>
+                <select
+                  id="store"
+                  className="border rounded-md px-3 py-2 text-sm bg-background h-10 w-full focus:ring-2 focus:ring-primary/20"
+                  value={formState.store}
+                  onChange={async (e) => {
+                    const storeId = e.target.value;
+                    handleInputChange('store', storeId);
+                    handleInputChange('bookingReference', ''); // Reset booking when store changes
+                    if (storeId) {
+                      await loadBookingsForStore(storeId);
+                    } else {
+                      setBookings([]); // Clear bookings when store is cleared
+                    }
+                  }}
+                  disabled={loadingStores}
+                  required={!isEditing}
+                >
+                  <option value="">Select a store</option>
+                  {stores.map((store) => (
+                    <option key={store._id} value={store._id}>
+                      {store.name} ({store.code})
+                    </option>
+                  ))}
+                </select>
+                {loadingStores && (
+                  <p className="text-sm text-muted-foreground">Loading stores...</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="bookingReference">Booking Reference *</Label>
                 <select
                   id="bookingReference"
                   className="border rounded-md px-3 py-2 text-sm bg-background h-10 w-full focus:ring-2 focus:ring-primary/20"
                   value={formState.bookingReference}
                   onChange={(e) => handleInputChange('bookingReference', e.target.value)}
-                  disabled={loadingBookings}
+                  disabled={loadingBookings || !formState.store}
                   required
                 >
                   <option value="">Select a booking</option>
                   {bookings.map((booking) => (
                     <option key={booking._id || booking.id} value={booking._id || booking.id}>
-                      {booking.sender?.name} → {booking.receiver?.name} ({booking.bundleCount} bundles)
+                      {booking.bookingCode} - {booking.sender?.name} → {booking.receiver?.name} ({booking.bundleCount} bundles)
                     </option>
                   ))}
                 </select>
-                {loadingBookings && (
-                  <p className="text-sm text-muted-foreground">Loading bookings...</p>
+                {(loadingBookings || !formState.store) && (
+                  <p className="text-sm text-muted-foreground">
+                    {formState.store 
+                      ? 'Loading bookings...' 
+                      : 'Please select a store first'
+                    }
+                  </p>
                 )}
               </div>
 

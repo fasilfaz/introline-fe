@@ -204,7 +204,9 @@ export const PackingListView = () => {
                     Pickup Partner
                   </p>
                   <p className="font-medium">
-                    {packingList.bookingReference.pickupPartner?.name || 'N/A'}
+                    {typeof packingList.bookingReference.pickupPartner === 'string' 
+                      ? packingList.bookingReference.pickupPartner 
+                      : packingList.bookingReference.pickupPartner?.name || 'N/A'}
                   </p>
                 </div>
 

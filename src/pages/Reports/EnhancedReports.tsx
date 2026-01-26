@@ -496,11 +496,11 @@ const EnhancedReports: React.FC = () => {
         rows = data.map((item: BookingReportItem) => [
           item.sender.name,
           item.receiver.name,
-          item.pickupPartner.name,
+          typeof item.pickupPartner === 'string' ? item.pickupPartner : item.pickupPartner.name,
           format(new Date(item.date), 'dd MMM yyyy'),
           format(new Date(item.expectedReceivingDate), 'dd MMM yyyy'),
           item.bundleCount.toString(),
-          formatCurrency(item.pickupPartner.price),
+          typeof item.pickupPartner === 'string' ? 'N/A' : formatCurrency(item.pickupPartner.price),
           item.status
         ]);
         break;
@@ -1153,14 +1153,22 @@ const EnhancedReports: React.FC = () => {
                                   </TableCell>
                                   <TableCell>
                                     <div className="text-sm">
-                                      <div className="font-medium">{item.pickupPartner.name}</div>
-                                      <div className="text-gray-500">{item.pickupPartner.phoneNumber}</div>
+                                      <div className="font-medium">
+                                        {typeof item.pickupPartner === 'string' 
+                                          ? item.pickupPartner 
+                                          : item.pickupPartner.name}
+                                      </div>
+                                      {typeof item.pickupPartner !== 'string' && (
+                                        <div className="text-gray-500">{item.pickupPartner.phoneNumber}</div>
+                                      )}
                                     </div>
                                   </TableCell>
                                   <TableCell>{format(new Date(item.date), 'dd MMM yyyy')}</TableCell>
                                   <TableCell>{format(new Date(item.expectedReceivingDate), 'dd MMM yyyy')}</TableCell>
                                   <TableCell>{item.bundleCount}</TableCell>
-                                  <TableCell>{formatCurrency(item.pickupPartner.price)}</TableCell>
+                                  <TableCell>
+                                    {typeof item.pickupPartner === 'string' ? 'N/A' : formatCurrency(item.pickupPartner.price)}
+                                  </TableCell>
                                   <TableCell>
                                     <Badge variant={item.status === 'success' ? 'default' : 'secondary'}>
                                       {item.status}
