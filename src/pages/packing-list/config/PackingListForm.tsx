@@ -153,7 +153,7 @@ export const PackingListForm = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" onClick={() => navigate('/dashboard/packing-lists')}>
           <ArrowLeft className="h-4 w-4" />

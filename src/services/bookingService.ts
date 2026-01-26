@@ -4,6 +4,7 @@ import type { ApiListResponse, ApiResponse } from '@/types/backend';
 // Define the Booking interface to match the backend model
 export interface Booking {
   _id?: string;
+  id?: string;
   sender: {
     _id: string;
     name: string;
