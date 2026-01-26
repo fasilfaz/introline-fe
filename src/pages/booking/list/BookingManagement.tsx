@@ -224,6 +224,7 @@ export const BookingManagement: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="font-semibold">Booking Code</TableHead>
                     <TableHead className="font-semibold">Sender</TableHead>
                     <TableHead className="font-semibold">Receiver</TableHead>
                     <TableHead className="font-semibold">Branch</TableHead>
@@ -259,6 +260,9 @@ export const BookingManagement: React.FC = () => {
                     bookings.map((booking) => (
                       <TableRow key={booking._id} className="hover:bg-gray-50">
                         <TableCell className="font-medium">
+                          {booking.bookingCode}
+                        </TableCell>
+                        <TableCell className="font-medium">
                           {booking.sender.name}
                         </TableCell>
                         <TableCell className="font-medium">
@@ -268,7 +272,7 @@ export const BookingManagement: React.FC = () => {
                           {booking.receiverBranch || '—'}
                         </TableCell>
                         <TableCell>
-                          {booking.pickupPartner.name}
+                          {typeof booking.pickupPartner === 'string' ? booking.pickupPartner : booking.pickupPartner.name}
                         </TableCell>
                         <TableCell>
                           {formatDate(booking.date)}

@@ -5,6 +5,7 @@ import type { ApiListResponse, ApiResponse } from '@/types/backend';
 export interface Booking {
   _id?: string;
   id?: string;
+  bookingCode: string; // Generated booking code based on sender, receiver and date
   sender: {
     _id: string;
     name: string;
@@ -23,15 +24,20 @@ export interface Booking {
   };
   receiverBranch?: string;
   pickupPartner: {
-    _id: string;
+    _id?: string; // Will be undefined for 'Self' or 'Central'
     name: string;
-    phoneNumber: string;
+    phoneNumber?: string; // Will be undefined for 'Self' or 'Central'
     price?: number;
-  };
+  } | 'Self' | 'Central';
   date: string;
   expectedReceivingDate: string;
   bundleCount: number;
   status: 'pending' | 'success';
+  store?: {
+    _id: string;
+    name: string;
+    country?: string;
+  };
   createdAt?: string;
   updatedAt?: string;
 }
@@ -44,6 +50,7 @@ export interface ListBookingsParams {
   status?: string;
   sender?: string;
   receiver?: string;
+  receiverCountry?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
@@ -53,11 +60,12 @@ export interface CreateBookingPayload {
   sender: string;
   receiver: string;
   receiverBranch?: string;
-  pickupPartner: string;
+  pickupPartner: string; // Can be ObjectId or 'Self' or 'Central'
   date: string;
   expectedReceivingDate: string;
   bundleCount: number;
   status?: 'pending' | 'success';
+  store?: string;
 }
 
 export interface UpdateBookingPayload extends Partial<CreateBookingPayload> {}

@@ -48,12 +48,10 @@ export const StoreBookings: React.FC = () => {
 
             const response = await bookingService.listBookings(params);
 
-            // Filter for India Store specifically if not already filtered by backend
-            // Assuming 'receiverBranch' or 'receiver' name contains 'India'
+            // Filter for India Store specifically - check if the booking's store country is India
             const allSuccessfulBookings = response.data || [];
             const indiaStoreBookings = allSuccessfulBookings.filter(booking =>
-                (booking.receiverBranch?.toLowerCase().includes('india')) ||
-                (booking.receiver?.name?.toLowerCase().includes('india'))
+                (booking.store && booking.store.country && booking.store.country.toLowerCase().includes('india'))
             );
 
             setBookings(indiaStoreBookings);
@@ -215,7 +213,7 @@ export const StoreBookings: React.FC = () => {
                                                     {booking.receiverBranch || '—'}
                                                 </TableCell>
                                                 <TableCell>
-                                                    {booking.pickupPartner.name}
+                                                    {booking.pickupPartner === 'Self' || booking.pickupPartner === 'Central' ? booking.pickupPartner : booking.pickupPartner.name}
                                                 </TableCell>
                                                 <TableCell>
                                                     {formatDate(booking.date)}

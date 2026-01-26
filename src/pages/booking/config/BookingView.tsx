@@ -144,6 +144,12 @@ export default function BookingView() {
             </div>
           </CardHeader>
           <CardContent>
+            <div className="mb-6 bg-blue-50 border border-blue-200 rounded-md p-4">
+              <p className="text-sm text-blue-700 font-medium">Booking Code</p>
+              <p className="text-xl font-bold text-blue-900" id="booking-code-display">
+                {booking.bookingCode}
+              </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -288,16 +294,22 @@ export default function BookingView() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <p className="text-sm text-gray-500">Partner Name</p>
-                <p className="font-medium text-lg">{booking.pickupPartner.name}</p>
+                <p className="font-medium text-lg">
+                  {typeof booking.pickupPartner === 'string' 
+                    ? booking.pickupPartner 
+                    : booking.pickupPartner.name}
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gray-400" />
-                <div>
-                  <p className="text-sm text-gray-500">Phone Number</p>
-                  <p className="font-medium">{booking.pickupPartner.phoneNumber}</p>
+              {typeof booking.pickupPartner !== 'string' && (
+                <div className="flex items-center gap-2">
+                  <Phone className="h-4 w-4 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-500">Phone Number</p>
+                    <p className="font-medium">{booking.pickupPartner.phoneNumber}</p>
+                  </div>
                 </div>
-              </div>
-              {booking.pickupPartner.price && (
+              )}
+              {typeof booking.pickupPartner !== 'string' && booking.pickupPartner.price && (
                 <div className="flex items-center gap-2">
                   <DollarSign className="h-4 w-4 text-gray-400" />
                   <div>

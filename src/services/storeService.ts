@@ -32,6 +32,7 @@ export interface ListStoresParams {
   managerId?: string;
   userId?: string;
   userRole?: string;
+  limit?: number;
 }
 
 export interface CreateStorePayload {
@@ -64,6 +65,7 @@ export const storeService = {
     if (params.managerId) queryParams.append('managerId', params.managerId);
     if (params.userId) queryParams.append('userId', params.userId);
     if (params.userRole) queryParams.append('userRole', params.userRole);
+    if (params.limit) queryParams.append('limit', params.limit.toString());
 
     const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
     const url = `/stores${queryString}`;
