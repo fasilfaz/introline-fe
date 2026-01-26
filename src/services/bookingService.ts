@@ -80,6 +80,11 @@ export const bookingService = {
     return apiClient.get<ApiListResponse<Booking>>(`/bookings${queryString}`);
   },
 
+  // Alias for listBookings to maintain compatibility
+  async list(params: ListBookingsParams = {}) {
+    return this.listBookings(params);
+  },
+
   // Fetch a single booking by ID
   async getBooking(id: string) {
     return apiClient.get<ApiResponse<Booking>>(`/bookings/${id}`);
