@@ -386,7 +386,7 @@ export default function AddStoreForm() {
             bank_ifsc_code: data.ifscCode || "",
             bank_iban_code: data.ibanCode || "",
             tax_code: data.taxCode || "",
-            store_manager_id: (data as any).purchaser === 'ROLE_PURCHASER' ? 'purchaser' : (data as any).biller === 'ROLE_BILLER' ? 'biller' : "",
+            store_manager_id: data.role || "",
           });
         }
       } catch (error: any) {
@@ -431,7 +431,7 @@ export default function AddStoreForm() {
     loadParentStores();
   }, [isEditing, store]);
 
-  // Load store managers, purchasers, and billers
+  // Load store managers
   useEffect(() => {
     const loadUsers = async () => {
       try {
@@ -441,25 +441,53 @@ export default function AddStoreForm() {
           limit: 1000,
         });
         let usersData = response.data || [];
-
+  
         const adminUsers = usersData.filter(
           (user) =>
             user.role?.toLowerCase() === 'admin'          // <-- if role is a string like "admin"
         );
-
-        const purchaserUsers = usersData.filter(
+  
+        const managerUsers = usersData.filter(
           (user) =>
-            user.role?.toLowerCase() === 'purchaser'
+            user.role?.toLowerCase() === 'manager'
         );
-
-        const billerUsers = usersData.filter(
+  
+        const storeKeeperUsers = usersData.filter(
           (user) =>
-            user.role?.toLowerCase() === 'biller'
+            user.role?.toLowerCase() === 'store_keeper'
         );
-
+  
+        const marketingExecutiveUsers = usersData.filter(
+          (user) =>
+            user.role?.toLowerCase() === 'marketing_executive'
+        );
+  
+        const pickupBoyUsers = usersData.filter(
+          (user) =>
+            user.role?.toLowerCase() === 'pickup_boy'
+        );
+  
+        const telecallerUsers = usersData.filter(
+          (user) =>
+            user.role?.toLowerCase() === 'telecaller'
+        );
+  
+        const logisticCoordinatorUsers = usersData.filter(
+          (user) =>
+            user.role?.toLowerCase() === 'logistic_coordinator'
+        );
+  
         // Combine all users for the managers dropdown
-        const allManagers = [...adminUsers, ...purchaserUsers, ...billerUsers];
-
+        const allManagers = [
+          ...adminUsers, 
+          ...managerUsers, 
+          ...storeKeeperUsers, 
+          ...marketingExecutiveUsers, 
+          ...pickupBoyUsers, 
+          ...telecallerUsers, 
+          ...logisticCoordinatorUsers
+        ];
+  
         const mappedManagers: ExtendedUser[] = allManagers.map((user) => ({
           id: user.id,
           firstName: user.firstName,
@@ -473,7 +501,7 @@ export default function AddStoreForm() {
           lastLoginAt: user.lastLoginAt || '',
           full_name: `${user.firstName} ${user.lastName}`,
         }));
-
+  
         _setManagers(mappedManagers);
       } catch (error) {
         console.error('Error loading users:', error);
@@ -481,7 +509,7 @@ export default function AddStoreForm() {
         _setManagers([]);
       }
     };
-
+  
     loadUsers();
   }, [id, isEditing, store]);
 
@@ -533,6 +561,11 @@ export default function AddStoreForm() {
     }
     if (data.email && data.email.trim() !== "") {
       cleanedData.email = data.email.trim().toLowerCase();
+    }
+    
+    // Handle role assignment - map the selected role to the backend format
+    if (data.store_manager_id && data.store_manager_id.trim() !== "") {
+      cleanedData.managerId = data.store_manager_id;
     }
 
     try {
@@ -1337,11 +1370,16 @@ export default function AddStoreForm() {
                                   } pl-3 pr-3 py-2 rounded-md shadow-sm focus:ring-4 transition-all duration-200 w-full ${field.value ? "border-blue-300" : ""
                                   }`}
                               >
-                                <SelectValue placeholder="Select role (purchaser or biller)" />
+                                <SelectValue placeholder="Select role" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="purchaser">Purchaser</SelectItem>
-                                <SelectItem value="biller">Biller</SelectItem>
+                                <SelectItem value="admin">Admin</SelectItem>
+                                <SelectItem value="manager">Manager</SelectItem>
+                                <SelectItem value="store_keeper">Store Keeper</SelectItem>
+                                <SelectItem value="marketing_executive">Marketing Executive</SelectItem>
+                                <SelectItem value="pickup_boy">Pickup Boy</SelectItem>
+                                <SelectItem value="telecaller">Telecaller</SelectItem>
+                                <SelectItem value="logistic_coordinator">Logistic Coordinator</SelectItem>
                               </SelectContent>
                             </Select>
                           )}

@@ -37,6 +37,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 import { userService } from '@/services/userService';
 
 const ROLE_OPTIONS = [
+  { id: 'superadmin', name: 'Super Admin' },
   { id: 'admin', name: 'Admin' },
   { id: 'manager', name: 'Manager' },
   { id: 'store_keeper', name: 'Store Keeper' },
@@ -44,7 +45,8 @@ const ROLE_OPTIONS = [
   { id: 'pickup_boy', name: 'Pickup Boy' },
   { id: 'telecaller', name: 'Telecaller' },
   { id: 'customer', name: 'Customer' },
-  { id: 'logistic_coordinator', name: 'Logistic Coordinator' }
+  { id: 'logistic_coordinator', name: 'Logistic Coordinator' },
+  { id: 'users', name: 'Users' }
 ];
 
 const STATUS_OPTIONS = ['active', 'inactive', 'locked'];

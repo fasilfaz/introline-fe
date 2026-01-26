@@ -7,7 +7,7 @@ export interface User {
   lastName: string;
   email: string;
   phone?: string;
-  role: 'superadmin' | 'admin' | 'purchaser' | 'biller';
+  role: 'superadmin' | 'admin' | 'manager' | 'store_keeper' | 'marketing_executive' | 'pickup_boy' | 'telecaller' | 'customer' | 'logistic_coordinator' | 'users';
   status: 'active' | 'inactive' | 'locked';
   isActive: boolean;
   createdAt: string;

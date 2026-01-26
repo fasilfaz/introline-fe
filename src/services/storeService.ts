@@ -7,9 +7,7 @@ export interface Store {
   company: string;
   name: string;
   code: string;
-  manager?: string;
-  purchaser?: string;
-  biller?: string;
+  role?: string; // Stores the role name (e.g. 'store keeper', 'manager', etc.)
   phone?: string;
   email?: string;
   address?: string;

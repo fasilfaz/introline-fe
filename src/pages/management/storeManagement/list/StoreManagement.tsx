@@ -106,7 +106,7 @@ export const StoreManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [storeTypeFilter, setStoreTypeFilter] = useState('all');
-  const [managerFilter, setManagerFilter] = useState('all');
+  const [roleFilter, setRoleFilter] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [storeToDelete, setStoreToDelete] = useState<Store | null>(null);
   const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
@@ -184,15 +184,15 @@ export const StoreManagement = () => {
 
   const storeTypes = ['all'];
 
-  // Get unique managers for filters
-  const managers = useMemo(() => {
-    const managerSet = new Set<string>(['all']);
+  // Get unique roles for filters
+  const roles = useMemo(() => {
+    const roleSet = new Set<string>(['all']);
     stores.forEach((store) => {
-      if (store.manager) {
-        managerSet.add(store.manager);
+      if (store.role) {
+        roleSet.add(store.role);
       }
     });
-    return Array.from(managerSet);
+    return Array.from(roleSet);
   }, [stores]);
 
   // const storeNames = useMemo(() => {
@@ -218,9 +218,9 @@ export const StoreManagement = () => {
     }
 
     // Filters
-    if (managerFilter !== 'all') {
+    if (roleFilter !== 'all') {
       filtered = filtered.filter(
-        (s) => s.manager === managerFilter
+        (s) => s.role === roleFilter
       );
     }
 
@@ -243,8 +243,8 @@ export const StoreManagement = () => {
             bVal = b.address || '';
             break;
           case 'store_manager':
-            aVal = a.manager || '';
-            bVal = b.manager || '';
+            aVal = a.role || '';
+            bVal = b.role || '';
             break;
           default:
             aVal = a.name;
@@ -258,7 +258,7 @@ export const StoreManagement = () => {
     }
 
     return filtered;
-  }, [stores, searchQuery, managerFilter, sortConfig]);
+  }, [stores, searchQuery, roleFilter, sortConfig]);
 
   const totalItems = filteredAndSortedStores.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -339,14 +339,9 @@ export const StoreManagement = () => {
                   </span>
                 </div>
                 <div className="flex items-center gap-1">
-                  {node.purchaser === 'ROLE_PURCHASER' && (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Purchaser
-                    </span>
-                  )}
-                  {node.biller === 'ROLE_BILLER' && (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      Biller
+                  {node.role && (
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 capitalize">
+                      {node.role.replace('_', ' ')}
                     </span>
                   )}
                 </div>
@@ -388,7 +383,7 @@ export const StoreManagement = () => {
       `"${store.code}"`,
       `"${store.name}"`,
       `"${store.address || ''}"`,
-      `"${store.purchaser === 'ROLE_PURCHASER' ? 'Purchaser' : store.biller === 'ROLE_BILLER' ? 'Biller' : 'None'}"`,
+      `"${store.role ? store.role.replace('_', ' ') : 'None'}"`,
     ]);
 
     const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
@@ -444,7 +439,7 @@ export const StoreManagement = () => {
   const handleFilterReset = () => {
     setSearchQuery('');
     setStoreTypeFilter('all');
-    setManagerFilter('all');
+    setRoleFilter('all');
     setItemsPerPage(10);
     setCurrentPage(1);
     setSortConfig({ field: null, direction: null });
@@ -526,14 +521,14 @@ export const StoreManagement = () => {
                         ))}
                       </SelectContent>
                     </Select>
-                    <Select value={managerFilter} onValueChange={(v) => { setManagerFilter(v); setCurrentPage(1); }}>
+                    <Select value={roleFilter} onValueChange={(v) => { setRoleFilter(v); setCurrentPage(1); }}>
                       <SelectTrigger className="w-full sm:w-[200px]">
-                        <SelectValue placeholder="Filter by manager" />
+                        <SelectValue placeholder="Filter by role" />
                       </SelectTrigger>
                       <SelectContent>
-                        {managers.map((m: string) => (
-                          <SelectItem key={m} value={m}>
-                            {m === 'all' ? 'All Managers' : m}
+                        {roles.map((r: string) => (
+                          <SelectItem key={r} value={r}>
+                            {r === 'all' ? 'All Roles' : r.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -606,17 +601,11 @@ export const StoreManagement = () => {
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2">
-                                {store.purchaser === 'ROLE_PURCHASER' && (
-                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    Purchaser
+                                {store.role ? (
+                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800 capitalize">
+                                    {store.role.replace('_', ' ')}
                                   </span>
-                                )}
-                                {store.biller === 'ROLE_BILLER' && (
-                                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    Biller
-                                  </span>
-                                )}
-                                {!store.purchaser && !store.biller && (
+                                ) : (
                                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
                                     None
                                   </span>
