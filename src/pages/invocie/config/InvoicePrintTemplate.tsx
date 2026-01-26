@@ -346,10 +346,10 @@ const generateInvoicePDF = (data: InvoiceData) => {
           <!-- Header -->
           <div class="invoice-header">
             <div class="company-info">
-              <h1>AL LIBAS GENERAL TRADING L L C</h1>
-              <p>SHOP NO 5</p>
-              <p>STANDARD HOMES REAL ESTATE BUILDING</p>
-              <p>AJMAN, INDUSTRIAL AREA 2, UNITED ARAB EMIRATES</p>
+              <h1>Introlines </h1>
+              <p>No.25(2)/22, Ground Floor,</p>
+              <p>Opp Vinayakar Kovil, Kumarapuram 1st Street Ryapuram,</p>
+              <p>Tirupur, TN 641601 IN</p>
               <p>P.O.BOX :4381</p>
               <p>Phone: +971-55-680-5858 / +971-55-918-7607</p>
               <p>Email: allibastrading@gmail.com</p>

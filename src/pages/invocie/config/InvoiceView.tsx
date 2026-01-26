@@ -202,11 +202,11 @@ export default function InvoiceView() {
               {/* Header Section */}
               <div className="flex justify-between items-start border-b border-gray-200 pb-6 print:pb-4">
                 <div className="space-y-2">
-                  <h1 className="text-3xl font-bold text-blue-800">{'AL LIBAS GENERAL TRADING L L C'}</h1>
-                  <p className="text-gray-600">{'SHOP NO 5'}</p>
-                  <p className="text-gray-600">{ 'STANDARD HOMES REAL ESTATE BUILDING'}</p>
-                  <p className="text-gray-600">{ 'AJMAN'}, {'INDUSTRIAL AREA 2'}, { 'P.O.BOX :4381'}</p>
-                  <p className="text-gray-600">Phone: { '+971-55-680-5858 / +971-55-918-7607'}</p>
+                  <h1 className="text-3xl font-bold text-blue-800">{'Introlines '}</h1>
+                  <p className="text-gray-600">{'No.25(2)/22, Ground Floor,'}</p>
+                  <p className="text-gray-600">{ 'Opp Vinayakar Kovil, Kumarapuram 1st Street Ryapuram,'}</p>
+                  <p className="text-gray-600">{ 'Tirupur'}, { 'TN 641601 IN'}</p>
+                  <p className="text-gray-600">Phone: { '+91 8681 800 075'}</p>
                   {invoice.email && <p className="text-gray-600">Email: {'allibastrading@gmail.com'}</p>}
                 </div>
                 <div className="text-right space-y-2">

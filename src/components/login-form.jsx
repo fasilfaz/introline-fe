@@ -59,9 +59,9 @@ export function LoginForm({ className, ...props }) {
           is_active: data.isActive ?? true,
           company_id: data.companyId ?? data.company?.id ?? null,
           company_data: data.company ?? {
-            name: 'AL LIBAS GENERAL TRADING L L C',
-            description: 'SHOP NO 5',
-            address: 'STANDARD HOMES REAL ESTATE BUILDING',
+            name: 'Introlines ',
+            description: 'No.25(2)/22, Ground Floor,',
+            address: 'Opp Vinayakar Kovil, Kumarapuram 1st Street Ryapuram,',
             city: 'AJMAN',
             state: 'INDUSTRIAL AREA 2',
             country: 'UNITED ARAB EMIRATES',

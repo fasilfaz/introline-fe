@@ -88,9 +88,9 @@ export default function PurchaseOrderView() {
   const [loading, setLoading] = useState(true);
   const userInfo = {
     company_data: {
-      name: "AL LIBAS GENERAL TRADING L L C",
-      description: "SHOP NO 5",
-      address: "STANDARD HOMES REAL ESTATE BUILDING",
+      name: "Introlines ",
+      description: "No.25(2)/22, Ground Floor,",
+      address: "Opp Vinayakar Kovil, Kumarapuram 1st Street Ryapuram,",
       city: "AJMAN",
       state: "INDUSTRIAL AREA 2",
       country: "UNITED ARAB EMIRATES",
@@ -133,8 +133,8 @@ export default function PurchaseOrderView() {
     // Company Details
     doc.setFontSize(11);
     doc.setTextColor(75, 85, 99);
-    doc.text(companyData?.name || "AL LIBAS GENERAL TRADING L L C", 20, 30);
-    doc.text(companyData?.address || "STANDARD HOMES REAL ESTATE BUILDING, AJMAN, UAE", 20, 36);
+    doc.text(companyData?.name || "Introlines ", 20, 30);
+    doc.text(companyData?.address || "Opp Vinayakar Kovil, Kumarapuram 1st Street Ryapuram,, AJMAN, UAE", 20, 36);
     doc.text(`Phone: ${companyData?.phone || "+971-55-680-5858 / +971-55-918-7607"}`, 20, 42);
 
     // PO Details

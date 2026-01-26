@@ -64,7 +64,7 @@ const generatePurchaseOrderPDF = (data: PurchaseOrderViewData, userInfo: any) =>
 
   // Extract company data safely
   const companyData = userInfo?.company_data || {};
-  const companyName = companyData.name || 'AL LIBAS GENERAL TRADING L L C';
+  const companyName = companyData.name || 'Introlines ';
   const companyDescription = companyData.description || '';
   const companyAddress = companyData.address || '';
   const companyCity = companyData.city || '';
