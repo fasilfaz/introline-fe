@@ -46,10 +46,9 @@ type Store = {
   id?: string;
   name: string;
   address?: string;
+  role?: string;
   isActive: boolean;
-  biller?: string;
   manager?: string;
-  purchaser?: string;
 };
 
 // Define Supply type
@@ -227,10 +226,10 @@ export default function InvoiceEdit() {
 
         const response = await storeService.listStores(params);
         if (response.data) {
-          // Filter stores to only include those with biller role set to "ROLE_BILLER"
+          // Filter stores to only include those with biller role
           const filteredStores = response.data.filter(store => 
-            store.biller === "ROLE_BILLER" && store.isActive
-          );
+            store.role === "manager" && store.isActive
+      );
           
           const storeList = filteredStores.map(store => ({
             _id: store._id,

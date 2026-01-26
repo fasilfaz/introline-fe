@@ -101,11 +101,11 @@ const ProductTransmissionPage = () => {
       const allStores = response.data || [];
 
       // Filter stores with ROLE_PURCHASER for "From Store"
-      const purchaserFilteredStores = allStores.filter(store => store.purchaser === 'ROLE_PURCHASER');
+      const purchaserFilteredStores = allStores.filter(store => store.role === 'manager');
       setPurchaserStores(purchaserFilteredStores);
 
       // Filter stores with ROLE_BILLER for "To Store"
-      const billerFilteredStores = allStores.filter(store => store.biller === 'ROLE_BILLER');
+      const billerFilteredStores = allStores.filter(store => store.role === 'manager');
       setBillerStores(billerFilteredStores);
     } catch (error) {
       console.error('Failed to load stores', error);

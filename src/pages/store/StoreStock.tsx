@@ -290,9 +290,10 @@ export const StoreStockPage = () => {
                               Biller
                             </span>
                           )}
-                          {(record.store as any)?.purchaser && (
+                          {(record.store as any)?.manager === 'manager' && (
                             <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              Purchaser
+                              Manager
+                            
                             </span>
                           )}
                         </div>

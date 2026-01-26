@@ -122,11 +122,11 @@ export const PackingListsPage = () => {
       setStores(allStores);
 
       // Filter stores with ROLE_PURCHASER for "From Store"
-      const purchaserFilteredStores = allStores.filter(store => store.purchaser);
+      const purchaserFilteredStores = allStores.filter(store => store.role === 'purchaser');
       setPurchaserStores(purchaserFilteredStores);
 
       // Filter stores with ROLE_BILLER for "To Store"
-      const billerFilteredStores = allStores.filter(store => store.biller);
+      const billerFilteredStores = allStores.filter(store => store.role === 'biller');
       setBillerStores(billerFilteredStores);
     } catch (error) {
       console.error('Failed to load stores', error);

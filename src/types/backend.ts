@@ -78,7 +78,7 @@ export interface Item {
   updatedAt: string;
 }
 
-export interface Store {
+export interface StoreBackend {
   _id: string;
   id?: string;
   company: string;
@@ -108,7 +108,7 @@ export interface Store {
 export interface StoreStock {
   id: string;
   product: Item;
-  store?: Store;
+  store?: StoreBackend;
   quantity: number;
   margin: number;
   currency: 'INR' | 'AED';
