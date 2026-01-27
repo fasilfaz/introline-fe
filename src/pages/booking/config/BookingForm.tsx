@@ -400,7 +400,7 @@ export default function BookingForm() {
                         <SelectValue placeholder="Select pickup partner" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Self">Self</SelectItem>
+                        <SelectItem value="Self">Self ( Our Pickup Man)</SelectItem>
                         <SelectItem value="Central">Central (Direct to Office)</SelectItem>
                         {pickupPartners.map((partner) => (
                           <SelectItem key={partner._id} value={partner._id!}>
