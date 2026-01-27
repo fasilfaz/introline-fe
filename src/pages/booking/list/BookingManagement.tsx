@@ -232,6 +232,7 @@ export const BookingManagement: React.FC = () => {
                     <TableHead className="font-semibold">Date</TableHead>
                     <TableHead className="font-semibold">Expected Date</TableHead>
                     <TableHead className="font-semibold">Bundles</TableHead>
+                    <TableHead className="font-semibold">Repacking</TableHead>
                     <TableHead className="font-semibold">Status</TableHead>
                     <TableHead className="text-center font-semibold">Actions</TableHead>
                   </TableRow>
@@ -239,7 +240,7 @@ export const BookingManagement: React.FC = () => {
                 <TableBody>
                   {loading ? (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8">
+                      <TableCell colSpan={11} className="text-center py-8">
                         <div className="flex items-center justify-center">
                           <div className="h-6 w-6 animate-spin rounded-full border-2 border-blue-600 border-t-transparent mr-2"></div>
                           Loading bookings...
@@ -248,7 +249,7 @@ export const BookingManagement: React.FC = () => {
                     </TableRow>
                   ) : bookings.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={9} className="text-center py-8">
+                      <TableCell colSpan={11} className="text-center py-8">
                         <div className="flex flex-col items-center">
                           <Calendar className="h-12 w-12 text-gray-400 mb-2" />
                           <p className="text-gray-500">No bookings found</p>
@@ -263,16 +264,18 @@ export const BookingManagement: React.FC = () => {
                           {booking.bookingCode}
                         </TableCell>
                         <TableCell className="font-medium">
-                          {booking.sender.name}
+                          {booking.sender?.name || '—'}
                         </TableCell>
                         <TableCell className="font-medium">
-                          {booking.receiver.name}
+                          {booking.receiver?.name || '—'}
                         </TableCell>
                         <TableCell>
                           {booking.receiverBranch || '—'}
                         </TableCell>
                         <TableCell>
-                          {typeof booking.pickupPartner === 'string' ? booking.pickupPartner : booking.pickupPartner.name}
+                          {typeof booking.pickupPartner === 'string' 
+                            ? booking.pickupPartner 
+                            : booking.pickupPartner?.name || '—'}
                         </TableCell>
                         <TableCell>
                           {formatDate(booking.date)}
@@ -282,6 +285,11 @@ export const BookingManagement: React.FC = () => {
                         </TableCell>
                         <TableCell className="font-medium">
                           {booking.bundleCount}
+                        </TableCell>
+                        <TableCell>
+                          <Badge className={`${booking.repacking ? 'bg-orange-100 text-orange-800 border-orange-200' : 'bg-gray-100 text-gray-800 border-gray-200'} border text-xs`}>
+                            {booking.repacking ? 'Yes' : 'No'}
+                          </Badge>
                         </TableCell>
                         <TableCell>
                           <StatusBadge status={booking.status} />

@@ -1,11 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Card,
   CardContent,
@@ -50,6 +51,7 @@ const bookingFormSchema = z.object({
   expectedReceivingDate: z.string().min(1, 'Expected receiving date is required'),
   bundleCount: z.number().min(1, 'Bundle count must be at least 1'),
   status: z.enum(['pending', 'success']),
+  repacking: z.boolean().optional().default(false),
   store: z.string().optional(),
 }).refine(data => {
   const bookingDate = new Date(data.date);
@@ -59,8 +61,6 @@ const bookingFormSchema = z.object({
   message: 'Expected receiving date must be after booking date',
   path: ['expectedReceivingDate']
 });
-
-type BookingFormValues = z.infer<typeof bookingFormSchema>;
 
 export default function BookingForm() {
   const { id } = useParams<{ id?: string }>();
@@ -84,7 +84,7 @@ export default function BookingForm() {
     watch,
     setValue,
     trigger,
-  } = useForm<BookingFormValues>({
+  } = useForm({
     resolver: zodResolver(bookingFormSchema),
     defaultValues: {
       bookingCode: '',
@@ -95,7 +95,8 @@ export default function BookingForm() {
       date: '',
       expectedReceivingDate: '',
       bundleCount: 1,
-      status: 'pending',
+      status: 'pending' as const,
+      repacking: false,
       store: '',
     },
     mode: 'onSubmit',
@@ -173,6 +174,7 @@ export default function BookingForm() {
             expectedReceivingDate: formatDateForInput(booking.expectedReceivingDate),
             bundleCount: booking.bundleCount,
             status: booking.status,
+            repacking: booking.repacking || false,
             store: booking.store?._id || '',
           });
         } catch (err) {
@@ -205,7 +207,7 @@ export default function BookingForm() {
     handleSubmit(onSubmit)(e);
   };
 
-  const onSubmit: SubmitHandler<BookingFormValues> = async (data) => {
+  const onSubmit = async (data: any) => {
     console.log('Form submitted with data:', data);
     setError('');
 
@@ -221,6 +223,7 @@ export default function BookingForm() {
         expectedReceivingDate: data.expectedReceivingDate,
         bundleCount: Number(data.bundleCount),
         status: data.status,
+        repacking: data.repacking || false,
         store: data.store || undefined,
       };
 
@@ -564,6 +567,24 @@ export default function BookingForm() {
                         {errors.status.message}
                       </p>
                     )}
+                  </div>
+
+                  {/* Repacking */}
+                  <div className="space-y-2">
+                    <Label htmlFor="repacking" className="flex items-center gap-2 font-medium">
+                      <Package className="h-4 w-4 text-orange-500" />
+                      Repacking Required
+                    </Label>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="repacking"
+                        checked={watch('repacking') || false}
+                        onCheckedChange={(checked) => setValue('repacking', checked as boolean)}
+                      />
+                      <Label htmlFor="repacking" className="text-sm font-normal">
+                        This booking requires repacking
+                      </Label>
+                    </div>
                   </div>
                 </div>
               </div>

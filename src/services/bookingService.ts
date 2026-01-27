@@ -33,6 +33,7 @@ export interface Booking {
   expectedReceivingDate: string;
   bundleCount: number;
   status: 'pending' | 'success';
+  repacking: boolean;
   store?: {
     _id: string;
     name: string;
@@ -65,10 +66,13 @@ export interface CreateBookingPayload {
   expectedReceivingDate: string;
   bundleCount: number;
   status?: 'pending' | 'success';
+  repacking?: boolean;
   store?: string;
 }
 
-export interface UpdateBookingPayload extends Partial<CreateBookingPayload> {}
+export interface UpdateBookingPayload extends Partial<CreateBookingPayload> {
+  repacking?: boolean;
+}
 
 // Booking service with all CRUD operations
 export const bookingService = {
