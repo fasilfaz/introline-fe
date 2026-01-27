@@ -74,6 +74,10 @@ import { ContainerManagement } from '@/pages/container/list/ContainerManagement'
 import ContainerForm from '@/pages/container/config/ContainerForm';
 import ContainerView from '@/pages/container/config/ContainerView';
 import StoreBookings from '@/pages/management/storeManagement/list/StoreBookings';
+import { PickupAssignManagement } from '@/pages/pickup-assign/list/PickupAssignManagement';
+import { PickupAssignCreate } from '@/pages/pickup-assign/config/PickupAssignCreate';
+import { PickupAssignEdit } from '@/pages/pickup-assign/config/PickupAssignEdit';
+import { PickupAssignView } from '@/pages/pickup-assign/config/PickupAssignView';
 
 
 const protectedRoutes = [
@@ -160,7 +164,11 @@ const protectedRoutes = [
   { path: 'containers', element: <ContainerManagement />, module: 'Containers' },
   { path: 'containers/create', element: <ContainerForm />, module: 'Containers' },
   { path: 'containers/edit/:id', element: <ContainerForm />, module: 'Containers' },
-  { path: 'containers/view/:id', element: <ContainerView />, module: 'Containers' }
+  { path: 'containers/view/:id', element: <ContainerView />, module: 'Containers' },
+  { path: 'pickup-assigns', element: <PickupAssignManagement />, module: 'Pickup Assigns' },
+  { path: 'pickup-assigns/create', element: <PickupAssignCreate />, module: 'Pickup Assigns' },
+  { path: 'pickup-assigns/edit/:id', element: <PickupAssignEdit />, module: 'Pickup Assigns' },
+  { path: 'pickup-assigns/view/:id', element: <PickupAssignView />, module: 'Pickup Assigns' }
 ];
 
 const unprotectedRoutes = [

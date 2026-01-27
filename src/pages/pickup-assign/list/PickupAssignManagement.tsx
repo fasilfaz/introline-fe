@@ -44,23 +44,24 @@ import {
   ChevronLeft,
   ChevronRight,
   Filter,
-  UserCheck,
+  ClipboardList,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  Phone,
-  DollarSign,
+  Calendar,
+  Truck,
+  Package,
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { Badge } from '@/components/ui/badge';
-import { pickupPartnerService, type PickupPartner, type ListPickupPartnersParams } from '@/services/pickupPartnerService';
+import { pickupAssignService, type PickupAssign, type ListPickupAssignsParams } from '@/services/pickupAssignService';
 
-const STATUS_OPTIONS: Array<{ value: 'Active' | 'Inactive'; label: string }> = [
-  { value: 'Active', label: 'Active' },
-  { value: 'Inactive', label: 'Inactive' },
+const STATUS_OPTIONS: Array<{ value: 'Pending' | 'Completed'; label: string }> = [
+  { value: 'Pending', label: 'Pending' },
+  { value: 'Completed', label: 'Completed' },
 ];
 
-type SortField = 'name' | 'phoneNumber' | 'price' | 'status' | 'createdAt';
+type SortField = 'assignDate' | 'status' | 'createdAt';
 type SortOrder = 'asc' | 'desc';
 
 interface SortConfig {
@@ -85,9 +86,9 @@ const SortIndicator = ({ column, sortConfig }: { column: SortField, sortConfig: 
   return <ArrowDown className="h-4 w-4 text-gray-400" />;
 };
 
-export const PickupPartnerManagement: React.FC = () => {
+export const PickupAssignManagement: React.FC = () => {
   const navigate = useNavigate();
-  const [pickupPartners, setPickupPartners] = useState<PickupPartner[]>([]);
+  const [pickupAssigns, setPickupAssigns] = useState<PickupAssign[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -102,7 +103,7 @@ export const PickupPartnerManagement: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [sortConfig, setSortConfig] = useState<SortConfig>({ column: 'createdAt', order: 'desc' });
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [partnerToDelete, setPartnerToDelete] = useState<PickupPartner | null>(null);
+  const [assignToDelete, setAssignToDelete] = useState<PickupAssign | null>(null);
 
   // Refs to track previous values
   const prevSearchTerm = useRef(searchTerm);
@@ -110,12 +111,12 @@ export const PickupPartnerManagement: React.FC = () => {
   const prevSortConfig = useRef(sortConfig);
   const isInitialLoad = useRef(true);
 
-  const fetchPickupPartners = useCallback(async (page: number = currentPage) => {
+  const fetchPickupAssigns = useCallback(async (page: number = currentPage) => {
     setLoading(true);
     setError(null);
 
     try {
-      const params: ListPickupPartnersParams = {
+      const params: ListPickupAssignsParams = {
         page,
         limit: itemsPerPage,
         sortBy: sortConfig.column,
@@ -130,8 +131,8 @@ export const PickupPartnerManagement: React.FC = () => {
         params.status = statusFilter;
       }
 
-      const response = await pickupPartnerService.listPickupPartners(params);
-      setPickupPartners(response.data);
+      const response = await pickupAssignService.listPickupAssigns(params);
+      setPickupAssigns(response.data);
 
       const totalItems = response.meta?.total || 0;
       const totalPages = response.meta?.totalPages || Math.ceil(totalItems / itemsPerPage);
@@ -144,11 +145,11 @@ export const PickupPartnerManagement: React.FC = () => {
       });
 
     } catch (err) {
-      console.error('Error fetching pickup partners:', err);
+      console.error('Error fetching pickup assignments:', err);
       setError(err instanceof Error ? err.message : 'An error occurred while fetching data');
-      setPickupPartners([]);
+      setPickupAssigns([]);
       setPagination(prev => ({ ...prev, currentPage: page, totalPages: 0, totalItems: 0 }));
-      toast.error('Failed to fetch transport partners');
+      toast.error('Failed to fetch pickup assignments');
     } finally {
       setLoading(false);
     }
@@ -175,21 +176,21 @@ export const PickupPartnerManagement: React.FC = () => {
     if (searchChanged || statusFilterChanged) {
       setCurrentPage(1);
       const handler = setTimeout(() => {
-        fetchPickupPartners(1);
+        fetchPickupAssigns(1);
       }, 300); // Debounce search
       return () => clearTimeout(handler);
     }
 
     // For sort changes, use current page and fetch immediately
     if (sortChanged) {
-      fetchPickupPartners(currentPage);
+      fetchPickupAssigns(currentPage);
     }
-  }, [searchTerm, statusFilter, sortConfig, fetchPickupPartners]);
+  }, [searchTerm, statusFilter, sortConfig, fetchPickupAssigns]);
 
   // Handle pagination changes
   useEffect(() => {
     if (!isInitialLoad.current) {
-      fetchPickupPartners(currentPage);
+      fetchPickupAssigns(currentPage);
     }
   }, [currentPage]);
 
@@ -197,34 +198,34 @@ export const PickupPartnerManagement: React.FC = () => {
   useEffect(() => {
     if (!isInitialLoad.current) {
       setCurrentPage(1);
-      fetchPickupPartners(1);
+      fetchPickupAssigns(1);
     }
   }, [itemsPerPage]);
 
   // Initial load
   useEffect(() => {
     if (isInitialLoad.current) {
-      fetchPickupPartners(1);
+      fetchPickupAssigns(1);
     }
   }, []);
 
-  const deletePickupPartner = async () => {
-    if (!partnerToDelete || !partnerToDelete._id) return;
+  const deletePickupAssign = async () => {
+    if (!assignToDelete || !assignToDelete._id) return;
     try {
-      await pickupPartnerService.deletePickupPartner(partnerToDelete._id);
-      toast.success("Transport partner deleted successfully!");
-      fetchPickupPartners(currentPage);
+      await pickupAssignService.deletePickupAssign(assignToDelete._id);
+      toast.success("Pickup assignment deleted successfully!");
+      fetchPickupAssigns(currentPage);
       setIsDeleteDialogOpen(false);
-      setPartnerToDelete(null);
+      setAssignToDelete(null);
     } catch (error: unknown) {
-      console.error('Error deleting pickup partner:', error);
-      const message = error instanceof Error ? error.message : 'Failed to delete transport partner';
+      console.error('Error deleting pickup assignment:', error);
+      const message = error instanceof Error ? error.message : 'Failed to delete pickup assignment';
       toast.error(message);
     }
   };
 
-  const openDeleteDialog = (partner: PickupPartner) => {
-    setPartnerToDelete(partner);
+  const openDeleteDialog = (assign: PickupAssign) => {
+    setAssignToDelete(assign);
     setIsDeleteDialogOpen(true);
   };
 
@@ -255,21 +256,18 @@ export const PickupPartnerManagement: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleEditClick = (partner: PickupPartner) => {
-    navigate(`/dashboard/pickup-partners/edit/${partner._id}`);
+  const handleEditClick = (assign: PickupAssign) => {
+    navigate(`/dashboard/pickup-assigns/edit/${assign._id}`);
+  };
+
+  const handleViewClick = (assign: PickupAssign) => {
+    navigate(`/dashboard/pickup-assigns/view/${assign._id}`);
   };
 
   const getStatusBadgeColor = (status: string) => {
-    return status === 'Active'
+    return status === 'Completed'
       ? 'bg-green-100 text-green-800 border-green-300'
-      : 'bg-red-100 text-red-800 border-red-300';
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value);
+      : 'bg-yellow-100 text-yellow-800 border-yellow-300';
   };
 
   const formatDate = (dateString: string): string => {
@@ -284,6 +282,12 @@ export const PickupPartnerManagement: React.FC = () => {
     }
   };
 
+  const getLRStatusSummary = (lrNumbers: any[]) => {
+    const collected = lrNumbers.filter(lr => lr.status === 'Collected').length;
+    const total = lrNumbers.length;
+    return `${collected}/${total} Collected`;
+  };
+
   return (
     <TooltipProvider>
       <div className="p-6">
@@ -293,24 +297,24 @@ export const PickupPartnerManagement: React.FC = () => {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-center space-x-3">
                   <div className="p-2.5 rounded-lg bg-blue-100 shadow-sm">
-                    <UserCheck className="h-6 w-6 text-blue-600" />
+                    <ClipboardList className="h-6 w-6 text-blue-600" />
                   </div>
                   <div>
                     <CardTitle className="text-2xl font-bold flex items-center gap-2">
-                      Transport Partner Management
+                      Pickup Assign Management
                     </CardTitle>
                     <CardDescription className="mt-1">
-                      Manage your transport partner information and charges
+                      Manage pickup assignments and track LR numbers
                     </CardDescription>
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    onClick={() => navigate('/dashboard/pickup-partners/create')}
+                    onClick={() => navigate('/dashboard/pickup-assigns/create')}
                     className="transition-colors"
                   >
                     <Plus className="mr-2 h-4 w-4" />
-                    Add Transport Partner
+                    Add Pickup Assignment
                   </Button>
                 </div>
               </div>
@@ -322,7 +326,7 @@ export const PickupPartnerManagement: React.FC = () => {
                   <div className="relative flex-1 w-full">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                     <Input
-                      placeholder="Search transport partners..."
+                      placeholder="Search pickup assignments..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="pl-10"
@@ -369,34 +373,26 @@ export const PickupPartnerManagement: React.FC = () => {
                   <TableHeader>
                     <TableRow className="hover:bg-gray-50 border-gray-200">
                       <TableHead className="font-semibold">
-                        <button
-                          onClick={() => handleSort('name')}
-                          className={`h-8 flex items-center gap-1 font-semibold cursor-pointer hover:text-blue-600 justify-start ps-2`}
-                        >
-                          <UserCheck className="h-3 w-3 mr-1" />
-                          Name
-                          <SortIndicator column="name" sortConfig={sortConfig} />
-                        </button>
+                        <div className="flex items-center gap-1 font-semibold">
+                          <Truck className="h-3 w-3 mr-1" />
+                          Transport Partner
+                        </div>
                       </TableHead>
                       <TableHead className="font-semibold">
                         <button
-                          onClick={() => handleSort('phoneNumber')}
+                          onClick={() => handleSort('assignDate')}
                           className={`h-8 flex items-center gap-1 font-semibold cursor-pointer hover:text-blue-600 justify-start`}
                         >
-                          <Phone className="h-3 w-3 mr-1" />
-                          Phone Number
-                          <SortIndicator column="phoneNumber" sortConfig={sortConfig} />
+                          <Calendar className="h-3 w-3 mr-1" />
+                          Assign Date
+                          <SortIndicator column="assignDate" sortConfig={sortConfig} />
                         </button>
                       </TableHead>
                       <TableHead className="font-semibold">
-                        <button
-                          onClick={() => handleSort('price')}
-                          className={`h-8 flex items-center gap-1 font-semibold cursor-pointer hover:text-blue-600 justify-start`}
-                        >
-                          <DollarSign className="h-3 w-3 mr-1" />
-                          Pickup Charge per kg
-                          <SortIndicator column="price" sortConfig={sortConfig} />
-                        </button>
+                        <div className="flex items-center gap-1 font-semibold">
+                          <Package className="h-3 w-3 mr-1" />
+                          LR Numbers
+                        </div>
                       </TableHead>
                       <TableHead className="font-semibold">
                         <button
@@ -412,7 +408,7 @@ export const PickupPartnerManagement: React.FC = () => {
                           onClick={() => handleSort('createdAt')}
                           className={`h-8 flex items-center gap-1 font-semibold cursor-pointer hover:text-blue-600 w-full justify-start`}
                         >
-                          Date Added
+                          Created Date
                           <SortIndicator column="createdAt" sortConfig={sortConfig} />
                         </button>
                       </TableHead>
@@ -430,38 +426,52 @@ export const PickupPartnerManagement: React.FC = () => {
                           ))}
                         </TableRow>
                       ))
-                    ) : pickupPartners.length > 0 ? (
-                      pickupPartners.map((partner) => (
+                    ) : pickupAssigns.length > 0 ? (
+                      pickupAssigns.map((assign) => (
                         <TableRow
-                          key={partner._id}
+                          key={assign._id}
                           className="hover:bg-gray-50"
                         >
                           <TableCell className="font-medium py-3">
-                            {partner.name}
+                            <div>
+                              <div className="font-medium">{assign.transportPartner?.name || 'N/A'}</div>
+                              <div className="text-sm text-gray-500">{assign.transportPartner?.phoneNumber || ''}</div>
+                            </div>
                           </TableCell>
                           <TableCell className="text-left">
-                            {partner.phoneNumber}
+                            {formatDate(assign.assignDate)}
                           </TableCell>
-                          <TableCell className="text-left font-medium">
-                            {formatCurrency(partner.price)}
+                          <TableCell className="text-left">
+                            <div>
+                              <div className="text-sm font-medium">{assign.lrNumbers.length} LR Numbers</div>
+                              <div className="text-xs text-gray-500">{getLRStatusSummary(assign.lrNumbers)}</div>
+                            </div>
                           </TableCell>
                           <TableCell className="text-left">
                             <Badge
                               variant="outline"
-                              className={`font-medium ${getStatusBadgeColor(partner.status)}`}
+                              className={`font-medium ${getStatusBadgeColor(assign.status)}`}
                             >
-                              {partner.status}
+                              {assign.status}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-left text-sm">
-                            {formatDate(partner.createdAt || '')}
+                            {formatDate(assign.createdAt || '')}
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-center gap-2">
                               <Button
                                 variant="outline"
                                 size="icon"
-                                onClick={() => handleEditClick(partner)}
+                                onClick={() => handleViewClick(assign)}
+                                title="View Details"
+                              >
+                                <ClipboardList className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => handleEditClick(assign)}
                               >
                                 <Edit className="h-4 w-4" />
                               </Button>
@@ -469,7 +479,7 @@ export const PickupPartnerManagement: React.FC = () => {
                                 variant="outline"
                                 size="icon"
                                 className="text-destructive hover:bg-destructive/10"
-                                onClick={() => openDeleteDialog(partner)}
+                                onClick={() => openDeleteDialog(assign)}
                               >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
@@ -481,14 +491,14 @@ export const PickupPartnerManagement: React.FC = () => {
                       <TableRow className="hover:bg-gray-50">
                         <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                           <div className="flex flex-col items-center justify-center py-6">
-                            <UserCheck className="h-12 w-12 text-gray-300 mb-2" />
+                            <ClipboardList className="h-12 w-12 text-gray-300 mb-2" />
                             <p className="text-base font-medium">
-                              {searchTerm || statusFilter !== 'all' ? 'No matching transport partners found' : "No transport partners added yet"}
+                              {searchTerm || statusFilter !== 'all' ? 'No matching pickup assignments found' : "No pickup assignments added yet"}
                             </p>
                             <p className="text-sm text-gray-500">
                               {searchTerm || statusFilter !== 'all'
                                 ? 'Try adjusting your search or filter criteria.'
-                                : 'Click "Add Transport Partner" to get started.'}
+                                : 'Click "Add Pickup Assignment" to get started.'}
                             </p>
                           </div>
                         </TableCell>
@@ -556,15 +566,15 @@ export const PickupPartnerManagement: React.FC = () => {
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Confirm Deletion</DialogTitle>
-                <DialogDescription>Are you sure you want to delete the transport partner "{partnerToDelete?.name}"?</DialogDescription>
+                <DialogDescription>Are you sure you want to delete this pickup assignment?</DialogDescription>
               </DialogHeader>
               <DialogFooter className="flex justify-end gap-2">
                 <DialogClose asChild>
-                  <Button variant="outline" onClick={() => setPartnerToDelete(null)}>
+                  <Button variant="outline" onClick={() => setAssignToDelete(null)}>
                     No
                   </Button>
                 </DialogClose>
-                <Button variant="destructive" onClick={deletePickupPartner}>
+                <Button variant="destructive" onClick={deletePickupAssign}>
                   Yes
                 </Button>
               </DialogFooter>

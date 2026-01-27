@@ -46,7 +46,7 @@ export const PickupPartnerForm: React.FC<PickupPartnerFormProps> = ({ mode }) =>
       });
     } catch (error) {
       console.error('Error fetching pickup partner:', error);
-      toast.error('Failed to fetch pickup partner details');
+      toast.error('Failed to fetch transport partner details');
     } finally {
       setLoading(false);
     }
@@ -65,16 +65,16 @@ export const PickupPartnerForm: React.FC<PickupPartnerFormProps> = ({ mode }) =>
       
       if (mode === 'create') {
         await pickupPartnerService.createPickupPartner(formData);
-        toast.success('Pickup partner created successfully');
+        toast.success('Transport partner created successfully');
       } else {
         await pickupPartnerService.updatePickupPartner(id!, formData);
-        toast.success('Pickup partner updated successfully');
+        toast.success('Transport partner updated successfully');
       }
       
       navigate('/dashboard/pickup-partners');
     } catch (error: any) {
       console.error('Error saving pickup partner:', error);
-      toast.error(error.response?.data?.message || 'Failed to save pickup partner');
+      toast.error(error.response?.data?.message || 'Failed to save transport partner');
     } finally {
       setLoading(false);
     }
@@ -119,18 +119,18 @@ export const PickupPartnerForm: React.FC<PickupPartnerFormProps> = ({ mode }) =>
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">
-                {mode === 'create' ? 'Create Pickup Partner' : 'Edit Pickup Partner'}
+                {mode === 'create' ? 'Create Transport Partner' : 'Edit Transport Partner'}
               </h1>
-              <p className="text-gray-600">Manage pickup partner information</p>
+              <p className="text-gray-600">Manage transport partner information</p>
             </div>
           </div>
         </div>
 
         <Card className="border-none shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
           <CardHeader>
-            <CardTitle className="text-xl text-blue-800">Pickup Partner Information</CardTitle>
+            <CardTitle className="text-xl text-blue-800">Transport Partner Information</CardTitle>
             <CardDescription className="text-blue-600">
-              {mode === 'create' ? 'Fill in the pickup partner details below' : 'Update the pickup partner details below'}
+              {mode === 'create' ? 'Fill in the transport partner details below' : 'Update the transport partner details below'}
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -150,7 +150,7 @@ export const PickupPartnerForm: React.FC<PickupPartnerFormProps> = ({ mode }) =>
                       id="name"
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
-                      placeholder="Enter pickup partner name"
+                      placeholder="Enter transport partner name"
                       required
                       className="border-gray-200 focus:border-blue-500 focus:ring-blue-200 transition-all duration-200 pl-3 pr-3 py-2 rounded-md shadow-sm focus:ring-4"
                     />

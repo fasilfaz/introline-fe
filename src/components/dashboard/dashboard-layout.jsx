@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Home, Users, Package, Truck, LayoutTemplate, ChevronRight, Bell, LogOut, BadgeDollarSign, ChartNoAxesCombined, Store, FileText, Workflow, ClipboardCheck, SquareChartGantt, Building2, Clock, Handshake, ShieldCheck, Boxes, ArrowRightLeft, Wallet, MapPin, UserCheck, DollarSign, Calendar, Container } from 'lucide-react';
+import { Menu, X, Users, LayoutTemplate, ChevronRight, Bell, LogOut, BadgeDollarSign, ChartNoAxesCombined, Store, Boxes, Wallet, MapPin, UserCheck, DollarSign, Calendar, Container, ClipboardList } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { ChatWidget } from '@/components/ChatWidget';
 import ProfileImg from '@/assets/Images/ProfileImg.png';
 
 export const DashboardLayout = () => {
@@ -15,9 +14,8 @@ export const DashboardLayout = () => {
   const userData = user ? JSON.parse(user) : null;
   const [notificationCount, setNotificationCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState([]);
   const notificationPaneRef = useRef(null);
-  const [roleName, setRoleName] = useState(() => {
+  const [roleName] = useState(() => {
     // Extract role name from userData with proper handling
     if (userData?.role && typeof userData.role === 'string') {
       return userData.role;
@@ -35,7 +33,6 @@ export const DashboardLayout = () => {
   }, []);
 
   const fetchNotifications = useCallback(async () => {
-    setNotifications([]);
     setNotificationCount(0);
   }, []);
 
@@ -190,8 +187,14 @@ export const DashboardLayout = () => {
     },
     {
       path: '/dashboard/pickup-partners',
-      label: 'Pickup Partners',
+      label: 'Transport Partners',
       icon: <UserCheck className="mr-3 h-4 w-4 flex-shrink-0" />,
+      roles: ['superadmin', 'admin', 'biller']
+    },
+    {
+      path: '/dashboard/pickup-assigns',
+      label: 'Pickup Assign',
+      icon: <ClipboardList className="mr-3 h-4 w-4 flex-shrink-0" />,
       roles: ['superadmin', 'admin', 'biller']
     },
     {
