@@ -403,7 +403,7 @@ export default function BookingForm() {
                   <div className="space-y-2">
                     <Label htmlFor="pickupPartner" className="flex items-center gap-2 font-medium">
                       <Truck className="h-4 w-4 text-orange-500" />
-                      Pickup Partner <span className="text-red-500">*</span>
+                      Transport Partner <span className="text-red-500">*</span>
                     </Label>
                     <Select
                       value={watch('pickupPartner')}

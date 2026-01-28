@@ -332,7 +332,7 @@ export default function BookingView() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Truck className="h-5 w-5 text-orange-500" />
-              Pickup Partner Information
+              Transport Partner Information
             </CardTitle>
           </CardHeader>
           <CardContent>

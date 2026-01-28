@@ -173,7 +173,7 @@ export const StoreBookings: React.FC = () => {
                                         <TableHead className="font-semibold">Sender</TableHead>
                                         <TableHead className="font-semibold">Receiver</TableHead>
                                         <TableHead className="font-semibold">Branch</TableHead>
-                                        <TableHead className="font-semibold">Pickup Partner</TableHead>
+                                        <TableHead className="font-semibold">Transport Partner</TableHead>
                                         <TableHead className="font-semibold">Stuffing Date</TableHead>
                                         <TableHead className="font-semibold">Expected Date</TableHead>
                                         <TableHead className="font-semibold">Bundles</TableHead>

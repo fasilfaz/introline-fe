@@ -201,7 +201,7 @@ export const PackingListView = () => {
                 <div>
                   <p className="text-sm text-muted-foreground flex items-center gap-2">
                     <Truck className="h-4 w-4" />
-                    Pickup Partner
+                    Transport Partner
                   </p>
                   <p className="font-medium">
                     {typeof packingList.bookingReference.pickupPartner === 'string'

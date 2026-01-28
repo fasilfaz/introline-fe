@@ -192,9 +192,9 @@ const EnhancedReports: React.FC = () => {
     },
     { 
       value: 'pickup-partners', 
-      label: 'Pickup Partner Report', 
+      label: 'Transport Partner Report', 
       icon: Package2,
-      description: 'Pickup partner details and pricing'
+      description: 'Transport partner details and pricing'
     },
     { 
       value: 'bookings', 
