@@ -232,7 +232,7 @@ export const BookingManagement: React.FC = () => {
                     <TableHead className="font-semibold">Date</TableHead>
                     <TableHead className="font-semibold">Expected Date</TableHead>
                     <TableHead className="font-semibold">Bundles</TableHead>
-                    <TableHead className="font-semibold">Repacking</TableHead>
+                    <TableHead className="font-semibold">Repacking Status</TableHead>
                     <TableHead className="font-semibold">Status</TableHead>
                     <TableHead className="text-center font-semibold">Actions</TableHead>
                   </TableRow>
@@ -287,8 +287,8 @@ export const BookingManagement: React.FC = () => {
                           {booking.bundleCount}
                         </TableCell>
                         <TableCell>
-                          <Badge className={`${booking.repacking ? 'bg-orange-100 text-orange-800 border-orange-200' : 'bg-gray-100 text-gray-800 border-gray-200'} border text-xs`}>
-                            {booking.repacking ? 'Yes' : 'No'}
+                          <Badge className={`${booking.repacking === 'repacking-required' ? 'bg-orange-100 text-orange-800 border-orange-200' : 'bg-green-100 text-green-800 border-green-200'} border text-xs`}>
+                            {booking.repacking === 'repacking-required' ? 'Repacking Required' : 'Ready to Ship'}
                           </Badge>
                         </TableCell>
                         <TableCell>

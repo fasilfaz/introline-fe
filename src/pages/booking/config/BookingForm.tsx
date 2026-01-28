@@ -51,7 +51,7 @@ const bookingFormSchema = z.object({
   expectedReceivingDate: z.string().min(1, 'Expected receiving date is required'),
   bundleCount: z.number().min(1, 'Bundle count must be at least 1'),
   status: z.enum(['pending', 'success']),
-  repacking: z.boolean().optional().default(false),
+  repacking: z.enum(['ready-to-ship', 'repacking-required']).default('ready-to-ship'),
   store: z.string().optional(),
 }).refine(data => {
   const bookingDate = new Date(data.date);
@@ -96,7 +96,7 @@ export default function BookingForm() {
       expectedReceivingDate: '',
       bundleCount: 1,
       status: 'pending' as const,
-      repacking: false,
+      repacking: 'ready-to-ship',
       store: '',
     },
     mode: 'onSubmit',
@@ -174,7 +174,7 @@ export default function BookingForm() {
             expectedReceivingDate: formatDateForInput(booking.expectedReceivingDate),
             bundleCount: booking.bundleCount,
             status: booking.status,
-            repacking: booking.repacking || false,
+            repacking: booking.repacking,
             store: booking.store?._id || '',
           });
         } catch (err) {
@@ -223,7 +223,7 @@ export default function BookingForm() {
         expectedReceivingDate: data.expectedReceivingDate,
         bundleCount: Number(data.bundleCount),
         status: data.status,
-        repacking: data.repacking || false,
+        repacking: data.repacking,
         store: data.store || undefined,
       };
 
@@ -573,18 +573,20 @@ export default function BookingForm() {
                   <div className="space-y-2">
                     <Label htmlFor="repacking" className="flex items-center gap-2 font-medium">
                       <Package className="h-4 w-4 text-orange-500" />
-                      Repacking Required
+                      Repacking Status
                     </Label>
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="repacking"
-                        checked={watch('repacking') || false}
-                        onCheckedChange={(checked) => setValue('repacking', checked as boolean)}
-                      />
-                      <Label htmlFor="repacking" className="text-sm font-normal">
-                        This booking requires repacking
-                      </Label>
-                    </div>
+                    <Select
+                      value={watch('repacking')}
+                      onValueChange={(value) => setValue('repacking', value as 'ready-to-ship' | 'repacking-required')}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="ready-to-ship">Ready to Ship</SelectItem>
+                        <SelectItem value="repacking-required">Repacking Required</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>

@@ -178,9 +178,9 @@ export default function BookingView() {
                 <div className="flex items-center gap-3">
                   <Package className="h-5 w-5 text-orange-500" />
                   <div>
-                    <p className="text-sm text-gray-500">Repacking Required</p>
-                    <Badge className={`${booking.repacking ? 'bg-orange-100 text-orange-800 border-orange-200' : 'bg-gray-100 text-gray-800 border-gray-200'} border`}>
-                      {booking.repacking ? 'Yes' : 'No'}
+                    <p className="text-sm text-gray-500">Repacking Status</p>
+                    <Badge className={`${booking.repacking === 'repacking-required' ? 'bg-orange-100 text-orange-800 border-orange-200' : 'bg-green-100 text-green-800 border-green-200'} border`}>
+                      {booking.repacking === 'repacking-required' ? 'Repacking Required' : 'Ready to Ship'}
                     </Badge>
                   </div>
                 </div>
