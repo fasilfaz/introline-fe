@@ -47,18 +47,22 @@ const bookingFormSchema = z.object({
   receiver: z.string().min(1, 'Receiver is required'),
   receiverBranch: z.string().optional(),
   pickupPartner: z.string().min(1, 'Pickup partner is required'), // Can be ObjectId or 'Self' or 'Central'
-  date: z.string().min(1, 'Booking date is required'),
+  stuffingDate: z.string().min(1, 'Stuffing date is required'),
+  cutOffDate: z.string().optional(),
+  etaCok: z.string().optional(),
+  etdCok: z.string().optional(),
+  etaJea: z.string().optional(),
   expectedReceivingDate: z.string().min(1, 'Expected receiving date is required'),
   bundleCount: z.number().min(1, 'Bundle count must be at least 1'),
   status: z.enum(['pending', 'success']),
   repacking: z.boolean().optional().default(false),
   store: z.string().optional(),
 }).refine(data => {
-  const bookingDate = new Date(data.date);
+  const bookingDate = new Date(data.stuffingDate);
   const expectedDate = new Date(data.expectedReceivingDate);
   return expectedDate > bookingDate;
 }, {
-  message: 'Expected receiving date must be after booking date',
+  message: 'Expected receiving date must be after stuffing date',
   path: ['expectedReceivingDate']
 });
 
@@ -68,7 +72,7 @@ export default function BookingForm() {
   const isEditing = Boolean(id);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   // Options for dropdowns
   const [senders, setSenders] = useState<Customer[]>([]);
   const [receivers, setReceivers] = useState<Customer[]>([]);
@@ -92,7 +96,11 @@ export default function BookingForm() {
       receiver: '',
       receiverBranch: '',
       pickupPartner: '',
-      date: '',
+      stuffingDate: '',
+      cutOffDate: '',
+      etaCok: '',
+      etdCok: '',
+      etaJea: '',
       expectedReceivingDate: '',
       bundleCount: 1,
       status: 'pending' as const,
@@ -170,7 +178,11 @@ export default function BookingForm() {
             pickupPartner: typeof booking.pickupPartner === 'string'
               ? booking.pickupPartner // 'Self' or 'Central'
               : (booking.pickupPartner as any)._id || '',
-            date: formatDateForInput(booking.date),
+            stuffingDate: booking.stuffingDate ? formatDateForInput(booking.stuffingDate) : '',
+            cutOffDate: booking.cutOffDate ? formatDateForInput(booking.cutOffDate) : '',
+            etaCok: booking.etaCok ? formatDateForInput(booking.etaCok) : '',
+            etdCok: booking.etdCok ? formatDateForInput(booking.etdCok) : '',
+            etaJea: booking.etaJea ? formatDateForInput(booking.etaJea) : '',
             expectedReceivingDate: formatDateForInput(booking.expectedReceivingDate),
             bundleCount: booking.bundleCount,
             status: booking.status,
@@ -219,7 +231,11 @@ export default function BookingForm() {
         receiver: data.receiver,
         receiverBranch: data.receiverBranch || undefined,
         pickupPartner: data.pickupPartner,
-        date: data.date,
+        stuffingDate: data.stuffingDate,
+        cutOffDate: data.cutOffDate || undefined,
+        etaCok: data.etaCok || undefined,
+        etdCok: data.etdCok || undefined,
+        etaJea: data.etaJea || undefined,
         expectedReceivingDate: data.expectedReceivingDate,
         bundleCount: Number(data.bundleCount),
         status: data.status,
@@ -453,24 +469,76 @@ export default function BookingForm() {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {/* <div className="grid grid-cols-1 md:grid-cols-2  gap-6"> */}
-                  {/* Date */}
+                  {/* Stuffing Date */}
                   <div className="space-y-2">
-                    <Label htmlFor="date" className="flex items-center gap-2 font-medium">
+                    <Label htmlFor="stuffingDate" className="flex items-center gap-2 font-medium">
                       <Calendar className="h-4 w-4 text-blue-500" />
-                      Booking Date <span className="text-red-500">*</span>
+                      Stuffing Date <span className="text-red-500">*</span>
                     </Label>
                     <Input
-                      id="date"
+                      id="stuffingDate"
                       type="date"
-                      {...register('date')}
-                      className={errors.date ? 'border-red-300' : ''}
+                      {...register('stuffingDate')}
+                      className={errors.stuffingDate ? 'border-red-300' : ''}
                     />
-                    {errors.date && (
+                    {errors.stuffingDate && (
                       <p className="text-sm text-red-500 flex items-center gap-1">
                         <AlertCircle className="h-3 w-3" />
-                        {errors.date.message}
+                        {errors.stuffingDate.message}
                       </p>
                     )}
+                  </div>
+
+                  {/* Cut Off Date */}
+                  <div className="space-y-2">
+                    <Label htmlFor="cutOffDate" className="flex items-center gap-2 font-medium">
+                      <Calendar className="h-4 w-4 text-red-500" />
+                      Cut Off Date
+                    </Label>
+                    <Input
+                      id="cutOffDate"
+                      type="date"
+                      {...register('cutOffDate')}
+                    />
+                  </div>
+
+                  {/* ETA COK */}
+                  <div className="space-y-2">
+                    <Label htmlFor="etaCok" className="flex items-center gap-2 font-medium">
+                      <Calendar className="h-4 w-4 text-indigo-500" />
+                      ETA COK
+                    </Label>
+                    <Input
+                      id="etaCok"
+                      type="date"
+                      {...register('etaCok')}
+                    />
+                  </div>
+
+                  {/* ETD COK */}
+                  <div className="space-y-2">
+                    <Label htmlFor="etdCok" className="flex items-center gap-2 font-medium">
+                      <Calendar className="h-4 w-4 text-pink-500" />
+                      ETD COK
+                    </Label>
+                    <Input
+                      id="etdCok"
+                      type="date"
+                      {...register('etdCok')}
+                    />
+                  </div>
+
+                  {/* ETA JEA */}
+                  <div className="space-y-2">
+                    <Label htmlFor="etaJea" className="flex items-center gap-2 font-medium">
+                      <Calendar className="h-4 w-4 text-yellow-500" />
+                      ETA JEA
+                    </Label>
+                    <Input
+                      id="etaJea"
+                      type="date"
+                      {...register('etaJea')}
+                    />
                   </div>
 
                   {/* Expected Receiving Date */}

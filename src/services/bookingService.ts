@@ -29,7 +29,11 @@ export interface Booking {
     phoneNumber?: string; // Will be undefined for 'Self' or 'Central'
     price?: number;
   } | 'Self' | 'Central';
-  date: string;
+  stuffingDate: string;
+  cutOffDate?: string;
+  etaCok?: string;
+  etdCok?: string;
+  etaJea?: string;
   expectedReceivingDate: string;
   bundleCount: number;
   status: 'pending' | 'success';
@@ -62,7 +66,11 @@ export interface CreateBookingPayload {
   receiver: string;
   receiverBranch?: string;
   pickupPartner: string; // Can be ObjectId or 'Self' or 'Central'
-  date: string;
+  stuffingDate: string;
+  cutOffDate?: string;
+  etaCok?: string;
+  etdCok?: string;
+  etaJea?: string;
   expectedReceivingDate: string;
   bundleCount: number;
   status?: 'pending' | 'success';
@@ -79,7 +87,7 @@ export const bookingService = {
   // Fetch all bookings with pagination and filters
   async listBookings(params: ListBookingsParams = {}) {
     const queryParams = new URLSearchParams();
-    
+
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.search) queryParams.append('search', params.search);
@@ -88,7 +96,7 @@ export const bookingService = {
     if (params.receiver) queryParams.append('receiver', params.receiver);
     if (params.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
-    
+
     const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
     return apiClient.get<ApiListResponse<Booking>>(`/bookings${queryString}`);
   },
