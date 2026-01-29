@@ -48,11 +48,7 @@ export interface PackingList {
       _id: string;
       name: string;
     };
-    stuffingDate?: string;
-    cutOffDate?: string;
-    etaCok?: string;
-    etdCok?: string;
-    etaJea?: string;
+    date?: string;
     expectedReceivingDate?: string;
     bundleCount?: number;
     status?: string;
@@ -66,7 +62,7 @@ export interface PackingList {
   packingStatus: 'pending' | 'in_progress' | 'completed';
   count?: number;
   bundles?: Array<{
-    bundleNumber: string  ;
+    bundleNumber: string;
     description?: string;
     quantity: number;
     netWeight?: number;

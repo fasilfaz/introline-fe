@@ -229,7 +229,7 @@ export const BookingManagement: React.FC = () => {
                     <TableHead className="font-semibold">Receiver</TableHead>
                     <TableHead className="font-semibold">Branch</TableHead>
                     <TableHead className="font-semibold">Transport Partner</TableHead>
-                    <TableHead className="font-semibold">Stuffing Date</TableHead>
+                    <TableHead className="font-semibold">Booking Date</TableHead>
                     <TableHead className="font-semibold">Expected Date</TableHead>
                     <TableHead className="font-semibold">Bundles</TableHead>
                     <TableHead className="font-semibold">Repacking Status</TableHead>
@@ -278,7 +278,7 @@ export const BookingManagement: React.FC = () => {
                             : booking.pickupPartner?.name || '—'}
                         </TableCell>
                         <TableCell>
-                          {formatDate(booking.stuffingDate)}
+                          {formatDate(booking.date)}
                         </TableCell>
                         <TableCell>
                           {formatDate(booking.expectedReceivingDate)}

@@ -156,11 +156,11 @@ export default function ContainerView() {
         </div>
 
         {/* Container Information Card */}
-        <Card className="border-none shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+        <Card>
+          <CardHeader className="border-b">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-xl text-blue-800 flex items-center gap-2">
-                <ContainerIcon className="h-5 w-5" />
+              <CardTitle className="text-xl flex items-center gap-2">
+                <ContainerIcon className="h-5 w-5 text-blue-600" />
                 Container Information
               </CardTitle>
               <StatusBadge status={container.status} />
@@ -172,13 +172,13 @@ export default function ContainerView() {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-800">
-                    <Building className="h-5 w-5 text-blue-500" />
+                    <Building className="h-5 w-5 text-gray-500" />
                     Basic Information
                   </h3>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
                       <span className="text-gray-600 font-medium">Container Code:</span>
-                      <span className="font-mono font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                      <span className="font-mono font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded">
                         {container.containerCode}
                       </span>
                     </div>
@@ -188,11 +188,47 @@ export default function ContainerView() {
                     </div>
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
                       <span className="text-gray-600 font-medium flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        Booking Date:
+                        <Calendar className="h-4 w-4 text-gray-400" />
+                        Stuffing Date:
                       </span>
                       <span className="font-semibold text-gray-900">{formatDate(container.bookingDate)}</span>
                     </div>
+                    {container.cutOffDate && (
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium flex items-center gap-1">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          Cut Off Date:
+                        </span>
+                        <span className="font-semibold text-gray-900">{formatDate(container.cutOffDate)}</span>
+                      </div>
+                    )}
+                    {container.etaCok && (
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium flex items-center gap-1">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          ETA COK:
+                        </span>
+                        <span className="font-semibold text-gray-900">{formatDate(container.etaCok)}</span>
+                      </div>
+                    )}
+                    {container.etdCok && (
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium flex items-center gap-1">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          ETD COK:
+                        </span>
+                        <span className="font-semibold text-gray-900">{formatDate(container.etdCok)}</span>
+                      </div>
+                    )}
+                    {container.etaJea && (
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-600 font-medium flex items-center gap-1">
+                          <Calendar className="h-4 w-4 text-gray-400" />
+                          ETA JEA:
+                        </span>
+                        <span className="font-semibold text-gray-900">{formatDate(container.etaJea)}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -201,25 +237,25 @@ export default function ContainerView() {
               <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold mb-4 flex items-center gap-2 text-gray-800">
-                    <DollarSign className="h-5 w-5 text-green-500" />
+                    <DollarSign className="h-5 w-5 text-gray-500" />
                     Financial Details
                   </h3>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
                       <span className="text-gray-600 font-medium">Booking Charge:</span>
-                      <span className="font-bold text-green-600 text-lg">
+                      <span className="font-bold text-gray-900 text-lg">
                         {formatCurrency(container.bookingCharge)}
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-2 border-b border-gray-100">
                       <span className="text-gray-600 font-medium">Advance Payment:</span>
-                      <span className="font-bold text-blue-600 text-lg">
+                      <span className="font-bold text-gray-900 text-lg">
                         {formatCurrency(container.advancePayment)}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center py-3 border-b-2 border-orange-200 bg-orange-50 px-3 rounded-lg">
+                    <div className="flex justify-between items-center py-3 border-b border-gray-100 bg-gray-50 px-3 rounded-lg">
                       <span className="text-gray-700 font-semibold">Balance Amount:</span>
-                      <span className="font-bold text-orange-600 text-xl">
+                      <span className="font-bold text-gray-900 text-xl">
                         {formatCurrency(container.balanceAmount)}
                       </span>
                     </div>
@@ -250,25 +286,6 @@ export default function ContainerView() {
             )}
           </CardContent>
         </Card>
-
-        {/* Action Buttons */}
-        <div className="flex justify-between items-center">
-          <Button
-            variant="outline"
-            onClick={() => navigate('/dashboard/containers')}
-            className="border-gray-300 text-gray-700 hover:bg-gray-100"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Containers
-          </Button>
-          <Button
-            onClick={() => navigate(`/dashboard/containers/edit/${container._id}`)}
-            className="transition-colors"
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            Edit Container
-          </Button>
-        </div>
       </div>
     </div>
   );

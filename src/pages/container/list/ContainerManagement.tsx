@@ -240,7 +240,7 @@ export const ContainerManagement: React.FC = () => {
                   <TableRow>
                     <TableHead className="font-semibold">Container Code</TableHead>
                     <TableHead className="font-semibold">Company Name</TableHead>
-                    <TableHead className="font-semibold">Booking Date</TableHead>
+                    <TableHead className="font-semibold">Stuffing Date</TableHead>
                     <TableHead className="font-semibold">Booking Charge</TableHead>
                     <TableHead className="font-semibold">Advance Payment</TableHead>
                     <TableHead className="font-semibold">Balance Amount</TableHead>

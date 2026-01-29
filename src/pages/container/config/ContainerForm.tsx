@@ -39,6 +39,10 @@ import { containerService, type CreateContainerPayload, type UpdateContainerPayl
 const containerFormSchema = z.object({
   companyName: z.string().min(1, 'Company name is required').trim(),
   bookingDate: z.string().min(1, 'Booking date is required'),
+  cutOffDate: z.string().optional(),
+  etaCok: z.string().optional(),
+  etdCok: z.string().optional(),
+  etaJea: z.string().optional(),
   bookingCharge: z.number().min(0, 'Booking charge must be a positive number'),
   advancePayment: z.number().min(0, 'Advance payment must be a positive number'),
   status: z.enum(['pending', 'confirmed', 'completed', 'cancelled']),
@@ -71,6 +75,10 @@ export default function ContainerForm() {
     defaultValues: {
       companyName: '',
       bookingDate: '',
+      cutOffDate: '',
+      etaCok: '',
+      etdCok: '',
+      etaJea: '',
       bookingCharge: 0,
       advancePayment: 0,
       status: 'pending',
@@ -104,6 +112,10 @@ export default function ContainerForm() {
           reset({
             companyName: container.companyName,
             bookingDate: formatDateForInput(container.bookingDate),
+            cutOffDate: container.cutOffDate ? formatDateForInput(container.cutOffDate) : '',
+            etaCok: container.etaCok ? formatDateForInput(container.etaCok) : '',
+            etdCok: container.etdCok ? formatDateForInput(container.etdCok) : '',
+            etaJea: container.etaJea ? formatDateForInput(container.etaJea) : '',
             bookingCharge: container.bookingCharge,
             advancePayment: container.advancePayment,
             status: container.status,
@@ -148,6 +160,10 @@ export default function ContainerForm() {
       const containerPayload: CreateContainerPayload | UpdateContainerPayload = {
         companyName: data.companyName,
         bookingDate: data.bookingDate,
+        cutOffDate: data.cutOffDate || undefined,
+        etaCok: data.etaCok || undefined,
+        etdCok: data.etdCok || undefined,
+        etaJea: data.etaJea || undefined,
         bookingCharge: Number(data.bookingCharge),
         advancePayment: Number(data.advancePayment),
         status: data.status,
@@ -253,11 +269,11 @@ export default function ContainerForm() {
                     )}
                   </div>
 
-                  {/* Booking Date */}
+                  {/* Stuffing Date (renamed from Booking Date) */}
                   <div className="space-y-2">
                     <Label htmlFor="bookingDate" className="flex items-center gap-2 font-medium">
                       <Calendar className="h-4 w-4 text-green-500" />
-                      Booking Date <span className="text-red-500">*</span>
+                      Stuffing Date <span className="text-red-500">*</span>
                     </Label>
                     <Input
                       id="bookingDate"
@@ -271,6 +287,58 @@ export default function ContainerForm() {
                         {errors.bookingDate.message}
                       </p>
                     )}
+                  </div>
+
+                  {/* Cut Off Date */}
+                  <div className="space-y-2">
+                    <Label htmlFor="cutOffDate" className="flex items-center gap-2 font-medium">
+                      <Calendar className="h-4 w-4 text-red-500" />
+                      Cut Off Date
+                    </Label>
+                    <Input
+                      id="cutOffDate"
+                      type="date"
+                      {...register('cutOffDate')}
+                    />
+                  </div>
+
+                  {/* ETA COK */}
+                  <div className="space-y-2">
+                    <Label htmlFor="etaCok" className="flex items-center gap-2 font-medium">
+                      <Calendar className="h-4 w-4 text-indigo-500" />
+                      ETA COK
+                    </Label>
+                    <Input
+                      id="etaCok"
+                      type="date"
+                      {...register('etaCok')}
+                    />
+                  </div>
+
+                  {/* ETD COK */}
+                  <div className="space-y-2">
+                    <Label htmlFor="etdCok" className="flex items-center gap-2 font-medium">
+                      <Calendar className="h-4 w-4 text-pink-500" />
+                      ETD COK
+                    </Label>
+                    <Input
+                      id="etdCok"
+                      type="date"
+                      {...register('etdCok')}
+                    />
+                  </div>
+
+                  {/* ETA JEA */}
+                  <div className="space-y-2">
+                    <Label htmlFor="etaJea" className="flex items-center gap-2 font-medium">
+                      <Calendar className="h-4 w-4 text-yellow-500" />
+                      ETA JEA
+                    </Label>
+                    <Input
+                      id="etaJea"
+                      type="date"
+                      {...register('etaJea')}
+                    />
                   </div>
                 </div>
               </div>

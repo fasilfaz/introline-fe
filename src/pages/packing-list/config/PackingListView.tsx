@@ -221,16 +221,18 @@ export const PackingListView = () => {
                 </div>
 
                 <div>
-                  <p className="text-sm text-muted-foreground flex items-center gap-2">
-                    <Calendar className="h-4 w-4" />
-                    Stuffing Date
-                  </p>
-                  <p className="font-medium">
-                    {packingList.bookingReference.stuffingDate
-                      ? new Date(packingList.bookingReference.stuffingDate).toLocaleDateString()
-                      : 'N/A'
-                    }
-                  </p>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      Booking Date
+                    </p>
+                    <p className="font-medium">
+                      {packingList.bookingReference.date
+                        ? new Date(packingList.bookingReference.date).toLocaleDateString()
+                        : 'N/A'
+                      }
+                    </p>
+                  </div>
                 </div>
 
                 <div>
