@@ -260,6 +260,93 @@ export const PackingListView = () => {
         </Card>
       )}
 
+      {/* Bundles Section */}
+      {packingList.bundles && packingList.bundles.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Package className="h-5 w-5 text-primary" />
+              Bundles ({packingList.bundles.length})
+            </CardTitle>
+            <CardDescription>Details of bundles in this packing list</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {packingList.bundles.map((bundle, index) => (
+                <div key={index} className="border rounded-lg p-4">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+                    <div>
+                      <h3 className="font-medium text-lg">Bundle #{bundle.bundleNumber}</h3>
+                      {bundle.description && <p className="text-sm text-muted-foreground">{bundle.description}</p>}
+                    </div>
+                    <div className="flex flex-wrap gap-4">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Quantity</p>
+                        <p className="font-medium">{bundle.quantity}</p>
+                      </div>
+                      {bundle.netWeight !== undefined && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Net Weight</p>
+                          <p className="font-medium">{bundle.netWeight} kg</p>
+                        </div>
+                      )}
+                      {bundle.grossWeight !== undefined && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Gross Weight</p>
+                          <p className="font-medium">{bundle.grossWeight} kg</p>
+                        </div>
+                      )}
+                      {bundle.actualCount !== undefined && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Actual Count</p>
+                          <p className="font-medium">{bundle.actualCount}</p>
+                        </div>
+                      )}
+                      {bundle.status && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Status</p>
+                          {getStatusBadge(bundle.status)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Products in Bundle */}
+                  {bundle.products && bundle.products.length > 0 && (
+                    <div className="border-t pt-4">
+                      <h4 className="font-medium mb-3 flex items-center gap-2">
+                        <Package className="h-4 w-4 text-muted-foreground" />
+                        Products ({bundle.products.length})
+                      </h4>
+                      <div className="space-y-3">
+                        {bundle.products.map((product, productIndex) => (
+                          <div key={productIndex} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-muted/30 rounded-md">
+                            <div className="flex-1">
+                              <div className="font-medium">{product.productName}</div>
+                              <div className="text-sm text-muted-foreground flex flex-wrap gap-x-4 gap-y-1">
+                                <span>ID: {product.id}</span>
+                                {product.fabric && <span>Fabric: {product.fabric}</span>}
+                                {product.description && <span>Desc: {product.description}</span>}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                <p className="text-sm text-muted-foreground">Quantity</p>
+                                <p className="font-medium">{product.productQuantity}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Timestamps Card */}
       <Card>
         <CardHeader>

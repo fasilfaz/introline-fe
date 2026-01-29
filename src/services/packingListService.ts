@@ -7,9 +7,24 @@ export interface PackingListInput {
   grossWeight: number;
   packedBy: string;
   plannedBundleCount: number;
-  actualBundleCount?: number;
   packingStatus?: 'pending' | 'in_progress' | 'completed';
   count?: number;
+  bundles?: Array<{
+    bundleNumber: string;
+    description?: string;
+    quantity: number;
+    netWeight?: number;
+    grossWeight?: number;
+    actualCount?: number;
+    status?: 'pending' | 'in_progress' | 'completed';
+    products?: Array<{
+      id: string;
+      productName: string;
+      productQuantity: number;
+      fabric: string;
+      description: string;
+    }>;
+  }>;
 }
 
 // Extended interface for backward compatibility with old packing list system
@@ -46,6 +61,23 @@ export interface PackingList {
   actualBundleCount: number;
   packingStatus: 'pending' | 'in_progress' | 'completed';
   count?: number;
+  bundles?: Array<{
+    bundleNumber: string  ;
+    description?: string;
+    quantity: number;
+    netWeight?: number;
+    grossWeight?: number;
+    actualCount?: number;
+    status?: 'pending' | 'in_progress' | 'completed';
+    products?: Array<{
+      id: string;
+      productName: string;
+      productQuantity: number;
+      fabric: string;
+      description: string;
+    }>;
+  }>;
+
   createdAt: string;
   updatedAt: string;
 
