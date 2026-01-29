@@ -134,7 +134,7 @@ const ReadyToShipPrintPreview: React.FC = () => {
             {bundles.map((bundle) => (
               <div
                 key={bundle._id}
-                className="break-inside-avoid page-break-inside-avoid border-b border-dashed border-gray-200 pb-10 last:border-0 last:pb-0"
+                className="bundle-item border-b border-dashed border-gray-200 pb-10 last:border-0 last:pb-0"
               >
                 {/* Header area - kept minimal */}
                 <div className="flex justify-between items-center mb-7 border-b-2 border-gray-800 pb-4">
@@ -288,6 +288,16 @@ const ReadyToShipPrintPreview: React.FC = () => {
             .page-break-inside-avoid {
               page-break-inside: avoid;
               break-inside: avoid;
+            }
+            .bundle-item {
+              break-before: page;
+              page-break-before: always;
+              padding-top: 10mm;
+            }
+            .bundle-item:first-child {
+              break-before: avoid;
+              page-break-before: avoid;
+              padding-top: 0;
             }
             * {
               -webkit-print-color-adjust: exact !important;
