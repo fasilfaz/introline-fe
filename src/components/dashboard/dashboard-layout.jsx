@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Users, LayoutTemplate, ChevronRight, Bell, LogOut, BadgeDollarSign, ChartNoAxesCombined, Store, Boxes, Wallet, MapPin, UserCheck, DollarSign, Calendar, Container, ClipboardList } from 'lucide-react';
+import { Menu, X, Users, LayoutTemplate, ChevronRight, Bell, LogOut, BadgeDollarSign, ChartNoAxesCombined, Store, Boxes, Wallet, MapPin, UserCheck, DollarSign, Calendar, Container, ClipboardList, PackageCheck } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -163,6 +163,12 @@ export const DashboardLayout = () => {
           path: '/dashboard/packing-lists',
           label: 'Packing List',
           icon: <Boxes className="mr-3 h-4 w-4 flex-shrink-0" />,
+          roles: ['superadmin', 'purchaser', 'store']
+        },
+        {
+          path: '/dashboard/ready-to-ship',
+          label: 'Ready to Ship',
+          icon: <PackageCheck className="mr-3 h-4 w-4 flex-shrink-0" />,
           roles: ['superadmin', 'purchaser', 'store']
         }
       ]

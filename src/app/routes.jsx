@@ -78,6 +78,9 @@ import { PickupAssignManagement } from '@/pages/pickup-assign/list/PickupAssignM
 import { PickupAssignCreate } from '@/pages/pickup-assign/config/PickupAssignCreate';
 import { PickupAssignEdit } from '@/pages/pickup-assign/config/PickupAssignEdit';
 import { PickupAssignView } from '@/pages/pickup-assign/config/PickupAssignView';
+import ReadyToShipListPage from '@/pages/ready-to-ship/ReadyToShipListPage';
+import ReadyToShipViewPage from '@/pages/ready-to-ship/ReadyToShipViewPage';
+import ReadyToShipEditPage from '@/pages/ready-to-ship/ReadyToShipEditPage';
 
 
 const protectedRoutes = [
@@ -168,7 +171,10 @@ const protectedRoutes = [
   { path: 'pickup-assigns', element: <PickupAssignManagement />, module: 'Pickup Assigns' },
   { path: 'pickup-assigns/create', element: <PickupAssignCreate />, module: 'Pickup Assigns' },
   { path: 'pickup-assigns/edit/:id', element: <PickupAssignEdit />, module: 'Pickup Assigns' },
-  { path: 'pickup-assigns/view/:id', element: <PickupAssignView />, module: 'Pickup Assigns' }
+  { path: 'pickup-assigns/view/:id', element: <PickupAssignView />, module: 'Pickup Assigns' },
+  { path: 'ready-to-ship', element: <ReadyToShipListPage />, module: 'Ready to Ship' },
+  { path: 'ready-to-ship/:id', element: <ReadyToShipViewPage />, module: 'Ready to Ship' },
+  { path: 'ready-to-ship/edit/:id', element: <ReadyToShipEditPage />, module: 'Ready to Ship' }
 ];
 
 const unprotectedRoutes = [
