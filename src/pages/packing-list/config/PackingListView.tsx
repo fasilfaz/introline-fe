@@ -16,7 +16,7 @@ export const PackingListView = () => {
   useEffect(() => {
     const fetchPackingList = async () => {
       if (!id) return;
-      
+
       try {
         setLoading(true);
         const response = await packingListService.get(id);
@@ -201,11 +201,11 @@ export const PackingListView = () => {
                 <div>
                   <p className="text-sm text-muted-foreground flex items-center gap-2">
                     <Truck className="h-4 w-4" />
-                    Pickup Partner
+                    Transport Partner
                   </p>
                   <p className="font-medium">
-                    {typeof packingList.bookingReference.pickupPartner === 'string' 
-                      ? packingList.bookingReference.pickupPartner 
+                    {typeof packingList.bookingReference.pickupPartner === 'string'
+                      ? packingList.bookingReference.pickupPartner
                       : packingList.bookingReference.pickupPartner?.name || 'N/A'}
                   </p>
                 </div>
@@ -223,11 +223,11 @@ export const PackingListView = () => {
                 <div>
                   <p className="text-sm text-muted-foreground flex items-center gap-2">
                     <Calendar className="h-4 w-4" />
-                    Booking Date
+                    Stuffing Date
                   </p>
                   <p className="font-medium">
-                    {packingList.bookingReference.date 
-                      ? new Date(packingList.bookingReference.date).toLocaleDateString()
+                    {packingList.bookingReference.stuffingDate
+                      ? new Date(packingList.bookingReference.stuffingDate).toLocaleDateString()
                       : 'N/A'
                     }
                   </p>
@@ -239,7 +239,7 @@ export const PackingListView = () => {
                     Expected Receiving Date
                   </p>
                   <p className="font-medium">
-                    {packingList.bookingReference.expectedReceivingDate 
+                    {packingList.bookingReference.expectedReceivingDate
                       ? new Date(packingList.bookingReference.expectedReceivingDate).toLocaleDateString()
                       : 'N/A'
                     }

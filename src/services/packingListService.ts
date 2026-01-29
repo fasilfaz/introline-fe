@@ -48,7 +48,11 @@ export interface PackingList {
       _id: string;
       name: string;
     };
-    date?: string;
+    stuffingDate?: string;
+    cutOffDate?: string;
+    etaCok?: string;
+    etdCok?: string;
+    etaJea?: string;
     expectedReceivingDate?: string;
     bundleCount?: number;
     status?: string;

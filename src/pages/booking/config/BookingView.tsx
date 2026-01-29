@@ -155,10 +155,46 @@ export default function BookingView() {
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-blue-500" />
                   <div>
-                    <p className="text-sm text-gray-500">Booking Date</p>
-                    <p className="font-medium">{formatDate(booking.date)}</p>
+                    <p className="text-sm text-gray-500">Stuffing Date</p>
+                    <p className="font-medium">{formatDate(booking.stuffingDate)}</p>
                   </div>
                 </div>
+                {booking.cutOffDate && (
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5 text-red-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">Cut Off Date</p>
+                      <p className="font-medium">{formatDate(booking.cutOffDate)}</p>
+                    </div>
+                  </div>
+                )}
+                {booking.etaCok && (
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5 text-indigo-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">ETA COK</p>
+                      <p className="font-medium">{formatDate(booking.etaCok)}</p>
+                    </div>
+                  </div>
+                )}
+                {booking.etdCok && (
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5 text-pink-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">ETD COK</p>
+                      <p className="font-medium">{formatDate(booking.etdCok)}</p>
+                    </div>
+                  </div>
+                )}
+                {booking.etaJea && (
+                  <div className="flex items-center gap-3">
+                    <Calendar className="h-5 w-5 text-yellow-500" />
+                    <div>
+                      <p className="text-sm text-gray-500">ETA JEA</p>
+                      <p className="font-medium">{formatDate(booking.etaJea)}</p>
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center gap-3">
                   <Calendar className="h-5 w-5 text-green-500" />
                   <div>
@@ -296,7 +332,7 @@ export default function BookingView() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Truck className="h-5 w-5 text-orange-500" />
-              Pickup Partner Information
+              Transport Partner Information
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -304,8 +340,8 @@ export default function BookingView() {
               <div>
                 <p className="text-sm text-gray-500">Partner Name</p>
                 <p className="font-medium text-lg">
-                  {typeof booking.pickupPartner === 'string' 
-                    ? booking.pickupPartner 
+                  {typeof booking.pickupPartner === 'string'
+                    ? booking.pickupPartner
                     : booking.pickupPartner.name}
                 </p>
               </div>
@@ -345,11 +381,10 @@ export default function BookingView() {
                 {booking.receiver.branches.map((branch, index) => (
                   <div
                     key={index}
-                    className={`p-4 rounded-lg border ${
-                      branch.branchName === booking.receiverBranch
+                    className={`p-4 rounded-lg border ${branch.branchName === booking.receiverBranch
                         ? 'bg-purple-50 border-purple-200'
                         : 'bg-gray-50 border-gray-200'
-                    }`}
+                      }`}
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
