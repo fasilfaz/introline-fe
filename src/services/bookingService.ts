@@ -29,11 +29,7 @@ export interface Booking {
     phoneNumber?: string; // Will be undefined for 'Self' or 'Central'
     price?: number;
   } | 'Self' | 'Central';
-  stuffingDate: string;
-  cutOffDate?: string;
-  etaCok?: string;
-  etdCok?: string;
-  etaJea?: string;
+  date: string;
   expectedReceivingDate: string;
   bundleCount: number;
   status: 'pending' | 'success';
@@ -66,11 +62,7 @@ export interface CreateBookingPayload {
   receiver: string;
   receiverBranch?: string;
   pickupPartner: string; // Can be ObjectId or 'Self' or 'Central'
-  stuffingDate: string;
-  cutOffDate?: string;
-  etaCok?: string;
-  etdCok?: string;
-  etaJea?: string;
+  date: string;
   expectedReceivingDate: string;
   bundleCount: number;
   status?: 'pending' | 'success';
