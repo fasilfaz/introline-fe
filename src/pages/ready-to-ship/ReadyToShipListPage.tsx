@@ -1,33 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardContent 
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from '@/components/ui/table';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Search, 
-  Eye, 
-  Edit, 
-  Package, 
-  PackageCheck
+import {
+  Search,
+  Eye,
+  Edit,
+  Package,
+  PackageCheck,
+  Printer
 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
@@ -36,7 +37,7 @@ import { toast } from 'sonner';
 import { readyToShipService } from '@/services/readyToShipService';
 import { ReadyToShipBundle } from '@/services/readyToShipService';
 
-interface ReadyToShipListPageProps {}
+interface ReadyToShipListPageProps { }
 
 const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
   const navigate = useNavigate();
@@ -136,17 +137,8 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
             View and manage bundles that are ready for shipping
           </p>
         </div>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-          <div className="relative w-full sm:w-auto">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search bundles..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="pl-8 w-full sm:w-64"
-            />
-          </div>
-          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+        <div className="flex flex-col items-end gap-3 w-full sm:w-auto">
+          <div className="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto justify-end">
             <Select value={priorityFilter} onValueChange={setPriorityFilter}>
               <SelectTrigger className="w-full sm:w-[120px]">
                 <SelectValue placeholder="Priority" />
@@ -169,6 +161,23 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                 <SelectItem value="dispatched">Dispatched</SelectItem>
               </SelectContent>
             </Select>
+            <Button
+            className="w-full sm:w-auto"
+              variant="outline"
+              onClick={() => navigate('/ready-to-ship-print')}
+            >
+              <Printer className="h-4 w-4" />
+              Print All
+            </Button>
+          </div>
+          <div className="relative w-full sm:w-64">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search bundles..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="pl-8"
+            />
           </div>
         </div>
       </div>
@@ -198,8 +207,8 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
               <Package className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-2 text-sm font-medium text-muted-foreground">No bundles found</h3>
               <p className="mt-1 text-sm text-muted-foreground">
-                {searchTerm 
-                  ? 'No bundles match your search.' 
+                {searchTerm
+                  ? 'No bundles match your search.'
                   : 'There are no completed bundles ready to ship yet.'}
               </p>
             </div>
@@ -231,10 +240,10 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                       <TableCell>{bundle.quantity}</TableCell>
                       <TableCell>{bundle.netWeight ? `${bundle.netWeight} kg` : '-'}</TableCell>
                       <TableCell>
-                        <Badge 
+                        <Badge
                           className={
-                            bundle.priority === 'high' 
-                              ? 'bg-red-100 text-red-800 hover:bg-red-100' 
+                            bundle.priority === 'high'
+                              ? 'bg-red-100 text-red-800 hover:bg-red-100'
                               : bundle.priority === 'medium'
                                 ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
                                 : 'bg-green-100 text-green-800 hover:bg-green-100'
@@ -244,10 +253,10 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <Badge 
+                        <Badge
                           className={
-                            bundle.readyToShipStatus === 'pending' 
-                              ? 'bg-gray-100 text-gray-800 hover:bg-gray-100' 
+                            bundle.readyToShipStatus === 'pending'
+                              ? 'bg-gray-100 text-gray-800 hover:bg-gray-100'
                               : bundle.readyToShipStatus === 'stuffed'
                                 ? 'bg-blue-100 text-blue-800 hover:bg-blue-100'
                                 : 'bg-green-100 text-green-800 hover:bg-green-100'
@@ -286,7 +295,7 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                   ))}
                 </TableBody>
               </Table>
-              
+
               {/* Pagination */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-6">
@@ -351,14 +360,14 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                   </Badge>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground">Priority</h3>
-                  <Badge 
+                  <Badge
                     className={
-                      selectedBundle.priority === 'high' 
-                        ? 'bg-red-100 text-red-800 hover:bg-red-100' 
+                      selectedBundle.priority === 'high'
+                        ? 'bg-red-100 text-red-800 hover:bg-red-100'
                         : selectedBundle.priority === 'medium'
                           ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
                           : 'bg-green-100 text-green-800 hover:bg-green-100'
@@ -369,10 +378,10 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground">Ready to Ship Status</h3>
-                  <Badge 
+                  <Badge
                     className={
-                      selectedBundle.readyToShipStatus === 'pending' 
-                        ? 'bg-gray-100 text-gray-800 hover:bg-gray-100' 
+                      selectedBundle.readyToShipStatus === 'pending'
+                        ? 'bg-gray-100 text-gray-800 hover:bg-gray-100'
                         : selectedBundle.readyToShipStatus === 'stuffed'
                           ? 'bg-blue-100 text-blue-800 hover:bg-blue-100'
                           : 'bg-green-100 text-green-800 hover:bg-green-100'
@@ -382,19 +391,19 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                   </Badge>
                 </div>
               </div>
-              
+
               {selectedBundle.container && (
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground">Container</h3>
                   <p className="text-lg font-semibold">{selectedBundle.container.containerCode}</p>
                 </div>
               )}
-              
+
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">Description</h3>
                 <p className="mt-1">{selectedBundle.description || '-'}</p>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground">Quantity</h3>
@@ -405,7 +414,7 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                   <p>{selectedBundle.actualCount || '-'}</p>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground">Net Weight</h3>
@@ -416,7 +425,7 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                   <p>{selectedBundle.grossWeight ? `${selectedBundle.grossWeight} kg` : '-'}</p>
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="text-sm font-medium text-muted-foreground">Products</h3>
                 <div className="mt-2 border rounded-md">
@@ -450,7 +459,7 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                   </Table>
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4 pt-4 border-t">
                 <div>
                   <h3 className="text-sm font-medium text-muted-foreground">Created At</h3>

@@ -81,7 +81,7 @@ import { PickupAssignView } from '@/pages/pickup-assign/config/PickupAssignView'
 import ReadyToShipListPage from '@/pages/ready-to-ship/ReadyToShipListPage';
 import ReadyToShipViewPage from '@/pages/ready-to-ship/ReadyToShipViewPage';
 import ReadyToShipEditPage from '@/pages/ready-to-ship/ReadyToShipEditPage';
-
+import ReadyToShipPrintPreview from '@/pages/ready-to-ship/ReadyToShipPrintPreview';
 
 const protectedRoutes = [
   { path: '', element: <InventoryDashboard />, module: 'Dashboard' },
@@ -200,6 +200,11 @@ export const router = createBrowserRouter([
         element: route.element,
       })),
     ],
+  },
+  {
+    path: '/ready-to-ship-print',
+    element: <ProtectedRoute module="Ready to Ship" />,
+    children: [{ index: true, element: <ReadyToShipPrintPreview /> }],
   },
   { path: '*', element: <NotFoundPage /> },
 ]);
