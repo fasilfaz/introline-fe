@@ -286,6 +286,14 @@ export const PackingListView = () => {
                         <p className="text-xs text-muted-foreground">Quantity</p>
                         <p className="font-medium">{bundle.quantity}</p>
                       </div>
+                      {bundle.bundleType && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Type</p>
+                          <Badge variant={bundle.bundleType === 'box' ? 'default' : 'secondary'}>
+                            {bundle.bundleType.charAt(0).toUpperCase() + bundle.bundleType.slice(1)}
+                          </Badge>
+                        </div>
+                      )}
                       {bundle.netWeight !== undefined && (
                         <div>
                           <p className="text-xs text-muted-foreground">Net Weight</p>

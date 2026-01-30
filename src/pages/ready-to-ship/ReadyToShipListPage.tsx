@@ -221,6 +221,7 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                     <TableHead>Description</TableHead>
                     <TableHead>Quantity</TableHead>
                     <TableHead>Net Weight</TableHead>
+                    <TableHead>Type</TableHead>
                     <TableHead>Priority</TableHead>
                     <TableHead>Shipping Status</TableHead>
                     <TableHead>Status</TableHead>
@@ -239,6 +240,21 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                       </TableCell>
                       <TableCell>{bundle.quantity}</TableCell>
                       <TableCell>{bundle.netWeight ? `${bundle.netWeight} kg` : '-'}</TableCell>
+                      <TableCell>
+                        {bundle.bundleType ? (
+                          <Badge 
+                            className={
+                              bundle.bundleType === 'box' 
+                                ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' 
+                                : 'bg-green-100 text-green-800 hover:bg-green-100'
+                            }
+                          >
+                            {bundle.bundleType.charAt(0).toUpperCase() + bundle.bundleType.slice(1)}
+                          </Badge>
+                        ) : (
+                          '-'
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge
                           className={

@@ -26,6 +26,7 @@ interface BundleItem {
   grossWeight?: number;
   actualCount?: number;
   status?: 'pending' | 'in_progress' | 'completed';
+  bundleType?: 'box' | 'bale';
   products: ProductItem[];
 }
 
@@ -258,7 +259,8 @@ export const PackingListForm = () => {
         }>;
       }> = formState.bundles.map(bundle => ({
         ...bundle,
-        bundleNumber: bundle.bundleNumber.toString() // Ensure bundle number stays as string
+        bundleNumber: bundle.bundleNumber.toString(), // Ensure bundle number stays as string
+        bundleType: bundle.bundleType || 'box' // Default to 'box' if not set
       }));
 
       const payload: PackingListInput = {
@@ -438,6 +440,7 @@ export const PackingListForm = () => {
                       grossWeight: 0,
                       actualCount: 0,
                       status: 'pending',
+                      bundleType: 'box',
                       products: []
                     };
                     setFormState(prev => ({
@@ -630,6 +633,29 @@ export const PackingListForm = () => {
                             }}
                             placeholder="Description"
                           />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor={`bundle-type-${index}`}>Bundle Type</Label>
+                          <select
+                            id={`bundle-type-${index}`}
+                            className="border rounded-md px-3 py-2 text-sm bg-background h-10 w-full focus:ring-2 focus:ring-primary/20"
+                            value={bundle.bundleType || 'box'}
+                            onChange={(e) => {
+                              const updatedBundles = [...formState.bundles];
+                              updatedBundles[index] = {
+                                ...updatedBundles[index],
+                                bundleType: e.target.value as 'box' | 'bale'
+                              };
+                              setFormState(prev => ({
+                                ...prev,
+                                bundles: updatedBundles
+                              }));
+                            }}
+                          >
+                            <option value="box">Box</option>
+                            <option value="bale">Bale</option>
+                          </select>
                         </div>
                         
                         {/* Products Section */}

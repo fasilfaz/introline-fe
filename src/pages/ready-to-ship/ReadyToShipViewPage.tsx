@@ -198,6 +198,21 @@ const ReadyToShipViewPage: React.FC<ReadyToShipViewPageProps> = () => {
                   {bundle.readyToShipStatus.charAt(0).toUpperCase() + bundle.readyToShipStatus.slice(1)}
                 </Badge>
               </div>
+              
+              {bundle.bundleType && (
+                <div>
+                  <h3 className="text-sm font-medium text-muted-foreground">Bundle Type</h3>
+                  <Badge 
+                    className={
+                      bundle.bundleType === 'box' 
+                        ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' 
+                        : 'bg-green-100 text-green-800 hover:bg-green-100'
+                    }
+                  >
+                    {bundle.bundleType.charAt(0).toUpperCase() + bundle.bundleType.slice(1)}
+                  </Badge>
+                </div>
+              )}
                             
               {bundle.container && (
                 <div>

@@ -17,6 +17,7 @@ export interface PackingListInput {
     grossWeight?: number;
     actualCount?: number;
     status?: 'pending' | 'in_progress' | 'completed';
+    bundleType?: 'box' | 'bale';
     products?: Array<{
       id: string;
       productName: string;
@@ -69,6 +70,7 @@ export interface PackingList {
     grossWeight?: number;
     actualCount?: number;
     status?: 'pending' | 'in_progress' | 'completed';
+    bundleType?: 'box' | 'bale';
     products?: Array<{
       id: string;
       productName: string;

@@ -30,6 +30,7 @@ export interface ReadyToShipBundleUpdate {
   actualCount?: number;
   priority?: 'high' | 'medium' | 'low';
   readyToShipStatus?: 'pending' | 'stuffed' | 'dispatched';
+  bundleType?: 'box' | 'bale';
   container?: string; // container ID
   products?: Array<{
     id: string;

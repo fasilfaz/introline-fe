@@ -10,6 +10,7 @@ export interface BundleInput {
   grossWeight?: number;
   actualCount?: number;
   status?: 'pending' | 'in_progress' | 'completed';
+  bundleType?: 'box' | 'bale';
   products?: Array<{
     id: string;
     productName: string;
@@ -54,6 +55,7 @@ export interface Bundle {
   grossWeight?: number;
   actualCount?: number;
   status: 'pending' | 'in_progress' | 'completed';
+  bundleType: 'box' | 'bale';
   products: Array<{
     id: string;
     productName: string;
