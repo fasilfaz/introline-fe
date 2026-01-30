@@ -10,7 +10,12 @@ export interface LRNumber {
 // Define the PickupAssign interface
 export interface PickupAssign {
   _id?: string;
-  transportPartnerId: string;
+  transportPartnerId: string | {
+    _id: string;
+    name: string;
+    phoneNumber: string;
+    price?: number;
+  };
   transportPartner?: {
     _id: string;
     name: string;
@@ -43,7 +48,7 @@ export interface CreatePickupAssignPayload {
   status?: 'Pending' | 'Completed';
 }
 
-export interface UpdatePickupAssignPayload extends Partial<CreatePickupAssignPayload> {}
+export interface UpdatePickupAssignPayload extends Partial<CreatePickupAssignPayload> { }
 
 // Define the payload for updating LR status
 export interface UpdateLRStatusPayload {
@@ -56,7 +61,7 @@ export const pickupAssignService = {
   // Fetch all pickup assignments with pagination and filters
   async listPickupAssigns(params: ListPickupAssignsParams = {}) {
     const queryParams = new URLSearchParams();
-    
+
     if (params.page) queryParams.append('page', params.page.toString());
     if (params.limit) queryParams.append('limit', params.limit.toString());
     if (params.search) queryParams.append('search', params.search);
@@ -64,7 +69,7 @@ export const pickupAssignService = {
     if (params.transportPartnerId) queryParams.append('transportPartnerId', params.transportPartnerId);
     if (params.sortBy) queryParams.append('sortBy', params.sortBy);
     if (params.sortOrder) queryParams.append('sortOrder', params.sortOrder);
-    
+
     const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
     return apiClient.get<ApiListResponse<PickupAssign>>(`/pickup-assigns${queryString}`);
   },

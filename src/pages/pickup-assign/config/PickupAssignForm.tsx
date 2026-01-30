@@ -23,7 +23,7 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
   const [hasChanges, setHasChanges] = useState(false);
   const [transportPartners, setTransportPartners] = useState<PickupPartner[]>([]);
   const [loadingPartners, setLoadingPartners] = useState(false);
-  
+
   const [formData, setFormData] = useState<CreatePickupAssignPayload>({
     transportPartnerId: '',
     lrNumbers: [{ lrNumber: '', status: 'Not Collected' }],
@@ -41,9 +41,9 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
   const fetchTransportPartners = async () => {
     try {
       setLoadingPartners(true);
-      const response = await pickupPartnerService.listPickupPartners({ 
-        limit: 100, 
-        status: 'Active' 
+      const response = await pickupPartnerService.listPickupPartners({
+        limit: 100,
+        status: 'Active'
       });
       setTransportPartners(response.data);
     } catch (error) {
@@ -60,7 +60,9 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
       const response = await pickupAssignService.getPickupAssign(id!);
       const pickupAssign = response.data;
       setFormData({
-        transportPartnerId: pickupAssign.transportPartnerId,
+        transportPartnerId: typeof pickupAssign.transportPartnerId === 'object'
+          ? pickupAssign.transportPartnerId._id
+          : pickupAssign.transportPartnerId,
         lrNumbers: pickupAssign.lrNumbers,
         assignDate: new Date(pickupAssign.assignDate).toISOString().split('T')[0],
         status: pickupAssign.status
@@ -75,7 +77,7 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.transportPartnerId || !formData.assignDate || formData.lrNumbers.length === 0) {
       toast.error('Please fill in all required fields');
       return;
@@ -90,12 +92,12 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
 
     try {
       setLoading(true);
-      
+
       const submitData = {
         ...formData,
         lrNumbers: validLRNumbers
       };
-      
+
       if (mode === 'create') {
         await pickupAssignService.createPickupAssign(submitData);
         toast.success('Pickup assignment created successfully');
@@ -103,7 +105,7 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
         await pickupAssignService.updatePickupAssign(id!, submitData);
         toast.success('Pickup assignment updated successfully');
       }
-      
+
       navigate('/dashboard/pickup-assigns');
     } catch (error: any) {
       console.error('Error saving pickup assignment:', error);
@@ -126,6 +128,19 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
     updatedLRNumbers[index] = { ...updatedLRNumbers[index], [field]: value };
     handleInputChange('lrNumbers', updatedLRNumbers);
   };
+
+  // Auto-update status when all LR numbers are collected
+  useEffect(() => {
+    if (formData.lrNumbers.length > 0) {
+      const allCollected = formData.lrNumbers.every(lr => lr.lrNumber.trim() !== '' && lr.status === 'Collected');
+      if (allCollected && formData.status !== 'Completed') {
+        setFormData(prev => ({ ...prev, status: 'Completed' }));
+      } else if (!allCollected && formData.status === 'Completed') {
+        // Optionally reset to Pending if not all are collected
+        // setFormData(prev => ({ ...prev, status: 'Pending' }));
+      }
+    }
+  }, [formData.lrNumbers]);
 
   const addLRNumber = () => {
     const newLRNumbers = [...formData.lrNumbers, { lrNumber: '', status: 'Not Collected' as const }];
@@ -271,7 +286,7 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
                     Add LR Number
                   </Button>
                 </div>
-                
+
                 <div className="space-y-4">
                   {formData.lrNumbers.map((lrNumber, index) => (
                     <div key={index} className="flex items-center gap-4 p-4 border rounded-lg bg-gray-50">
