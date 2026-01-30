@@ -164,8 +164,8 @@ const ReadyToShipPrintPreview: React.FC = () => {
                         <td className="p-3 border border-gray-700">{getStatusBadge(bundle.status)}</td>
                       </tr>
                       <tr>
-                        <td className="p-3 border border-gray-700 bg-gray-100 font-bold uppercase text-xs">Container</td>
-                        <td className="p-3 border border-gray-700 font-semibold">{bundle.container?.containerCode || '—'}</td>
+                        <td className="p-3 border border-gray-700 bg-gray-100 font-bold uppercase text-xs">Type</td>
+                        <td className="p-3 border border-gray-700 font-semibold">{bundle.bundleType}</td>
                         <td className="p-3 border border-gray-700 bg-gray-100 font-bold uppercase text-xs">Total Qty</td>
                         <td className="p-3 border border-gray-700">
                           <span className="text-lg font-semibold">{bundle.quantity || 0}</span>
