@@ -10,16 +10,11 @@ export interface LRNumber {
 // Define the PickupAssign interface
 export interface PickupAssign {
   _id?: string;
-  transportPartnerId: string | {
-    _id: string;
-    name: string;
-    phoneNumber: string;
-    price?: number;
-  };
+  transportPartnerId: string;
   transportPartner?: {
     _id: string;
     name: string;
-    phoneNumber: string;
+    phoneNumber?: string;
     price?: number;
   };
   lrNumbers: LRNumber[];

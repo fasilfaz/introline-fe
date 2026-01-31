@@ -450,8 +450,7 @@ export default function BookingForm() {
                   <Calendar className="h-5 w-5" />
                   Booking Details
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {/* <div className="grid grid-cols-1 md:grid-cols-2  gap-6"> */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Date */}
                   <div className="space-y-2">
                     <Label htmlFor="date" className="flex items-center gap-2 font-medium">
@@ -542,8 +541,8 @@ export default function BookingForm() {
                     )}
                   </div>
 
-                  {/* Status */}
-                  <div className="space-y-2">
+                  {/* Status - Smaller width */}
+                  <div className="space-y-2 md:col-span-1">
                     <Label htmlFor="status" className="flex items-center gap-2 font-medium">
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       Status <span className="text-red-500">*</span>

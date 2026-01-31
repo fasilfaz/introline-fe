@@ -32,10 +32,21 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
   });
 
   useEffect(() => {
-    fetchTransportPartners();
-    if (mode === 'edit' && id) {
-      fetchPickupAssign();
-    }
+    const loadData = async () => {
+      try {
+        // Always fetch transport partners first
+        await fetchTransportPartners();
+        
+        // Then fetch pickup assignment data if in edit mode
+        if (mode === 'edit' && id) {
+          await fetchPickupAssign();
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    };
+    
+    loadData();
   }, [mode, id]);
 
   const fetchTransportPartners = async () => {
@@ -59,11 +70,23 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
       setLoading(true);
       const response = await pickupAssignService.getPickupAssign(id!);
       const pickupAssign = response.data;
+
+      // Extract transport partner ID - the backend returns transportPartnerId as ObjectId
+      // and transportPartner as populated object (virtual field)
+      let transportPartnerIdValue = '';
+      
+      // First try to get from transportPartnerId (the actual field)
+      if (pickupAssign.transportPartnerId) {
+        transportPartnerIdValue = String(pickupAssign.transportPartnerId);
+      }
+      // Fallback to populated transportPartner object
+      else if (pickupAssign.transportPartner && typeof pickupAssign.transportPartner === 'object') {
+        transportPartnerIdValue = pickupAssign.transportPartner._id;
+      }
+
       setFormData({
-        transportPartnerId: typeof pickupAssign.transportPartnerId === 'object'
-          ? pickupAssign.transportPartnerId._id
-          : pickupAssign.transportPartnerId,
-        lrNumbers: pickupAssign.lrNumbers,
+        transportPartnerId: transportPartnerIdValue,
+        lrNumbers: pickupAssign.lrNumbers || [{ lrNumber: '', status: 'Not Collected' }],
         assignDate: new Date(pickupAssign.assignDate).toISOString().split('T')[0],
         status: pickupAssign.status
       });
@@ -167,6 +190,18 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
     navigate('/dashboard/pickup-assigns');
   };
 
+  // Show loading state while data is being fetched
+  if (loadingPartners || (mode === 'edit' && loading)) {
+    return (
+      <div className="p-6 flex flex-col items-center justify-center min-h-[50vh]">
+        <Loader2 className="h-12 w-12 text-blue-500 animate-spin mb-4" />
+        <p className="text-lg font-medium text-gray-700">
+          {loadingPartners ? 'Loading transport partners...' : 'Loading pickup assignment...'}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -222,10 +257,12 @@ export const PickupAssignForm: React.FC<PickupAssignFormProps> = ({ mode }) => {
                       </SelectTrigger>
                       <SelectContent>
                         {transportPartners.map((partner) => (
-                          <SelectItem key={partner._id} value={partner._id!}>
-                            <div className="flex flex-col">
+                          <SelectItem key={partner._id} value={partner._id!} className="py-3">
+                            <div className="flex items-center justify-between w-full">
                               <span className="font-medium">{partner.name}</span>
-                              <span className="text-sm text-gray-500">{partner.phoneNumber}</span>
+                              {partner.phoneNumber && (
+                                <span className="text-sm text-gray-500 ml-2">({partner.phoneNumber})</span>
+                              )}
                             </div>
                           </SelectItem>
                         ))}
