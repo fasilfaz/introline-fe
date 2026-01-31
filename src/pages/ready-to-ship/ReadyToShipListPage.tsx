@@ -218,6 +218,7 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Bundle Number</TableHead>
+                    <TableHead>Packing List</TableHead>
                     <TableHead>Description</TableHead>
                     <TableHead>Quantity</TableHead>
                     <TableHead>Net Weight</TableHead>
@@ -233,6 +234,16 @@ const ReadyToShipListPage: React.FC<ReadyToShipListPageProps> = () => {
                   {bundles.map((bundle) => (
                     <TableRow key={bundle._id}>
                       <TableCell className="font-medium">{bundle.bundleNumber}</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="font-mono">
+                          {bundle.packingList.packingListCode}
+                        </Badge>
+                        {bundle.packingList.bookingReference && (
+                          <div className="text-xs text-muted-foreground mt-1">
+                            Booking: {bundle.packingList.bookingReference.bookingCode}
+                          </div>
+                        )}
+                      </TableCell>
                       <TableCell>
                         <div className="max-w-xs truncate" title={bundle.description || ''}>
                           {bundle.description || '-'}

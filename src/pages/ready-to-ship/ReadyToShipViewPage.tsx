@@ -220,6 +220,11 @@ const ReadyToShipViewPage: React.FC<ReadyToShipViewPageProps> = () => {
                   <p className="text-lg font-semibold">{bundle.container.containerCode}</p>
                 </div>
               )}
+              
+              <div>
+                <h3 className="text-sm font-medium text-muted-foreground">Packing List</h3>
+                <p className="text-lg font-semibold">{bundle.packingList.packingListCode}</p>
+              </div>
             </div>
             
             <div className="space-y-4">
@@ -301,14 +306,119 @@ const ReadyToShipViewPage: React.FC<ReadyToShipViewPageProps> = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 pt-6 border-t">
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground">Created At</h3>
-              <p>{formatDate(bundle.createdAt)}</p>
+              <h3 className="text-sm font-medium text-muted-foreground">Packing List Code</h3>
+              <p className="font-semibold">{bundle.packingList.packingListCode}</p>
             </div>
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground">Updated At</h3>
-              <p>{formatDate(bundle.updatedAt)}</p>
+              <h3 className="text-sm font-medium text-muted-foreground">Packing Status</h3>
+              <Badge 
+                className={
+                  bundle.packingList.packingStatus === 'completed' 
+                    ? 'bg-green-100 text-green-800 hover:bg-green-100' 
+                    : bundle.packingList.packingStatus === 'in_progress'
+                      ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
+                      : 'bg-gray-100 text-gray-800 hover:bg-gray-100'
+                }
+              >
+                {bundle.packingList.packingStatus.replace('_', ' ').toUpperCase()}
+              </Badge>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Packed By</h3>
+              <p>{bundle.packingList.packedBy}</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Bundle Count</h3>
+              <p>{bundle.packingList.actualBundleCount} of {bundle.packingList.plannedBundleCount} bundles</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Net Weight</h3>
+              <p>{bundle.packingList.netWeight} kg</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Gross Weight</h3>
+              <p>{bundle.packingList.grossWeight} kg</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Packing List Created</h3>
+              <p>{formatDate(bundle.packingList.createdAt)}</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground">Packing List Updated</h3>
+              <p>{formatDate(bundle.packingList.updatedAt)}</p>
             </div>
           </div>
+          
+          {/* Booking Information Section */}
+          {bundle.packingList.bookingReference && (
+            <div className="mt-8 pt-6 border-t">
+              <h3 className="text-lg font-medium mb-4">Associated Booking Information</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">Booking Code</h4>
+                  <p className="font-semibold">{bundle.packingList.bookingReference.bookingCode}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">Booking Status</h4>
+                  <Badge 
+                    className={
+                      bundle.packingList.bookingReference.status === 'success' 
+                        ? 'bg-green-100 text-green-800 hover:bg-green-100' 
+                        : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-100'
+                    }
+                  >
+                    {bundle.packingList.bookingReference.status.toUpperCase()}
+                  </Badge>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">Sender</h4>
+                  <p>{bundle.packingList.bookingReference.sender.name}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">Receiver</h4>
+                  <p>{bundle.packingList.bookingReference.receiver.name}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">Pickup Partner</h4>
+                  <p>
+                    {typeof bundle.packingList.bookingReference.pickupPartner === 'string' 
+                      ? bundle.packingList.bookingReference.pickupPartner 
+                      : bundle.packingList.bookingReference.pickupPartner.name}
+                  </p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">Booking Date</h4>
+                  <p>{formatDate(bundle.packingList.bookingReference.date)}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">Expected Receiving Date</h4>
+                  <p>{formatDate(bundle.packingList.bookingReference.expectedReceivingDate)}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">Bundle Count</h4>
+                  <p>{bundle.packingList.bookingReference.bundleCount}</p>
+                </div>
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground">Repacking Status</h4>
+                  <Badge 
+                    className={
+                      bundle.packingList.bookingReference.repacking === 'ready-to-ship' 
+                        ? 'bg-blue-100 text-blue-800 hover:bg-blue-100' 
+                        : 'bg-orange-100 text-orange-800 hover:bg-orange-100'
+                    }
+                  >
+                    {bundle.packingList.bookingReference.repacking.replace('-', ' ').toUpperCase()}
+                  </Badge>
+                </div>
+                {bundle.packingList.bookingReference.store && (
+                  <div>
+                    <h4 className="text-sm font-medium text-muted-foreground">Store</h4>
+                    <p>{bundle.packingList.bookingReference.store.name}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
       

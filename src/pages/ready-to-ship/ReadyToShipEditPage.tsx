@@ -80,8 +80,8 @@ const ReadyToShipEditPage: React.FC<ReadyToShipEditPageProps> = () => {
         const containerResponse = await containerService.listContainers();
         setContainers(containerResponse.data);
         
-        // Show container select if status is stuffed
-        setShowContainerSelect(fetchedBundle.readyToShipStatus === 'stuffed');
+        // Show container select if status is stuffed or dispatched
+        setShowContainerSelect(['stuffed', 'dispatched'].includes(fetchedBundle.readyToShipStatus));
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Failed to fetch bundle details');
@@ -113,8 +113,8 @@ const ReadyToShipEditPage: React.FC<ReadyToShipEditPageProps> = () => {
         [name]: value
       };
       
-      // Clear container if changing from 'stuffed' to another status
-      if (name === 'readyToShipStatus' && prev.readyToShipStatus === 'stuffed' && value !== 'stuffed') {
+      // Clear container if changing from 'stuffed' or 'dispatched' to another status
+      if (name === 'readyToShipStatus' && prev.readyToShipStatus && ['stuffed', 'dispatched'].includes(prev.readyToShipStatus) && !['stuffed', 'dispatched'].includes(value)) {
         newState.container = undefined;
       }
       
@@ -123,7 +123,7 @@ const ReadyToShipEditPage: React.FC<ReadyToShipEditPageProps> = () => {
 
     // Show/hide container selection based on readyToShipStatus
     if (name === 'readyToShipStatus') {
-      setShowContainerSelect(value === 'stuffed');
+      setShowContainerSelect(['stuffed', 'dispatched'].includes(value));
     }
   };
 
@@ -177,8 +177,8 @@ const ReadyToShipEditPage: React.FC<ReadyToShipEditPageProps> = () => {
       // Prepare form data by excluding empty container field if not needed
       const submitData = { ...formData };
       
-      // Only send container field if it has a value and readyToShipStatus is 'stuffed'
-      if (formData.readyToShipStatus !== 'stuffed' || !formData.container) {
+      // Only send container field if it has a value and readyToShipStatus is 'stuffed' or 'dispatched'
+      if (!(formData.readyToShipStatus && ['stuffed', 'dispatched'].includes(formData.readyToShipStatus)) || !formData.container) {
         delete submitData.container;
       }
 

@@ -2,9 +2,60 @@ import { apiClient } from './apiClient';
 import type { ApiListResponse, ApiResponse } from '@/types/backend';
 import type { Bundle } from './bundleService';
 
+interface PopulatedBooking {
+  _id: string;
+  bookingCode: string;
+  sender: {
+    _id: string;
+    name: string;
+    email?: string;
+    phone?: string;
+    type: string;
+  };
+  receiver: {
+    _id: string;
+    name: string;
+    email?: string;
+    phone?: string;
+    type: string;
+  };
+  pickupPartner: {
+    _id: string;
+    name: string;
+    contactPerson?: string;
+    phone?: string;
+    email?: string;
+  } | 'Self' | 'Central';
+  date: string;
+  expectedReceivingDate: string;
+  bundleCount: number;
+  status: 'pending' | 'success';
+  repacking: 'ready-to-ship' | 'repacking-required';
+  store?: {
+    _id: string;
+    name: string;
+    code: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PopulatedPackingList {
+  _id: string;
+  packingListCode: string;
+  bookingReference: PopulatedBooking | null;
+  netWeight: number;
+  grossWeight: number;
+  packedBy: string;
+  plannedBundleCount: number;
+  actualBundleCount: number;
+  packingStatus: 'pending' | 'in_progress' | 'completed';
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ReadyToShipBundle extends Omit<Bundle, 'packingList'> {
-  // Omitting packingList since Ready to Ship doesn't need that data
-  packingList: never; // Explicitly exclude packingList
+  packingList: PopulatedPackingList;
   priority: 'high' | 'medium' | 'low';
   readyToShipStatus: 'pending' | 'stuffed' | 'dispatched';
   container?: {
