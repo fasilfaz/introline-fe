@@ -3,8 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, ClipboardList, Calendar, Truck, Package, Edit, CheckCircle, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, ClipboardList, Calendar, Truck, Package, Edit, CheckCircle,  Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { pickupAssignService, type PickupAssign, type LRNumber } from '@/services/pickupAssignService';
 
@@ -13,7 +12,6 @@ export const PickupAssignView: React.FC = () => {
   const { id } = useParams();
   const [pickupAssign, setPickupAssign] = useState<PickupAssign | null>(null);
   const [loading, setLoading] = useState(false);
-  const [updatingLR, setUpdatingLR] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) {
@@ -32,20 +30,6 @@ export const PickupAssignView: React.FC = () => {
       navigate('/dashboard/pickup-assigns');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleLRStatusUpdate = async (lrNumber: string, newStatus: 'Collected' | 'Not Collected') => {
-    try {
-      setUpdatingLR(lrNumber);
-      await pickupAssignService.updateLRStatus(id!, { lrNumber, status: newStatus });
-      toast.success('LR status updated successfully');
-      fetchPickupAssign(); // Refresh data
-    } catch (error) {
-      console.error('Error updating LR status:', error);
-      toast.error('Failed to update LR status');
-    } finally {
-      setUpdatingLR(null);
     }
   };
 
@@ -127,7 +111,7 @@ export const PickupAssignView: React.FC = () => {
             </div>
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Pickup Assignment Details</h1>
-              <p className="text-gray-600">View and manage pickup assignment information</p>
+              <p className="text-gray-600">View pickup assignment information</p>
             </div>
           </div>
           <Button
@@ -205,7 +189,7 @@ export const PickupAssignView: React.FC = () => {
               LR Numbers ({pickupAssign.lrNumbers.length})
             </CardTitle>
             <CardDescription>
-              Manage individual LR number statuses
+              View individual LR number statuses
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-6">
@@ -229,34 +213,6 @@ export const PickupAssignView: React.FC = () => {
                     >
                       {lrNumber.status}
                     </Badge>
-                    
-                    <Select
-                      value={lrNumber.status}
-                      onValueChange={(value) => handleLRStatusUpdate(lrNumber.lrNumber, value as 'Collected' | 'Not Collected')}
-                      disabled={updatingLR === lrNumber.lrNumber}
-                    >
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Not Collected">
-                          <div className="flex items-center gap-2">
-                            <X className="h-4 w-4 text-red-500" />
-                            Not Collected
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="Collected">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle className="h-4 w-4 text-green-500" />
-                            Collected
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    
-                    {updatingLR === lrNumber.lrNumber && (
-                      <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
-                    )}
                   </div>
                 </div>
               ))}
