@@ -82,6 +82,10 @@ import ReadyToShipListPage from '@/pages/ready-to-ship/ReadyToShipListPage';
 import ReadyToShipViewPage from '@/pages/ready-to-ship/ReadyToShipViewPage';
 import ReadyToShipEditPage from '@/pages/ready-to-ship/ReadyToShipEditPage';
 import ReadyToShipPrintPreview from '@/pages/ready-to-ship/ReadyToShipPrintPreview';
+import { BillListPage } from '@/pages/bill/list/BillListPage';
+import { BillForm } from '@/pages/bill/config/BillForm';
+import { BillView } from '@/pages/bill/config/BillView';
+import BillPrintPreview from '@/pages/bill/config/BillPrintPreview';
 
 const protectedRoutes = [
   { path: '', element: <InventoryDashboard />, module: 'Dashboard' },
@@ -174,7 +178,10 @@ const protectedRoutes = [
   { path: 'pickup-assigns/view/:id', element: <PickupAssignView />, module: 'Pickup Assigns' },
   { path: 'ready-to-ship', element: <ReadyToShipListPage />, module: 'Ready to Ship' },
   { path: 'ready-to-ship/:id', element: <ReadyToShipViewPage />, module: 'Ready to Ship' },
-  { path: 'ready-to-ship/edit/:id', element: <ReadyToShipEditPage />, module: 'Ready to Ship' }
+  { path: 'ready-to-ship/edit/:id', element: <ReadyToShipEditPage />, module: 'Ready to Ship' },
+  { path: 'bills', element: <BillListPage />, module: 'Bills' },
+  { path: 'bills/generate', element: <BillForm />, module: 'Bills' },
+  { path: 'bills/:id', element: <BillView />, module: 'Bills' }
 ];
 
 const unprotectedRoutes = [
@@ -205,6 +212,11 @@ export const router = createBrowserRouter([
     path: '/ready-to-ship-print',
     element: <ProtectedRoute module="Ready to Ship" />,
     children: [{ index: true, element: <ReadyToShipPrintPreview /> }],
+  },
+  {
+    path: '/bill-print/:id',
+    element: <ProtectedRoute module="Bills" />,
+    children: [{ index: true, element: <BillPrintPreview /> }],
   },
   { path: '*', element: <NotFoundPage /> },
 ]);
